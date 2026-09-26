@@ -86,10 +86,32 @@ def evaluate(prm):
     return out
 
 
+name = f"onestep_{args.loss}" + (f"_pf{args.steps}" if args.pushforward else "")
+os.makedirs(os.path.join(ROOT, "data", "stage7"), exist_ok=True)
+ckpt = os.path.join(ROOT, "data", "stage7", f"{name}_ckpt")  # restart safety: every 250 steps
 rng = np.random.default_rng(0)
 t0 = time.time()
-curve, times = [], []
-for i in range(args.steps):
+curve, times, start, wall_before = [], [], 0, 0.0
+if os.path.exists(ckpt + ".json") and not args.time_only:
+    meta = json.load(open(ckpt + ".json"))
+    z = np.load(ckpt + ".npz")
+    treedef = jax.tree_util.tree_structure((params, state))
+    params, state = jax.tree_util.tree_unflatten(treedef, [jnp.asarray(z[f"a{i}"]) for i in range(len(z.files))])
+    rng.bit_generator.state = meta["rng"]
+    curve, times, start, wall_before = meta["curve"], meta["times"], meta["step"], meta["wall_s"]
+    print(f"resumed at step {start}", flush=True)
+
+
+def save_ckpt(i):
+    leaves = jax.tree_util.tree_leaves((params, state))
+    np.savez(ckpt + ".tmp.npz", **{f"a{j}": np.asarray(x) for j, x in enumerate(leaves)})
+    os.replace(ckpt + ".tmp.npz", ckpt + ".npz")
+    json.dump(dict(step=i, rng=rng.bit_generator.state, curve=curve, times=times,
+                   wall_s=wall_before + time.time() - t0), open(ckpt + ".tmp.json", "w"))
+    os.replace(ckpt + ".tmp.json", ckpt + ".json")
+
+
+for i in range(start, args.steps):
     t = TAGS[rng.integers(len(TAGS))]
     s = rng.integers(0, 6, B)
     k = rng.integers(1, F - 2 if args.pushforward else F - 1, B)  # same sampling as Stage 7 when not pushforward
@@ -102,18 +124,17 @@ for i in range(args.steps):
         print("median s/step:", float(np.median(times[1:])), "params", n_params(params))
         sys.exit()
     if (i + 1) % 250 == 0:
-        curve.append(dict(step=i + 1, loss=float(loss), eval=evaluate(params), wall_s=time.time() - t0))
+        curve.append(dict(step=i + 1, loss=float(loss), eval=evaluate(params), wall_s=wall_before + time.time() - t0))
         print(curve[-1], flush=True)
+        save_ckpt(i + 1)
 ev = evaluate(params)
-name = f"onestep_{args.loss}" + (f"_pf{args.steps}" if args.pushforward else "")
 res = dict(config=str(MC), loss=args.loss, pushforward=args.pushforward, steps=args.steps, batch=B, n_params=int(n_params(params)),
-           eval=ev, curve=curve, step_s=float(np.median(times[1:])), wall_s=time.time() - t0,
+           eval=ev, curve=curve, step_s=float(np.median(times[1:])), wall_s=wall_before + time.time() - t0,
            norm_mean=mu.tolist(), norm_std=sd.tolist(),
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
 os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
 with open(os.path.join(HERE, "results", f"{name}.json"), "w") as f:
     json.dump(res, f, indent=1)
-os.makedirs(os.path.join(ROOT, "data", "stage7"), exist_ok=True)
 flat, _ = jax.flatten_util.ravel_pytree(params)
 np.savez(os.path.join(ROOT, "data", "stage7", f"{name}_params.npz"), flat=np.asarray(flat), mean=mu, std=sd)
 print(ev)

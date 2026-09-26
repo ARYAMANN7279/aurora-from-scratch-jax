@@ -132,3 +132,24 @@ def test_D8_manifest_checksums(root):
         d = traj_dir(root, t["tag"], t["seed"])
         for name, h in t["sha256"].items():
             assert sha256(os.path.join(d, name)) == h
+
+
+def test_D9_restart_safety(tmp_path):
+    """Added after the container restart of 26 Sep (not in the original spec): a chunked spin-up is
+    bitwise identical to a single scan, and an interrupted-then-resumed trajectory gives the same
+    files as an uninterrupted one."""
+    prm, g = Params(nu=0.01), make_grid(64)
+    m = choose_m(64, prm)
+    ic = random_ic(g, seed=3)
+    one = make_advance(g, prm, 0.1 / m, 7 * m)(ic)
+    two = make_advance(g, prm, 0.1 / m, 3 * m)(make_advance(g, prm, 0.1 / m, 4 * m)(ic))
+    assert jnp.array_equal(one, two)
+    a, b = str(tmp_path / "a"), str(tmp_path / "b")
+    ma, _ = generate_trajectory(a, 100, 4, 2, 64, 12.0, 2.0, 0.2, (16, 32), chunk_frames=4, verbose=False)
+    with pytest.raises(InterruptedError):
+        generate_trajectory(b, 100, 4, 2, 64, 12.0, 2.0, 0.2, (16, 32), chunk_frames=4, verbose=False,
+                            _stop_after_chunks=1)
+    assert os.path.exists(os.path.join(traj_dir(b, "re100_kf4", 2), "ckpt.npz"))
+    mb, _ = generate_trajectory(b, 100, 4, 2, 64, 12.0, 2.0, 0.2, (16, 32), chunk_frames=4, verbose=False)
+    assert ma["sha256"] == mb["sha256"]
+    assert not os.path.exists(os.path.join(traj_dir(b, "re100_kf4", 2), "ckpt.npz"))

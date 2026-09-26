@@ -63,7 +63,7 @@ def make_frame_fn(g, prm, dt, out_res):
 
 
 def generate_trajectory(root, Re, kf, seed, N_gen, T_spin=50.0, T_rec=100.0, save_dt=0.2,
-                        out_res=(64, 128), chunk_frames=50, verbose=True):
+                        out_res=(64, 128), chunk_frames=50, verbose=True, _stop_after_chunks=None):
     """Generate one trajectory into root/<tag>/seed_<seed>/. Returns (meta, final generation-grid state)."""
     t_start = time.time()
     prm = Params(nu=1.0 / Re, kf=kf)
@@ -88,13 +88,39 @@ def generate_trajectory(root, Re, kf, seed, N_gen, T_spin=50.0, T_rec=100.0, sav
 
     chunk = jax.jit(lambda wh, n: jax.lax.scan(body, wh, None, length=n), static_argnums=1)
 
-    wh = random_ic(g, seed=seed)
-    wh = make_advance(g, prm, dt, n_spin)(wh) if n_spin else wh
-
+    # Restart safety: the generation-grid state is checkpointed after every spin-up chunk and every
+    # recording chunk (ckpt.npz, written atomically). Chunking does not change a single bit of the
+    # result (gate D9), so an interrupted trajectory resumes to the same files as an uninterrupted one.
+    ckpt_path = os.path.join(d, "ckpt.npz")
     paths = {n: os.path.join(d, f"frames_{n}.npy") for n in out_res}
-    mm = {n: np.lib.format.open_memmap(paths[n] + ".part", mode="w+", dtype=np.float32,
+    diag_keys = ("E", "Z", "P", "cfl", "spec")
+    ck = dict(np.load(ckpt_path)) if os.path.exists(ckpt_path) else None
+    if ck is not None and not all(os.path.exists(paths[n] + ".part") for n in out_res) and int(ck["i"]) > 0:
+        ck = None  # frames missing: start over
+
+    def save_ckpt(wh, spin_done, i, diags):
+        tmp = ckpt_path + ".tmp.npz"
+        extra = {k: np.concatenate(v) for k, v in diags.items() if v} if i else {}
+        np.savez(tmp, wh=np.asarray(wh), spin_done=spin_done, i=i, **extra)
+        os.replace(tmp, ckpt_path)
+
+    spin_chunk = round(10.0 / SAVE_DT) * m  # 10 time units
+    if ck is None:
+        wh, spin_done = random_ic(g, seed=seed), 0
+    else:
+        wh, spin_done = jnp.asarray(ck["wh"]), int(ck["spin_done"])
+    while spin_done < n_spin:
+        n = min(spin_chunk, n_spin - spin_done)
+        wh = make_advance(g, prm, dt, n)(wh)
+        spin_done += n
+        save_ckpt(wh, spin_done, 0, {})
+        if verbose:
+            print(f"  {tag} seed {seed}: spin-up {spin_done}/{n_spin} steps", flush=True)
+
+    resume = ck is not None and int(ck["i"]) > 0
+    mm = {n: np.lib.format.open_memmap(paths[n] + ".part", mode="r+" if resume else "w+", dtype=np.float32,
                                         shape=(n_frames, 4, n, n)) for n in out_res}
-    diags = {k: [] for k in ("E", "Z", "P", "cfl", "spec")}
+    diags = {k: ([ck[k]] if resume else []) for k in diag_keys}
 
     def store(i0, outs, dg):
         for n, o in zip(out_res, outs):
@@ -103,16 +129,26 @@ def generate_trajectory(root, Re, kf, seed, N_gen, T_spin=50.0, T_rec=100.0, sav
         for k in diags:
             diags[k].append(np.atleast_1d(np.asarray(dg[k])) if k != "spec" else np.asarray(dg[k]).reshape(-1, g.n_shells))
 
-    outs, dg = frame(wh)
-    store(0, [o[None] for o in outs], dg)
-    i = 1
+    if resume:
+        i = int(ck["i"])
+    else:
+        outs, dg = frame(wh)
+        store(0, [o[None] for o in outs], dg)
+        i = 1
     while i < n_frames:
         n = min(chunk_frames, n_frames - i)
         wh, (outs, dg) = chunk(wh, n)
         store(i, outs, dg)
         i += n
+        for mmap in mm.values():
+            mmap.flush()
+        save_ckpt(wh, spin_done, i, diags)
         if verbose:
             print(f"  {tag} seed {seed}: frame {i}/{n_frames}, E={float(dg['E'][-1]):.4f}", flush=True)
+        if _stop_after_chunks is not None:  # test hook: simulate a crash after this many chunks
+            _stop_after_chunks -= 1
+            if _stop_after_chunks == 0:
+                raise InterruptedError("simulated interruption")
 
     dg = {k: np.concatenate(v) for k, v in diags.items()}
     max_cfl = float(dg["cfl"].max())
@@ -134,6 +170,8 @@ def generate_trajectory(root, Re, kf, seed, N_gen, T_spin=50.0, T_rec=100.0, sav
                 git_commit=git_commit())
     with open(os.path.join(d, "meta.json"), "w") as f:  # written last: marks the trajectory complete
         json.dump(meta, f, indent=1)
+    if os.path.exists(ckpt_path):
+        os.remove(ckpt_path)
     return meta, wh
 
 
