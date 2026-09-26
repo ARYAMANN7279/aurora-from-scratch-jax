@@ -23,14 +23,6 @@ shift become independent knobs. The ablation becomes tractable.
 4. **Which architectural components matter?** — shifted windows, depth, latent level count, the pushforward trick, MAE vs MSE.
 5. **Parameter-efficient adaptation** — does LoRA match full fine-tuning in the small-data regime?
 
-## Background
-
-Successor to a NeurIPS 2026 RealPDE Track 1 competition entry (final score 80.081266 of 181 teams).
-That project ended on an evidenced claim — *the remaining gap is a better pretrained backbone* —
-which it could not test: outside pretrained weights were banned, only 81 real trajectories existed,
-and the offline validation had no predictive power for the main accuracy channel. On generated data
-all three obstacles disappear.
-
 ## Layout
 
 | Path | Contents |
