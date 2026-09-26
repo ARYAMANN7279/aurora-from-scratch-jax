@@ -243,3 +243,10 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   both matched-steps and matched-compute comparisons.**
 * **Stage 11 accepted.** The harness reproduces the Stage 7 result exactly (difference 0) from a
   config file. This is the tool for E1–E5.
+
+### 2026-09-26 — Stage 10 result
+* **Stage 10: acceptance NOT met.** LoRA r=4 (0.84% trainable) improves Re1000 one-step error by
+  only 0.5% over zero-shot; full fine-tuning by 3.0%; LoRA at 10× lr by 0.7%. With two
+  trajectories and 1000 steps there is little to adapt with. Zero-shot transfer from Re 100/300 to
+  the unseen Re1000 is already 0.58× persistence. This moves to E5 (fine-tuning set size sweep,
+  plus an in-distribution Re1000 ceiling).
