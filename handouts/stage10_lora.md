@@ -50,3 +50,14 @@ trainable.
 | A4 | zero-shot error / persistence on Re1000 | > the Stage 7 in-distribution ratio at Re300 (the regime shift costs accuracy) |
 
 **Stage 10 acceptance:** L1–L5 pass, and A1 and A2 HIT.
+
+---
+
+## Amendments (after results; the original verdicts stand in the report)
+
+**A1 (26 Sep, after the first gate run): L5 step size.** With h = 1e-4, L5 **failed** at 1.8e-6.
+Diagnostic (5 entries, h ∈ {1e-3, 1e-4, 1e-5, 1e-6}): the error grows as h shrinks, so it is
+finite-difference roundoff, not a gradient error. The LoRA gradients are tiny (median |g| = 1.5e-6),
+so the roundoff floor at h = 1e-4 (≈ ε·loss/h ≈ 2e-12 absolute) exceeds the tolerance. At
+h = 1e-3 all 5 entries agree to ≤ 7.1e-8. From now on L5 uses h = 1e-3 (mixed tolerance
+unchanged).

@@ -8,3 +8,4 @@ from . import swin
 from . import backbone
 from . import model
 from . import rollout
+from . import lora
