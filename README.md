@@ -123,9 +123,10 @@ python3.11 -m venv .venv
 
 ## Status
 
-**Ongoing.** Stages 1, 3, 5, 7 and 8 are complete. Every stage from 2 to 11 is built and passes
-its correctness gates. The remaining learning measurements (Stages 2, 4, 6, 9–11) are running or
-queued. The Stage 4 runs and large-scale data generation go to the GPU box. Each stage has a spec with
+**Ongoing.** Stages 1, 3, 5, 6, 7, 8 and 11 are complete. Stage 9's acceptance test was not met
+(pushforward does not pay at matched compute). Stages 2 and 10 wait on the last Re 1000
+trajectories, which are generating, and the Stage 4 learning runs need the GPU box. Every stage is
+built and passes its correctness gates (74 tests). Each stage has a spec with
 pre-registered predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
 
 ## Advisors
