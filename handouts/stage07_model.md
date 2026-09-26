@@ -37,7 +37,7 @@ fixed, and the Stage 1 rules apply.
 | M1 | at initialisation, X̂^{t+1} == X^t, for 64² and 128² inputs | exact |
 | M2 | shapes: all four variables out, for every input subset S (including S = {ω}) | exact |
 | M3 | the same params run on 64² and 128² under `jit` | shapes exact |
-| M4 | translation equivariance: shifting both input frames by 16 patches (64 grid points) in x and y shifts the output identically (64² input; the band transform, Perceiver and heads are all translation-covariant) | ≤ 1e-10 |
+| M4 | translation equivariance: shifting both input frames by 16 patches (64 grid points, half the domain) in x and y shifts the output identically, on 128² input. The band transform, Perceiver and heads are translation-covariant; the backbone needs shifts of 2^{S−1}·window = 16 patches. (At 64², 16 patches is the whole domain, so the test would be vacuous.) | ≤ 1e-10 |
 | M5 | `jax.grad` vs central finite differences (h = 1e-4, mixed tolerance as in Stage 6 A1), 5 entries | ≤ 1e-6 |
 | M6 | a variable absent from the input gets residual base 0 (checked by feeding S = {u, v} and verifying `X̂_p = Δ_p`) | exact |
 
