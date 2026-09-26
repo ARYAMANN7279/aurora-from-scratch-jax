@@ -232,3 +232,14 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   checkpoints and resumes bitwise (gate D9; training checkpoints every 250 steps), and is relaunched
   with `data/stage2/lanes.sh`. Long jobs (Re1000 generation at 512², Stage 4 training) belong on the
   GPU box.
+
+### 2026-09-26 — Stage 6, 9, 11 results
+* **Stage 6 accepted on the plan's test.** A 16k-step diagnostic overfits one trajectory to 0.070×
+  persistence. The pre-registered 4000-step budget missed (0.19×); the cause was the budget, not
+  capacity.
+* **Stage 9: acceptance NOT met.** At matched compute, pushforward did not reduce rollout drift
+  (−13.7% / −5.6%, i.e. worse). Exploratory: at matched steps (2× compute) it cuts drift by 14% /
+  11%, winning 4/4 rollouts per regime at ~6–9 SE, with almost no one-step cost. **E4 must report
+  both matched-steps and matched-compute comparisons.**
+* **Stage 11 accepted.** The harness reproduces the Stage 7 result exactly (difference 0) from a
+  config file. This is the tool for E1–E5.

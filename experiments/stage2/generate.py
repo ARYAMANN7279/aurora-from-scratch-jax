@@ -24,6 +24,7 @@ ap.add_argument("--root", help="default: data/stage2/<config name>")
 ap.add_argument("--shard", type=int, default=0)
 ap.add_argument("--n-shards", type=int, default=1)
 ap.add_argument("--finalize", action="store_true")
+ap.add_argument("--partial", action="store_true", help="with --finalize: manifest of completed trajectories only")
 ap.add_argument("--only", nargs="*", help="restrict to trajectories tag:seed, generated in this order")
 args = ap.parse_args()
 
@@ -31,7 +32,7 @@ with open(args.config) as f:
     cfg = json.load(f)
 root = args.root or os.path.join(ROOT, "data", "stage2", cfg["name"])
 if args.finalize:
-    man = finalize(root)
+    man = finalize(root, partial=args.partial)
     print(f"manifest: {len(man['trajectories'])} trajectories verified")
 elif args.only:
     from kdata import generate_trajectory, regime_tag, traj_dir  # noqa: E402
@@ -43,10 +44,25 @@ elif args.only:
     for item in args.only:
         tag, seed = item.split(":")
         r, seed = regs[tag], int(seed)
-        if seed not in cfg["seeds"] or os.path.exists(os.path.join(traj_dir(root, tag, seed), "meta.json")):
+        d = traj_dir(root, tag, seed)
+        if seed not in cfg["seeds"] or os.path.exists(os.path.join(d, "meta.json")):
             continue
+        # per-trajectory lock, so parallel lanes never work on the same trajectory; a lock whose
+        # process is gone (e.g. after a container restart) is taken over
+        os.makedirs(d, exist_ok=True)
+        lock = os.path.join(d, "lock")
+        try:
+            other = int(open(lock).read().strip())
+            os.kill(other, 0)
+            print(f"skip {tag} seed {seed}: in progress in pid {other}", flush=True)
+            continue
+        except (FileNotFoundError, ValueError, ProcessLookupError):
+            pass
+        with open(lock, "w") as f:
+            f.write(str(os.getpid()))
         meta, _ = generate_trajectory(root, r["Re"], r["kf"], seed, r["N_gen"], cfg["T_spin"], cfg["T_rec"],
                                       cfg["save_dt"], tuple(cfg["N_out"]))
+        os.remove(lock)
         print(f"done {tag} seed {seed} in {meta['wall_s']:.0f}s", flush=True)
 else:
     generate_dataset(cfg, root, shard=args.shard, n_shards=args.n_shards)

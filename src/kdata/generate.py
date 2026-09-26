@@ -205,19 +205,22 @@ def generate_dataset(cfg, root, shard=0, n_shards=1, verbose=True):
     return done
 
 
-def finalize(root):
-    """Collect every trajectory's meta into manifest.json after verifying all sha256."""
+def finalize(root, partial=False):
+    """Collect every trajectory's meta into manifest.json after verifying all sha256.
+    partial=True lists only the trajectories completed so far (manifest marked "partial")."""
     cfg = load_config(os.path.join(root, "dataset.json"))
     entries = []
     for r, s in tasks(cfg):
         d = traj_dir(root, regime_tag(r["Re"], r["kf"]), s)
+        if partial and not os.path.exists(os.path.join(d, "meta.json")):
+            continue
         with open(os.path.join(d, "meta.json")) as f:
             meta = json.load(f)
         for name, h in meta["sha256"].items():
             if sha256(os.path.join(d, name)) != h:
                 raise RuntimeError(f"checksum mismatch: {d}/{name}")
         entries.append(meta)
-    man = dict(config=cfg, trajectories=entries)
+    man = dict(config=cfg, trajectories=entries, partial=bool(partial))
     with open(os.path.join(root, "manifest.json"), "w") as f:
         json.dump(man, f, indent=1)
     return man
