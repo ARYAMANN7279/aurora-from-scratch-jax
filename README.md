@@ -68,7 +68,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
 | 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts; ⚠️ the MAE-trained model blows up at Re 300 (a lead for E4) |
 | 9 | Pushforward trick | lower rollout drift at matched compute | ⚠️ **not met**: no gain at matched compute; at matched steps (2× compute) it cuts drift by 11–14% (exploratory) |
-| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | 🔧 built, gates pass (0.84% trainable); waits for the Re 1000 data |
+| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot already 0.58× persistence |
 | 11 | Ablation harness | one config → one run → one row of results | ✅ **done**: reproduces Stage 7 exactly from a config file |
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.

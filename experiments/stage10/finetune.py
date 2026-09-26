@@ -25,6 +25,7 @@ from kdata import traj_dir  # noqa: E402
 ap = argparse.ArgumentParser()
 ap.add_argument("--arm", choices=["zeroshot", "lora", "full"], required=True)
 ap.add_argument("--steps", type=int, default=1000)
+ap.add_argument("--lr", type=float, help="override the pre-registered learning rate (exploratory runs only)")
 args = ap.parse_args()
 MC, B, DT, R, TAG = model.ModelConfig(), 8, 0.2, 4, "re1000_kf4"
 VARS = model.VARS
@@ -47,6 +48,8 @@ else:
     trainable = base
     full = lambda t: t
     lr = 1e-4
+if args.lr:
+    lr = args.lr
 opt = optax.adam(optax.cosine_decay_schedule(lr, max(args.steps, 1), alpha=1e-2))
 state = opt.init(trainable)
 
@@ -89,6 +92,7 @@ res = dict(arm=args.arm, steps=steps, lr=lr, r=R if args.arm == "lora" else None
            n_total=int(n_params(base)), trainable_frac=n_tr / n_params(base), eval=ev, curve=curve,
            wall_s=time.time() - t0,
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
-with open(os.path.join(HERE, "results", f"finetune_{args.arm}.json"), "w") as f:
+suffix = f"_lr{args.lr:g}" if args.lr else ""
+with open(os.path.join(HERE, "results", f"finetune_{args.arm}{suffix}.json"), "w") as f:
     json.dump(res, f, indent=1)
 print(args.arm, ev)
