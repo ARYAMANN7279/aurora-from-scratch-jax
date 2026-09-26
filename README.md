@@ -29,16 +29,27 @@ shift become independent knobs. The ablation becomes tractable.
 |---|---|
 | `PROJECT_PLAN.md` | Research questions, testbed, architecture, 11 staged deliverables with acceptance tests, 5 experiments |
 | `project_memory.md` | Decision record. **Read §2 (carry-over rules) before running any experiment.** |
-| `src/` | Implementation, one module per stage |
-| `experiments/` | Ablation configs and results |
+| `handouts/` | Per-stage specs: equations, tests, tolerances, pre-registered predictions |
+| `src/kolmogorov/` | Stage 1: pseudo-spectral 2-D Kolmogorov flow solver (JAX) |
+| `tests/` | Correctness gates (`pytest tests`) |
+| `experiments/stage1/` | Stage 1 run scripts, result JSONs, figures and `REPORT.md` |
 
 ## Status
 
-Planning. Stage 1 (pseudo-spectral Kolmogorov solver) not yet started.
+**Stage 1 (pseudo-spectral Kolmogorov solver): complete, meets its acceptance test.** Energy budget
+closes to ≤ 2e-9 relative; the Re = 1000 forward-cascade slope is −4.38 over k ∈ [8, 16]; all 11
+correctness gates pass. Full results: [`experiments/stage1/REPORT.md`](experiments/stage1/REPORT.md).
 
-**Do not proceed past stage 1** until the energy spectrum shows the expected inertial-range scaling
-and the energy budget balances to <1%. If the data generator is wrong, every downstream measurement
-is meaningless.
+**Ongoing:** the resolution to use for dataset generation (Stage 2) is being decided (see report §8.1), followed by
+the dataset generator and loader.
+
+### Running the solver
+
+```
+python3.11 -m venv .venv && .venv/bin/pip install jax numpy scipy sympy pytest matplotlib
+.venv/bin/python -m pytest tests -q
+.venv/bin/python experiments/stage1/run_long.py --name L1000 --re 1000 --n 256
+```
 
 ## Advisors
 

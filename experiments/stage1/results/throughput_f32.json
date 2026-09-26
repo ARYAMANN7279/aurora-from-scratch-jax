@@ -1,0 +1,14 @@
+{
+ "results": {
+  "256": {
+   "steps_per_s": 193.45603254728348,
+   "times": [
+    5.345644335000543,
+    5.5652417769997555,
+    5.16913319699961
+   ]
+  }
+ },
+ "cpu_count": 4,
+ "command": ".venv/bin/python experiments/stage1/run_throughput.py --f32 --n 256"
+}
