@@ -1,0 +1,15 @@
+H3 recompose(decompose(x)) N=64: 3.482e-16 (pass if <= 1e-13)
+H4 band orthogonality N=64: 1.376e-17 (pass if <= 1e-13)
+H3 recompose(decompose(x)) N=128: 3.425e-16 (pass if <= 1e-13)
+H4 band orthogonality N=128: 1.773e-17 (pass if <= 1e-13)
+H5 band nesting 128 -> 64: 6.661e-16 (pass if <= 1e-13)
+H7 cond(W) = 279
+H7 round trip (float64): 1.871e-14 (pass if <= 1e-12)
+H7 cond(W) = 836
+H7 round trip (float32): 1.716e-05 (pass if <= 1e-03)
+H8 subset additivity: 3.553e-15 (pass if <= 1e-12)
+H9 position periodicity: 1.224e-14 (pass if <= 1e-12)
+H9 min distance between patch codes: 4.000e+00 (pass if > 1e-03)
+H9 area code 64 vs 128: 4.869e+00 (pass if > 1e-03)
+H10 grad vs finite differences (rel): 7.732e-07 (pass if <= 1e-06)
+12 passed in 40.35s
