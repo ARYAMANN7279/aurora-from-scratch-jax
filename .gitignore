@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.DS_Store
+
+# generated data, checkpoints, logs — never commit
+data/
+datasets/
+*.npy
+*.npz
+*.h5
+*.hdf5
+checkpoints/
+*.ckpt
+*.msgpack
+*.orbax
+runs/
+wandb/
+outputs/
+logs/
+*.log
