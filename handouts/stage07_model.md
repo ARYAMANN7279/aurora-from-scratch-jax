@@ -60,3 +60,15 @@ fixed, and the Stage 1 rules apply.
 
 **Stage 7 acceptance:** M1–M6 pass, and N3 HIT ("trains one-step prediction": clearly better than
 persistence on unseen trajectories).
+
+---
+
+## Amendments (after results; the original verdicts stand in the report)
+
+**A1 (26 Sep, after the first gate run): M4.** As written, M4 **failed** (max error 8.28). The
+model is not translation-equivariant, and should not be. The spec overlooked that the Stage 3
+embedding adds an **absolute position encoding**. The forcing `−A k_f cos(k_f y)` breaks
+translation symmetry in y (except by multiples of 2π/k_f), so the model needs absolute position.
+The gate was meant to verify that every other component (band transform, embedding, Perceiver,
+backbone, heads) is translation-covariant. From now on M4 checks that property with the
+position-encoding map set to zero, which removes the only position-dependent term.

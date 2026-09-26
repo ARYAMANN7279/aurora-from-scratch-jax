@@ -6,3 +6,4 @@ from .patches import patchify, unpatchify
 from . import attention, perceiver
 from . import swin
 from . import backbone
+from . import model
