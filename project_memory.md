@@ -174,18 +174,18 @@ Report: `experiments/stage1/REPORT.md` (every number there is traced to a result
 * Ran on a 4-core x86 CPU container (not the M2). f64 steps/s: 3206 / 576 / 144 / 34 at
   N = 64 / 128 / 256 / 512. Re1000@256 for 250 time units takes ~40 min on one core.
 
-### OPEN issues (resolve before the stage named)
-0. **OPEN — Stage 2 generation resolution (before Stage 2).** Re1000 at N=256 is ~1% from N=512
-   in ‖ω‖ (report §8.1). Options: generate at 256 and accept that, or at 512 (~4× cost per time
-   unit) and downsample to 64/128 for training. Decide, and pre-register the fidelity bar in an
-   energy norm or a band-limited norm, not the raw vorticity norm.
-1. **OPEN — "levels" on 2-D Kolmogorov (before Stage 4).** The flow has one physical level, so the
-   Perceiver C→L aggregator (Stage 4 test: C=3 and C=8 → L=3) and E4's L∈{1,3,6} have no natural
-   meaning. Define what a "level" is here (e.g. variables, spectral bands, stacked time frames)
-   before Stage 4.
-2. **OPEN — E1 hold-out type (before Stage 11 / E1).** Which regime is held out (Re or k_f), and
-   whether it sits in the interior or at the edge of the pretraining range. UGP-I showed interior
-   vs edge hold-outs behave differently, so this choice must be fixed and pre-registered.
-3. **OPEN — "from primitives" vs Flax (before Stage 3).** Does "from primitives" mean no Flax, or
-   match underPINN's JAX + Flax + Optax + YAML stack? Stage 1 is pure jax.numpy and does not
-   depend on the answer.
+### 2026-09-26 — Design decisions (closes all four open issues)
+0. **DECIDED — generation grid (Stage 2 M1, measured).** The fidelity bar is now set in the saved
+   output band: F_out = ‖B(ω_N) − B(ω_2N)‖/‖B(ω_2N)‖ ≤ 1e-3 at t=1, with B the truncation to
+   |k| < N_out/2. For the 128² band: **N_gen = 128 / 256 / 512 for Re 100 / 300 / 1000** (k_f=4).
+   Re1000 at 256 fails even the 64² band (1.5e-3); at 512 it gives 1.6e-5. Other regimes need
+   their own measurement before generation.
+1. **DECIDED — levels = spectral bands.** A "level" is a square-shell octave band of the field
+   (‖k‖∞ ∈ [0,2), [2,4), [4,8), …). The bands sum exactly to the field. A 64² field has 5 bands and
+   a 128² field has 6, with the first 5 identical, so level-count heterogeneity follows from
+   resolution heterogeneity. That ties the Perceiver (Stage 4) to RQ2, and E4's L ablation
+   compresses scales.
+2. **DECIDED — E1 holds out an interior regime.** E1 measures what diversity buys for
+   interpolation. Extrapolation beyond the pretraining range is E3's job only.
+3. **DECIDED — pure JAX + Optax.** Parameters are plain pytrees and layers are functions. No Flax.
+   Optax provides the optimisers only.
