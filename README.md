@@ -64,12 +64,12 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
 | 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | 🔧 built, gates pass; learning runs need the GPU |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
-| 6 | U-Net backbone with skips | overfits a single trajectory | 🔧 matches Aurora's backbone to 3 × 10⁻¹⁶; overfit run in progress |
-| 7 | Full encoder → backbone → decoder | trains one-step prediction | 🔧 built, gates pass; training |
-| 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | 🔧 built, gates pass; evaluation queued |
-| 9 | Pushforward trick | lower rollout drift at matched compute | 🔧 spec + code; runs queued |
-| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | |
-| 11 | Ablation harness | one config → one run → one row of results | |
+| 6 | U-Net backbone with skips | overfits a single trajectory | 🔧 matches Aurora's backbone to 3 × 10⁻¹⁶; overfit reached 0.19× persistence (target 0.1×), longer run queued |
+| 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
+| 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts; ⚠️ the MAE-trained model blows up at Re 300 (a lead for E4) |
+| 9 | Pushforward trick | lower rollout drift at matched compute | 🔧 built; matched-compute runs in progress |
+| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | 🔧 built, gates pass (0.84% trainable); waits for the Re 1000 data |
+| 11 | Ablation harness | one config → one run → one row of results | 🔧 built, gates pass; reproduction check queued |
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
@@ -123,8 +123,9 @@ python3.11 -m venv .venv
 
 ## Status
 
-**Ongoing.** Stages 1, 3 and 5 are complete. Stages 2, 4 and 6–9 are built and pass their
-correctness gates; their learning measurements are running or queued. Each stage has a spec with
+**Ongoing.** Stages 1, 3, 5, 7 and 8 are complete. Every stage from 2 to 11 is built and passes
+its correctness gates. The remaining learning measurements (Stages 2, 4, 6, 9–11) are running or
+queued. The Stage 4 runs and large-scale data generation go to the GPU box. Each stage has a spec with
 pre-registered predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
 
 ## Advisors

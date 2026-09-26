@@ -217,3 +217,18 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   and the matched-compute runs are queued.
 * **Compute lesson:** the 4-core CPU runs Stage 3–8 unit work fine, but anything that trains at
   128² or above, or generates at 512², belongs on the GPU box.
+
+### 2026-09-26 — Stage 7 and 8 results; restart lesson
+* **Stage 7 accepted.** On unseen trajectories, one-step error is 0.070 / 0.146 at Re100 / Re300,
+  i.e. 0.32× / 0.46× persistence (N3 < 0.5 HIT). N4 (< 0.1 absolute) missed at Re300.
+  5,106,688 parameters, 3000 steps, 1.0 s/step on the CPU.
+* **Stage 8: MSE vs MAE is the first real finding.** Both losses give the same one-step error
+  (MAE/MSE = 0.96 / 1.01). But over 50-step rollouts the **MSE model stays physical in all 8**
+  (E 0.54–1.34× climatology), while the **MAE model blows up in 3 of 4 Re300 rollouts** after step
+  25–38 (E up to 19×). One seed only: a lead for E4 (MAE vs MSE, 3 seeds) and for Stage 9 (does
+  pushforward fix it?). Aurora trains with MAE, so this matters.
+* **Compute lesson:** this cloud container restarts whenever the session pauses (a question to the
+  user, or the end of a turn), and every background job dies. Everything long-running therefore
+  checkpoints and resumes bitwise (gate D9; training checkpoints every 250 steps), and is relaunched
+  with `data/stage2/lanes.sh`. Long jobs (Re1000 generation at 512², Stage 4 training) belong on the
+  GPU box.
