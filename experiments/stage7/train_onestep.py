@@ -1,7 +1,9 @@
 """N1-N4 (handouts/stage07_model.md, section 3): train the full model on one-step prediction.
 
-usage: train_onestep.py [--steps 3000] [--time-only]
-Also writes the trained parameters to data/stage7/onestep_params.npz (used by Stage 8).
+usage: train_onestep.py [--steps 3000] [--loss mse|mae] [--pushforward] [--time-only]
+--pushforward trains with the pushforward trick (handouts/stage09_pushforward.md): loss on the
+one-step prediction plus the second step from stop_gradient(first prediction).
+Also writes the trained parameters to data/stage7/<name>_params.npz (used by Stages 8-9).
 """
 import argparse
 import json
@@ -27,6 +29,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--steps", type=int, default=3000)
 ap.add_argument("--time-only", action="store_true")
 ap.add_argument("--loss", choices=["mse", "mae"], default="mse")
+ap.add_argument("--pushforward", action="store_true")
 args = ap.parse_args()
 B, DT, TAGS = 8, 0.2, ("re100_kf4", "re300_kf4")
 MC = model.ModelConfig()
@@ -50,9 +53,17 @@ state = opt.init(params)
 lossf = (lambda d: jnp.mean(d**2)) if args.loss == "mse" else (lambda d: jnp.mean(jnp.abs(d)))
 
 
+def objective(p, xm, x0, xp, xp2):
+    y1 = fwd(p, xm, x0)
+    if not args.pushforward:
+        return lossf(y1 - xp)
+    y2 = fwd(p, x0, jax.lax.stop_gradient(y1))
+    return lossf(y1 - xp) + lossf(y2 - xp2)
+
+
 @jax.jit
-def step(prm, st, xm, x0, xp):
-    loss, g = jax.value_and_grad(lambda p: lossf(fwd(p, xm, x0) - xp))(prm)
+def step(prm, st, xm, x0, xp, xp2):
+    loss, g = jax.value_and_grad(objective)(prm, xm, x0, xp, xp2)
     upd, st = opt.update(g, st, prm)
     return optax.apply_updates(prm, upd), st, loss
 
@@ -81,10 +92,10 @@ curve, times = [], []
 for i in range(args.steps):
     t = TAGS[rng.integers(len(TAGS))]
     s = rng.integers(0, 6, B)
-    k = rng.integers(1, F - 1, B)
+    k = rng.integers(1, F - 2 if args.pushforward else F - 1, B)  # same sampling as Stage 7 when not pushforward
     v = train[t]
     ts = time.perf_counter()
-    params, state, loss = step(params, state, v[s, k - 1], v[s, k], v[s, k + 1])
+    params, state, loss = step(params, state, v[s, k - 1], v[s, k], v[s, k + 1], v[s, np.minimum(k + 2, F - 1)])
     loss.block_until_ready()
     times.append(time.perf_counter() - ts)
     if args.time_only and i == 4:
@@ -94,14 +105,15 @@ for i in range(args.steps):
         curve.append(dict(step=i + 1, loss=float(loss), eval=evaluate(params), wall_s=time.time() - t0))
         print(curve[-1], flush=True)
 ev = evaluate(params)
-res = dict(config=str(MC), loss=args.loss, steps=args.steps, batch=B, n_params=int(n_params(params)),
+name = f"onestep_{args.loss}" + (f"_pf{args.steps}" if args.pushforward else "")
+res = dict(config=str(MC), loss=args.loss, pushforward=args.pushforward, steps=args.steps, batch=B, n_params=int(n_params(params)),
            eval=ev, curve=curve, step_s=float(np.median(times[1:])), wall_s=time.time() - t0,
            norm_mean=mu.tolist(), norm_std=sd.tolist(),
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
 os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
-with open(os.path.join(HERE, "results", f"onestep_{args.loss}.json"), "w") as f:
+with open(os.path.join(HERE, "results", f"{name}.json"), "w") as f:
     json.dump(res, f, indent=1)
 os.makedirs(os.path.join(ROOT, "data", "stage7"), exist_ok=True)
 flat, _ = jax.flatten_util.ravel_pytree(params)
-np.savez(os.path.join(ROOT, "data", "stage7", f"onestep_{args.loss}_params.npz"), flat=np.asarray(flat), mean=mu, std=sd)
+np.savez(os.path.join(ROOT, "data", "stage7", f"{name}_params.npz"), flat=np.asarray(flat), mean=mu, std=sd)
 print(ev)
