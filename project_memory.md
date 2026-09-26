@@ -189,3 +189,31 @@ Report: `experiments/stage1/REPORT.md` (every number there is traced to a result
    interpolation. Extrapolation beyond the pretraining range is E3's job only.
 3. **DECIDED — pure JAX + Optax.** Parameters are plain pytrees and layers are functions. No Flax.
    Optax provides the optimisers only.
+
+### 2026-09-26 — Stages 2–9: specs, code and gates (results in progress)
+Every stage follows the same pattern: a spec with pre-registered predictions is committed before
+any code (`handouts/stageNN_*.md`), then the gates are written as pytest, then the measurements are
+run. Where a pre-registered bar turned out to be ill-posed, it was **not** silently changed. Each
+case has a dated amendment in the spec, and the original FAIL is kept in the report.
+* **Stage 2 (data):** `src/kdata`, gates D1–D8 pass. The acceptance dataset `acc_v1` has 3
+  regimes × 8 seeds × 501 frames at 64² and 128². It is still generating on CPU: the Re1000
+  trajectories at 512² take ~3 h each on one core.
+* **Stage 3 (levels + embedding):** accepted. Float64 round trip 1.9e-14. The float32 bar missed
+  (1.7e-5 vs 1e-5; a conditioning artefact of the random test matrix, amendment A1). The learned
+  autoencoders missed their step budgets. **Lesson:** plain Adam at 1e-3 is slow here; budget more
+  steps.
+* **Stage 4 (Perceiver):** gates K1–K8 pass. The S1–S6 learning measurements are too heavy for
+  the CPU and wait on the GPU box (`experiments/stage4/GPU_RUNBOOK.md`).
+* **Stage 5 (Swin3D block):** accepted. It matches Aurora's own `Swin3DTransformerBlock`
+  (microsoft-aurora 2.0.1) to 2.8e-7 (f32) and 5e-16 (f64). The shifted-window mask is generalised
+  to periodic H and W (Aurora's is periodic in W only).
+* **Stage 6 (U-Net backbone):** gates pass. It matches Aurora's `Swin3DTransformerBackbone` to
+  3e-16 (f64) and 1.9e-7 (f32). Gradient-check amendment A1: the finite-difference roundoff floor.
+* **Stage 7 (full model):** gates pass. It is persistence at initialisation (zero heads) and has
+  5.1M parameters at D = 64. **Finding:** the model is deliberately *not* translation-equivariant,
+  because it carries an absolute position encoding. That is correct, since the Kolmogorov forcing
+  breaks y symmetry (amendment A1).
+* **Stage 8 (rollout + MAE):** gates pass. **Stage 9 (pushforward):** spec and code are written,
+  and the matched-compute runs are queued.
+* **Compute lesson:** the 4-core CPU runs Stage 3–8 unit work fine, but anything that trains at
+  128² or above, or generates at 512², belongs on the GPU box.
