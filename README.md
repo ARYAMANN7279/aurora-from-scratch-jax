@@ -67,7 +67,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 6 | U-Net backbone with skips | overfits a single trajectory | ✅ **done**: matches Aurora's backbone to 3 × 10⁻¹⁶; overfits to 0.07× persistence (16k steps) |
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
 | 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts; ⚠️ the MAE-trained model blows up at Re 300 (a lead for E4) |
-| 9 | Pushforward trick | lower rollout drift at matched compute | 🔧 built; matched-compute runs in progress |
+| 9 | Pushforward trick | lower rollout drift at matched compute | ⚠️ **not met**: no gain at matched compute; at matched steps (2× compute) it cuts drift by 11–14% (exploratory) |
 | 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | 🔧 built, gates pass (0.84% trainable); waits for the Re 1000 data |
 | 11 | Ablation harness | one config → one run → one row of results | 🔧 built, gates pass; reproduction check queued |
 
