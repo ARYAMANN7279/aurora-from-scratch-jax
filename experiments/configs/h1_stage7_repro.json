@@ -1,0 +1,14 @@
+{
+ "name": "h1_stage7_repro",
+ "prediction": "H1: reproduces experiments/stage7/results/onestep_mse.json within 2% relative per regime (same data, model, schedule, seed and sampling scheme)",
+ "data": {"dataset": "acc_v1", "N": 64, "stride": 1,
+          "train": [{"tag": "re100_kf4", "seeds": [0, 1, 2, 3, 4, 5]}, {"tag": "re300_kf4", "seeds": [0, 1, 2, 3, 4, 5]}],
+          "test": [],
+          "val": [{"tag": "re100_kf4", "seeds": [6, 7]}, {"tag": "re300_kf4", "seeds": [6, 7]}]},
+ "model": {"D": 64, "P": 4, "L": 3, "heads": 4,
+           "backbone": {"enc_depths": [2, 2, 2], "enc_heads": [2, 4, 8], "dec_depths": [2, 2, 2],
+                        "dec_heads": [8, 4, 2], "window": [3, 4, 4]}},
+ "train": {"steps": 3000, "batch": 8, "lr": 0.001, "schedule": "cosine", "loss": "mse",
+           "pushforward": false, "seed": 0, "init_from": null, "lora_rank": null},
+ "eval": {"splits": ["val"], "rollout_steps": 0}
+}
