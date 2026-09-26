@@ -1,0 +1,8 @@
+K1 mha vs reference, H=1 (unmasked / masked): 6.661e-16 (pass if <= 1e-12)
+K1 mha vs reference, H=4 (unmasked / masked): 2.220e-16 (pass if <= 1e-12)
+K2 level-permutation invariance: 1.332e-15 (pass if <= 1e-12)
+K3 position equivariance: 0.000e+00 (pass if <= 1e-12)
+K4 masked padding vs unpadded: 0.000e+00 (pass if <= 1e-12)
+K6 softmax row sums: 2.220e-16 (pass if <= 1e-14)
+K7 grad vs finite differences (rel): 4.897e-07 (pass if <= 1e-06)
+9 passed in 58.66s

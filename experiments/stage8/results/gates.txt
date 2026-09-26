@@ -1,0 +1,4 @@
+Q1 rollout vs explicit loop: 8.438e-15 (pass if <= 1e-12)
+Q3 mae vs numpy: 4.441e-16 (pass if <= 1e-14)
+Q4 mae gradient: 0.000e+00 (pass if <= 1e-14)
+2 passed in 81.43s (0:01:21)

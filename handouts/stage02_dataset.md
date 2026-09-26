@@ -135,3 +135,15 @@ Same structure as Stage 1: gates with measured values, predictions HIT/MISS, the
 dataset table (per trajectory: ⟨E⟩ ± SE, slope, max spectral deviation, max CFL, wall time,
 storage), figures (per-regime spectra of all 8 seeds, ⟨E⟩ per seed with error bars), bugs fixed,
 deviations, spec concerns, commands.
+
+---
+
+## Amendments
+
+**A1 (26 Sep): restart safety and gate D9.** The container restarted during generation and killed
+every running job. The generator now checkpoints the generation-grid state after every 10-unit
+spin-up chunk and every recording chunk (`ckpt.npz`, written atomically), and resumes from it.
+Gate **D9** (added, not pre-registered) requires (a) a chunked spin-up to be bitwise identical to a
+single scan, and (b) an interrupted-then-resumed trajectory to give the same SHA-256 hashes as an
+uninterrupted one. D9 passes, so the 16 trajectories generated before the change stay consistent
+with the ones generated after it. M3 checks this on the real data.

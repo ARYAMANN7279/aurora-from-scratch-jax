@@ -1,0 +1,4 @@
+L2 merged vs unmerged: 7.216e-16 (pass if <= 1e-12)
+L4 trainable fraction: 0.842% of 5106688
+L5 LoRA grad vs finite differences (mixed, h = 1e-3 per amendment A1): 1.395e-07 (pass if <= 1e-06)
+5 passed in 109.32s (0:01:49)

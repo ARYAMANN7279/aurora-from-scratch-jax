@@ -60,16 +60,16 @@ Each stage has an acceptance test and is not passed until that test is met.
 | # | Deliverable | Acceptance test | Status |
 |---|---|---|---|
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
-| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | next |
-| 3 | Patch embed / unembed | round trip at machine precision | |
-| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | |
-| 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | |
-| 6 | U-Net backbone with skips | overfits a single trajectory | |
-| 7 | Full encoder → backbone → decoder | trains one-step prediction | |
-| 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | |
-| 9 | Pushforward trick | lower rollout drift at matched compute | |
-| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | |
-| 11 | Ablation harness | one config → one run → one row of results | |
+| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | 🔧 built, gates pass; acceptance dataset generating |
+| 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
+| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | 🔧 built, gates pass; learning runs need the GPU |
+| 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
+| 6 | U-Net backbone with skips | overfits a single trajectory | 🔧 matches Aurora's backbone to 3 × 10⁻¹⁶; overfit reached 0.19× persistence (target 0.1×), longer run queued |
+| 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
+| 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts; ⚠️ the MAE-trained model blows up at Re 300 (a lead for E4) |
+| 9 | Pushforward trick | lower rollout drift at matched compute | 🔧 built; matched-compute runs in progress |
+| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | 🔧 built, gates pass (0.84% trainable); waits for the Re 1000 data |
+| 11 | Ablation harness | one config → one run → one row of results | 🔧 built, gates pass; reproduction check queued |
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
@@ -116,13 +116,17 @@ python3.11 -m venv .venv
 | `project_memory.md` | Decision record and open issues. Read §2 (protocol rules) before running any experiment |
 | `handouts/` | Per-stage specs: equations, tests, tolerances and pre-registered predictions |
 | `src/kolmogorov/` | Pseudo-spectral Kolmogorov flow solver |
+| `src/kdata/` | Dataset generator (resumable, checksummed) and regime-split window loader |
+| `src/aurora/` | The model in pure JAX: spectral-band levels, embedding, Perceiver, Swin3D blocks, U-Net backbone, full model, rollout |
 | `tests/` | Correctness gates (`pytest tests`) |
-| `experiments/stage1/` | Stage 1 run scripts, result JSONs, figures and report |
+| `experiments/stageN/` | Per-stage run scripts, result JSONs, figures and reports |
 
 ## Status
 
-**Ongoing.** Stage 1 is complete. Next: fix the generation resolution for the dataset (see
-report §8.1), then build the Stage 2 dataset generator and loader.
+**Ongoing.** Stages 1, 3, 5, 7 and 8 are complete. Every stage from 2 to 11 is built and passes
+its correctness gates. The remaining learning measurements (Stages 2, 4, 6, 9–11) are running or
+queued. The Stage 4 runs and large-scale data generation go to the GPU box. Each stage has a spec with
+pre-registered predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
 
 ## Advisors
 

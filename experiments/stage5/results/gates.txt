@@ -1,0 +1,14 @@
+  a_noshift: 1.960e-07
+  a_shift: 2.052e-07
+  b_noshift: 2.785e-07
+  b_shift: 2.732e-07
+W3 block vs Aurora (float32): 2.785e-07 (pass if <= 1e-05)
+  a_noshift: 3.651e-16
+  a_shift: 2.548e-16
+  b_noshift: 5.188e-16
+  b_shift: 4.240e-16
+W4 block vs Aurora (float64): 5.188e-16 (pass if <= 1e-12)
+W5 periodic shifted == roll o unshifted o roll^-1: 0.000e+00 (pass if <= 1e-12)
+W6 translation equivariance (whole windows): 0.000e+00 (pass if <= 1e-12)
+W8 grad vs finite differences (rel): 1.003e-07 (pass if <= 1e-06)
+9 passed in 33.41s

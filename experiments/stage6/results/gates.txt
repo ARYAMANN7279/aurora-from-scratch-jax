@@ -1,0 +1,6 @@
+U1 merge/split vs Aurora: 1.665e-16 (pass if <= 1e-12)
+U2 backbone vs Aurora (float64): 3.073e-16 (pass if <= 1e-12)
+U3 backbone vs Aurora (float32): 1.925e-07 (pass if <= 1e-05)
+U5 translation equivariance: 0.000e+00 (pass if <= 1e-12)
+U6 grad vs finite differences (mixed): 3.288e-08 (pass if <= 1e-06)
+6 passed in 118.39s (0:01:58)
