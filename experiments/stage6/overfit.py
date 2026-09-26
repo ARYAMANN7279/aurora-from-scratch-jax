@@ -94,6 +94,7 @@ out = dict(D=D, P=P, batch=B, steps=args.steps, config=cfg._asdict(), n_params=i
            curve=curve, wall_s=time.time() - t0,
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
 os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
-with open(os.path.join(HERE, "results", "overfit.json"), "w") as fh:
+name = "overfit" if args.steps == 4000 else f"overfit_steps{args.steps}"  # non-default = diagnostic
+with open(os.path.join(HERE, "results", f"{name}.json"), "w") as fh:
     json.dump(out, fh, indent=1)
 print(f"trained {final:.4e} vs persistence {persistence:.4e} (ratio {final / persistence:.3f})")
