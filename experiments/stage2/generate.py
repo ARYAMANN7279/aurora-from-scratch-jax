@@ -24,6 +24,7 @@ ap.add_argument("--root", help="default: data/stage2/<config name>")
 ap.add_argument("--shard", type=int, default=0)
 ap.add_argument("--n-shards", type=int, default=1)
 ap.add_argument("--finalize", action="store_true")
+ap.add_argument("--partial", action="store_true", help="with --finalize: manifest of completed trajectories only")
 ap.add_argument("--only", nargs="*", help="restrict to trajectories tag:seed, generated in this order")
 args = ap.parse_args()
 
@@ -31,7 +32,7 @@ with open(args.config) as f:
     cfg = json.load(f)
 root = args.root or os.path.join(ROOT, "data", "stage2", cfg["name"])
 if args.finalize:
-    man = finalize(root)
+    man = finalize(root, partial=args.partial)
     print(f"manifest: {len(man['trajectories'])} trajectories verified")
 elif args.only:
     from kdata import generate_trajectory, regime_tag, traj_dir  # noqa: E402
