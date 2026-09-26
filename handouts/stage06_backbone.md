@@ -70,3 +70,18 @@ outputs in `tests/fixtures/backbone_ref.npz`.
 | V4 | trained one-step relative error on the training triples, after 4000 steps | < 0.1 × persistence, and < 2e-2 |
 
 **Stage 6 acceptance:** U1–U6 pass, and V4 HIT.
+
+---
+
+## Amendments (after results; the original verdicts stand in the report)
+
+**A1 (26 Sep, after the first gate run): U6 criterion.** The pre-registered check (h = 1e-6,
+relative error ≤ 1e-6 per entry) **failed** at 5.5e-5. Diagnosis: at all 5 sampled entries the
+absolute finite-difference error is 1e-12 to 2e-11. It grows as h shrinks (roundoff ∝ ε·loss/h),
+while the analytic gradient is unchanged. The failing entry has |g| = 3.1e-7, so a roundoff-level
+error of 1.7e-11 reads as 5.5e-5 relative. The gradient is correct. A first fix (the mixed
+criterion below, keeping h = 1e-6) **also failed**, at 6.7e-6: at h = 1e-6 the roundoff floor
+(~1.5e-10 absolute, ≈ ε·loss/h) is itself near the median gradient scale (2.2e-5). The same
+diagnostic run shows that at h = 1e-4 every sampled entry's absolute error is ≤ 3.9e-12. h = 1e-4
+is also the near-optimal central-difference step, ≈ ε^(1/3) × the parameter scale. From now on U6
+uses h = 1e-4 and asserts `|fd − g_i| ≤ 1e-6 · max(|g_i|, median|g|)`.

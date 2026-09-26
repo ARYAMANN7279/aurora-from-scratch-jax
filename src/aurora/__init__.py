@@ -5,3 +5,4 @@ from .levels import band_index, band_masks, decompose, n_levels, recompose
 from .patches import patchify, unpatchify
 from . import attention, perceiver
 from . import swin
+from . import backbone
