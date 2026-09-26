@@ -1,0 +1,117 @@
+{
+ "rows": [
+  {
+   "id": "P1",
+   "quantity": "|R_E| / \u222bP over [50,250]",
+   "prediction": "< 1e-4 each",
+   "measured": "Re100: 1.72e-09, Re300: 1.9e-10, Re1000: 5.44e-10",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P2",
+   "quantity": "|R_Z| / \u222bQ over [50,250]",
+   "prediction": "< 1e-3 each",
+   "measured": "Re100: 3.15e-11, Re300: 2.63e-10, Re1000: 1.11e-09",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P3",
+   "quantity": "temporal orders",
+   "prediction": "all in [3.5, 4.5]",
+   "measured": "L100: 4.004, 4.002, 3.999; L300: 4.000, 3.997, 3.522; L1000: 3.999, 4.001, 4.015",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P4",
+   "quantity": "E(K)/max E(k)",
+   "prediction": "< 1e-6 each",
+   "measured": "Re100: 5.82e-09, Re300: 1.35e-10, Re1000: 6.28e-08",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P5",
+   "quantity": "top-20% shell slope",
+   "prediction": "< -3 each",
+   "measured": "Re100: -13.6, Re300: -14.7, Re1000: -7.43",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P6",
+   "quantity": "Re1000 slope, k in [8,16]",
+   "prediction": "in [-6, -2.8] (guess -4.3)",
+   "measured": "-4.380 \u00b1 0.025 (SE)",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P7",
+   "quantity": "Re5000 slope, k in [8,32]",
+   "prediction": "in [-4.5, -3]",
+   "measured": "optional run not done",
+   "verdict": "NOT RUN"
+  },
+  {
+   "id": "P8",
+   "quantity": "k_d(Re1000); exponent of k_d vs Re",
+   "prediction": "in [15, 50]; exponent in [0.4, 0.6]",
+   "measured": "k_d: Re100: 12, Re300: 19.5, Re1000: 33.7; exponent 0.449",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P9",
+   "quantity": "<E> < E_lam",
+   "prediction": "each Re",
+   "measured": "Re100: 0.67 vs 3.7, Re300: 0.882 vs 10.6, Re1000: 1.02 vs 18.6",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P10",
+   "quantity": "2\u03bd<Z>/<P> at Re1000",
+   "prediction": "in [0.02, 0.4]",
+   "measured": "0.0943",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P11",
+   "quantity": "resolution map (rel diff at t=1, bar 1e-3)",
+   "prediction": "resolved at Re100@64, Re300@128, Re1000@256; not at half",
+   "measured": "Re100: N32 1.54e-01, N64 1.69e-02; Re300: N64 1.06e-01, N128 1.20e-02; Re1000: N128 9.79e-02, N256 1.15e-02",
+   "verdict": "MISS"
+  },
+  {
+   "id": "P12",
+   "quantity": "spin-up time",
+   "prediction": "\u2264 50 each",
+   "measured": "Re100: 0.3, Re300: 0.1, Re1000: 0.1",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P13",
+   "quantity": "\u03c4_e",
+   "prediction": "\u03c4_e(1000) in [0.5, 5]; \u03c4_e(100) > \u03c4_e(1000)",
+   "measured": "Re100: 1.38, Re300: 1.01, Re1000: 0.824",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P14",
+   "quantity": "Lyapunov \u03bb",
+   "prediction": "\u03bb(1000) in [0.2, 3]; \u03bb100 < \u03bb300 < \u03bb1000; \u03bb100 > 0",
+   "measured": "Re100: 0.394, Re300: 0.472, Re1000: 0.565",
+   "verdict": "HIT"
+  },
+  {
+   "id": "P15",
+   "quantity": "f32 vs f64 (L1000)",
+   "prediction": "<E>, <Z>, slope within 2 SE; |R_E|/\u222bP < 1e-3; f32 1.3\u20132.5\u00d7 faster",
+   "measured": "|\u0394<E>| 3.17 SE, |\u0394<Z>| 2.22 SE, |\u0394slope| 1.17 SE; R_E 3.49e-05; speed-up 1.34\u00d7 (idle throughput, N=256)",
+   "verdict": "MISS"
+  },
+  {
+   "id": "P16",
+   "quantity": "f64 steps/s",
+   "prediction": "64: 1e3\u20136e3 \u00b7 128: 250\u20131600 \u00b7 256: 60\u2013400 \u00b7 512: 15\u201390",
+   "measured": "64: 3206, 128: 576, 256: 144, 512: 34",
+   "verdict": "HIT"
+  }
+ ],
+ "command": ".venv/bin/python experiments/stage1/summarise.py"
+}

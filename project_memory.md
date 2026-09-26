@@ -2,7 +2,7 @@
 
 **Owner:** Aryamann Srivastava, 4th year, Dept. of Aerospace Engineering, IIT Kanpur
 **Advisors:** Prof. Rajesh Ranjan (ACAL) · Prashant Kumar (PhD)
-**Session name:** `UGP-II`. This file is the decision record for the NEW project.
+**Project:** `UGP-II`. This file is the decision record for the NEW project.
 **Predecessor:** `~/Desktop/sem7/UGP/project_memory.md` (12,797 lines, sections 1–188).
 Do NOT append UGP-II work to that file; it is closed. Read it only for the carry-over rules in §2.
 
@@ -112,25 +112,24 @@ behave as the literature expects. That contrast is itself worth a paragraph in t
 * ⛔ Never scratch to `/tmp` or the VM root partition. Work under the project directory.
 * Timings are worthless on a contended card — check utilisation, and use best-of-N.
 
-**Credits and pacing.** Aryamann is on a Pro plan and hit 82% of the weekly limit during UGP-I.
-Remote subagents were observed to bill against the SAME session limit, not a separate pool — four of
-them died simultaneously on one rate limit. Do not assume `isolation: "remote"` shifts cost.
-**Gemini credits are available and are the intended vehicle for UGP-II implementation work.**
-Batch SSH round-trips, keep outputs small, stop redundant sweeps immediately.
+**Repo.** UGP-II: `ARYAMANN7279/aurora-from-scratch-jax`.
+(`ARYAMANN7279/RealPDE-Track1` is the closed UGP-I competition repo, last push 27 Aug 2026.)
 
-**Repo.** `ARYAMANN7279/RealPDE-Track1` (private) exists but is stale (last push 27 Aug 2026) and is
-not a working copy of anything. Decide early whether UGP-II gets its own repo — it should.
+**Where things run.** Specs, solver development and CPU runs happen on a CPU machine (the Mac or a
+cloud container; Stage 1 ran on the latter). GPU runs go on the lab VM. Results come back as small result JSONs committed under `experiments/`. Raw data stays off git.
 
 ---
 
-## 4. Working agreement with Aryamann
+## 4. Working agreement
 
-* Give the number, not the narrative. He asks for 2-line answers often; respect that.
-* Report failures plainly and immediately. He would rather hear "this is closed, here is the
-  measurement" than be handed something unverified.
-* He does the submitting and any logging-in himself. Claude never authenticates.
-* When he asks for something that measurement says will not work, say so once with the number, then
-  do what he decides.
+* Give the number, not the narrative. Prefer 2-line answers.
+* Report failures plainly and immediately. "This is closed, here is the measurement" is better than
+  handing over something unverified.
+* When something that measurement says will not work is requested, say so once with the number, then
+  do what is decided.
+* **Split of work:** specs, pre-registered predictions, and result review are done before coding.
+  Stage specs live in `handouts/stageNN_*.md`. Implementation commits locally; the spec author
+  reviews the report before a stage is accepted.
 
 ---
 
@@ -139,8 +138,54 @@ not a working copy of anything. Decide early whether UGP-II gets its own repo �
 ### 2026-09-26 — project defined
 Prashant proposed the Aurora-in-JAX project. Plan drafted (`PROJECT_PLAN.md`): 5 research questions,
 11 staged deliverables with acceptance tests, 5 experiments. Agreed to start after the Track 1
-development phase closes on 27 Sep. Gemini credits to be used for implementation.
+development phase closes on 27 Sep.
 
 **First action when UGP-II opens:** Stage 1 only — the pseudo-spectral Kolmogorov solver. Do not
 proceed past it until the energy spectrum shows the expected inertial-range scaling and the energy
 budget balances to <1%. If the data generator is wrong, every measurement downstream is meaningless.
+
+### 2026-09-26 — Stage 1 designed; spec written
+`handouts/stage01_solver.md` is the Stage 1 spec. Fixed design: vorticity form, A=1, α=0.1,
+k_f=4, ν=1/Re (Re1000 = Kochkov); rfft2 norm="forward"; strict square 2/3 mask; Lawson IF-RK4 with
+forcing in the explicit part; dt=0.1/m from a laminar-speed CFL bound, run void if logged CFL>0.7;
+f64. There are 11 pytest gates (G1–G11), three long runs (Re100@128, Re300@256, Re1000@256,
+T=250, average over 50–250), supporting runs (temporal order, resolution map, Lyapunov, f32,
+throughput) and predictions P1–P16, all pre-registered in the spec.
+Changes from the plan's wording:
+* The spectral acceptance test is the forward-cascade slope for k>k_f (P6: Re1000, k∈[8,16], in
+  [−6,−2.8]). A −5/3 fit over k=1–3 would rest on 3 shells, which is not meaningful.
+* The budget is accumulated per step, with P1 predicting <1e-4 against the plan's 1e-2 bar.
+Environment: Mac M2, 8 GB, CPU only, Python 3.11 venv (3.14 may lack JAX wheels).
+
+### 2026-09-26 — Stage 1 DONE: solver built, gates pass, acceptance met
+Report: `experiments/stage1/REPORT.md` (every number there is traced to a result JSON + command).
+* **Acceptance (plan §5):** energy budget |R_E|/∫P ≤ 1.7e-9 on all three long runs (bar 1e-2);
+  Re1000 slope over k∈[8,16] = −4.380 ± 0.025 (band [−6,−2.8], guess −4.3). **Stage 1 accepted.**
+* Gates G1–G11: all pass, first attempt. Temporal order 4.00 (G9 and all long runs).
+* Predictions: 13 HIT, 2 MISS (P11, P15), P7 not run (optional Re5000, ~5 h here).
+* Long runs: ⟨E⟩ 0.670 / 0.882 / 1.015 at Re 100/300/1000 (far below E_lam, i.e. turbulent);
+  λ 0.39 / 0.47 / 0.57; τ_e 1.38 / 1.01 / 0.82; k_d 12 / 19.5 / 33.7 (∝Re^0.45).
+* **P11 MISS, a real finding:** the resolution metric ‖ω_N−ω_2N‖/‖ω_2N‖ bottoms out at the
+  vorticity-norm tail share beyond N/3, which is ~1% at Re100@64, Re300@128, Re1000@256, and drops
+  ~8–9× per doubling. Not a solver defect, but it bounds data fidelity.
+* **P15 MISS:** f32 ⟨E⟩ differs from f64 by 3.2 SE of one run (2.0 combined SE). The two runs are
+  independent chaotic samples, so this is sampling, not precision. f32 is only 1.34× faster here.
+  Keep f64 for data generation.
+* Ran on a 4-core x86 CPU container (not the M2). f64 steps/s: 3206 / 576 / 144 / 34 at
+  N = 64 / 128 / 256 / 512. Re1000@256 for 250 time units takes ~40 min on one core.
+
+### OPEN issues (resolve before the stage named)
+0. **OPEN — Stage 2 generation resolution (before Stage 2).** Re1000 at N=256 is ~1% from N=512
+   in ‖ω‖ (report §8.1). Options: generate at 256 and accept that, or at 512 (~4× cost per time
+   unit) and downsample to 64/128 for training. Decide, and pre-register the fidelity bar in an
+   energy norm or a band-limited norm, not the raw vorticity norm.
+1. **OPEN — "levels" on 2-D Kolmogorov (before Stage 4).** The flow has one physical level, so the
+   Perceiver C→L aggregator (Stage 4 test: C=3 and C=8 → L=3) and E4's L∈{1,3,6} have no natural
+   meaning. Define what a "level" is here (e.g. variables, spectral bands, stacked time frames)
+   before Stage 4.
+2. **OPEN — E1 hold-out type (before Stage 11 / E1).** Which regime is held out (Re or k_f), and
+   whether it sits in the interior or at the edge of the pretraining range. UGP-I showed interior
+   vs edge hold-outs behave differently, so this choice must be fixed and pre-registered.
+3. **OPEN — "from primitives" vs Flax (before Stage 3).** Does "from primitives" mean no Flax, or
+   match underPINN's JAX + Flax + Optax + YAML stack? Stage 1 is pure jax.numpy and does not
+   depend on the answer.
