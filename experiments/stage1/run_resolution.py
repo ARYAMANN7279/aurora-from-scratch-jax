@@ -4,7 +4,10 @@ Common IC = the source run's t=50 state truncated to the smallest grid's retaine
 dt (finest grid's) on every grid; T=2. Grid N is resolved iff ||up(w_N) - w_2N|| / ||w_2N|| <= 1e-3
 at t=1, compared on the 2N grid.
 
-usage: run_resolution.py --src L1000 --grids 128 256 512
+Stage 2 (M1) adds --bands: F_out(N) = ||B(w_N) - B(w_2N)|| / ||B(w_2N)|| with B the truncation to
+|kx|, |ky| < N_out/2, at t=1 and t=2 (handouts/stage02_dataset.md, section 2.3).
+
+usage: run_resolution.py --src L1000 --grids 128 256 512 [--bands 64 128 --out path.json]
 """
 import argparse
 import os
@@ -14,6 +17,8 @@ from common import DATA, command_line, setup_precision, write_json
 ap = argparse.ArgumentParser()
 ap.add_argument("--src", required=True)
 ap.add_argument("--grids", type=int, nargs="+", required=True)
+ap.add_argument("--bands", type=int, nargs="*", default=[])
+ap.add_argument("--out", help="write the JSON here instead of results/resolution_Re<Re>.json")
 args = ap.parse_args()
 setup_precision()
 
@@ -54,11 +59,27 @@ for a, b in zip(grids[:-1], grids[1:]):
     down = [ga.mask * resample(states[b][i], a) for i in (1, 2)]
     rel_c = [float(norm(ga, states[a][i] - down[i - 1]) / norm(ga, down[i - 1])) for i in (1, 2)]
     tail = float(jnp.sqrt(1 - (norm(ga, down[0]) / norm(gb, states[b][1])) ** 2))
-    rows.append(dict(N=a, vs=b, rel_t1=rel[0], rel_t2=rel[1], resolved=rel[0] <= 1e-3,
-                     rel_common_t1=rel_c[0], rel_common_t2=rel_c[1], tail_share_t1=tail))
+    row = dict(N=a, vs=b, rel_t1=rel[0], rel_t2=rel[1], resolved=rel[0] <= 1e-3,
+               rel_common_t1=rel_c[0], rel_common_t2=rel_c[1], tail_share_t1=tail)
+    for nb in args.bands:
+        gB = make_grid(nb)
+        F = []
+        for i in (1, 2):
+            ref = resample(states[b][i], nb)
+            F.append(float(norm(gB, resample(states[a][i], nb) - ref) / norm(gB, ref)))
+        row[f"F{nb}_t1"], row[f"F{nb}_t2"] = F
+    rows.append(row)
 spectra = {str(n): np.asarray(shell_spectrum(states[n][0], states[n][1])).tolist() for n in grids}
 res = dict(src=args.src, Re=meta["Re"], grids=grids, dt=dt, ic_truncation=grids[0], rows=rows,
            spectra_t1=spectra, command=command_line())
-write_json(f"resolution_Re{int(meta['Re'])}.json", res)
+if args.out:
+    import json
+
+    os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
+    with open(args.out, "w") as f:
+        json.dump(res, f, indent=1)
+    print("wrote", args.out)
+else:
+    write_json(f"resolution_Re{int(meta['Re'])}.json", res)
 for r in rows:
     print(r)
