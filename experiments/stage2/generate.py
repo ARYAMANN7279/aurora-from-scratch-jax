@@ -44,10 +44,25 @@ elif args.only:
     for item in args.only:
         tag, seed = item.split(":")
         r, seed = regs[tag], int(seed)
-        if seed not in cfg["seeds"] or os.path.exists(os.path.join(traj_dir(root, tag, seed), "meta.json")):
+        d = traj_dir(root, tag, seed)
+        if seed not in cfg["seeds"] or os.path.exists(os.path.join(d, "meta.json")):
             continue
+        # per-trajectory lock, so parallel lanes never work on the same trajectory; a lock whose
+        # process is gone (e.g. after a container restart) is taken over
+        os.makedirs(d, exist_ok=True)
+        lock = os.path.join(d, "lock")
+        try:
+            other = int(open(lock).read().strip())
+            os.kill(other, 0)
+            print(f"skip {tag} seed {seed}: in progress in pid {other}", flush=True)
+            continue
+        except (FileNotFoundError, ValueError, ProcessLookupError):
+            pass
+        with open(lock, "w") as f:
+            f.write(str(os.getpid()))
         meta, _ = generate_trajectory(root, r["Re"], r["kf"], seed, r["N_gen"], cfg["T_spin"], cfg["T_rec"],
                                       cfg["save_dt"], tuple(cfg["N_out"]))
+        os.remove(lock)
         print(f"done {tag} seed {seed} in {meta['wall_s']:.0f}s", flush=True)
 else:
     generate_dataset(cfg, root, shard=args.shard, n_shards=args.n_shards)
