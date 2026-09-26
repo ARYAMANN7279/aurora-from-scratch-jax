@@ -64,7 +64,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
 | 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | 🔧 built, gates pass; learning runs need the GPU |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
-| 6 | U-Net backbone with skips | overfits a single trajectory | 🔧 matches Aurora's backbone to 3 × 10⁻¹⁶; overfit reached 0.19× persistence (target 0.1×), longer run queued |
+| 6 | U-Net backbone with skips | overfits a single trajectory | ✅ **done**: matches Aurora's backbone to 3 × 10⁻¹⁶; overfits to 0.07× persistence (16k steps) |
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
 | 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts; ⚠️ the MAE-trained model blows up at Re 300 (a lead for E4) |
 | 9 | Pushforward trick | lower rollout drift at matched compute | 🔧 built; matched-compute runs in progress |
