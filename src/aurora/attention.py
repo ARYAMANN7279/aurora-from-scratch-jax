@@ -58,7 +58,7 @@ def init_mlp(key, D, dtype, mult=4):
 
 
 def mlp(p, x):
-    return jax.nn.gelu(x @ p["W1"] + p["b1"]) @ p["W2"] + p["b2"]
+    return jax.nn.gelu(x @ p["W1"] + p["b1"], approximate=False) @ p["W2"] + p["b2"]
 
 
 def init_block(key, D, dtype):

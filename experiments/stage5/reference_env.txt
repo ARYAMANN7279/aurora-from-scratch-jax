@@ -1,0 +1,4 @@
+einops==0.8.2
+microsoft-aurora==2.0.1
+timm==1.0.30
+torch==2.14.0
