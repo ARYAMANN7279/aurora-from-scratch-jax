@@ -260,22 +260,47 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   unproven; the leading suspect is VM pause/restore across hosts. **For the experiment datasets:
   store the post-spin-up state with every trajectory and record the host CPU / XLA ISA in meta.**
 
-### 2026-09-27 — E1 designed (draft); tooling built
+### 2026-09-27 — E1 designed (draft); tooling built; N_gen measured
 * Spec `handouts/e1_volume_diversity.md` (**DRAFT, awaiting advisor review**; frozen on approval).
   * Target: (300, 4), interior.
   * Nested regime sets 2 ⊂ 8 ⊂ 32.
   * Cells: T ∈ {32, 64, 128} × n ∈ {2, 8, 32}.
   * Scale: 326 trajectories at 64² and 57 runs. The metric is adv = 1 − e_ft / e_scratch.
   * Open points: regime grid, budgets (fixed vs scaled with T), distance confound.
-* Tooling:
-  * `experiments/e1/` holds the design module, N_gen measurement and config writer.
+* Tooling in `experiments/e1/`:
+  * the design module;
+  * N_gen measurement;
+  * the config writer (configs in `experiments/e1/configs/`);
+  * `analyse.py`, which builds the adv table and scores E1-P1 to E1-P6 from `results.jsonl`.
+* Other changes:
   * `kdata` supports per-regime seed lists.
   * The harness has `data.norm_from_init`: a fine-tune keeps its pretrain normalisation.
   * `run.py` handles lists, `--skip-done` and sharding.
-* N_gen for the 33 regimes is being measured on CPU (`data/e1/ngen_lanes.sh` relaunches after a
-  restart; results in `experiments/e1/results/ngen_{a,b}.json`).
-* Generation and training need the spec approved, then the GPU box.
+  * 78 tests.
 * **N_gen measured for all 33 E1 regimes:** 10 need 128 (Re ≤ 200 at k_f ≤ 5, and Re 125 at
   k_f 6), and the other 23 need 256; none needs 512. The target (300, 4) is at 256 (F = 9.3e-7),
-  which agrees with Stage 2. The configs are written (`experiments/e1/configs/`, 326 trajectories).
-* Daily notes are in `notes/YYYY-MM-DD.md`.
+  which agrees with Stage 2. The spec's cost estimate stands.
+
+## 6. Status (27 Sep 2026)
+
+**Done:**
+* Stages 1–3 and 5–11: built, gates pass, results reported.
+  * Acceptance met: 1, 3, 5, 6, 7, 8, 11.
+  * Not met, with the causes measured:
+    * Stage 9: pushforward does not pay at matched compute.
+    * Stage 10: LoRA adapts little from 2 trajectories.
+  * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
+* Stage 4: built and gates pass.
+* E1: spec drafted; tooling, N_gen and configs ready.
+
+**Remaining:**
+1. Advisor review of the E1 spec, then freeze it.
+2. On the GPU box:
+   * the Stage 4 S1–S6 learning runs;
+   * E1 generation (~8 GPU-h) and runs (~7 GPU-h), followed by the E1 report.
+3. E2–E5: specs, runs and reports.
+   * E2: the Perceiver vs pad-and-mask vs per-dataset encoders.
+   * E3: out-of-distribution transfer.
+   * E4: component ablations, including MAE vs MSE and pushforward at matched steps vs matched compute.
+   * E5: LoRA vs full fine-tuning across fine-tuning set sizes.
+4. Write-up.
