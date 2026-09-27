@@ -24,3 +24,4 @@ logs/
 *.log
 .pytest_cache/
 !tests/fixtures/*.npz
+dist/
