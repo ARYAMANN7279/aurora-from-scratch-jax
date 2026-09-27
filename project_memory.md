@@ -259,3 +259,19 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   the CPU ISA XLA compiles for (SSE4.2 ≠ AVX2 = default). The exact cause for that trajectory is
   unproven; the leading suspect is VM pause/restore across hosts. **For the experiment datasets:
   store the post-spin-up state with every trajectory and record the host CPU / XLA ISA in meta.**
+
+### 2026-09-27 — E1 designed (draft); tooling built
+* Spec `handouts/e1_volume_diversity.md` (**DRAFT, awaiting advisor review**; frozen on approval).
+  * Target: (300, 4), interior.
+  * Nested regime sets 2 ⊂ 8 ⊂ 32.
+  * Cells: T ∈ {32, 64, 128} × n ∈ {2, 8, 32}.
+  * Scale: 326 trajectories at 64² and 57 runs. The metric is adv = 1 − e_ft / e_scratch.
+  * Open points: regime grid, budgets (fixed vs scaled with T), distance confound.
+* Tooling:
+  * `experiments/e1/` holds the design module, N_gen measurement and config writer.
+  * `kdata` supports per-regime seed lists.
+  * The harness has `data.norm_from_init`: a fine-tune keeps its pretrain normalisation.
+  * `run.py` handles lists, `--skip-done` and sharding.
+* N_gen for the 33 regimes is being measured on CPU (`data/e1/ngen_lanes.sh` relaunches after a
+  restart; results in `experiments/e1/results/ngen_{a,b}.json`).
+* Generation and training need the spec approved, then the GPU box.

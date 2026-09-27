@@ -73,6 +73,10 @@ Each stage has an acceptance test and is not passed until that test is met.
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
+**Experiments.** E1 (RQ1, volume vs diversity) has a draft spec with pre-registered predictions in
+[`handouts/e1_volume_diversity.md`](handouts/e1_volume_diversity.md), awaiting review. Its tooling
+(`experiments/e1/`) runs it end to end: 326 trajectories and 57 harness runs.
+
 ## Stage 1 results: the data generator
 
 The solver is written from scratch in JAX. It uses 2/3-rule dealiasing, Lawson integrating-factor
@@ -120,6 +124,8 @@ python3.11 -m venv .venv
 | `src/aurora/` | The model in pure JAX: spectral-band levels, embedding, Perceiver, Swin3D blocks, U-Net backbone, full model, rollout |
 | `tests/` | Correctness gates (`pytest tests`) |
 | `experiments/stageN/` | Per-stage run scripts, result JSONs, figures and reports |
+| `experiments/e1/` | E1 design, N_gen measurement and config writer |
+| `experiments/run.py` | Runs harness configs (lists, sweeps, `--skip-done`, sharding); rows go to `experiments/results.jsonl` |
 
 ## Status
 
@@ -127,7 +133,7 @@ python3.11 -m venv .venv
 acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
 little adaptation from two trajectories). Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. The Stage 4 learning runs need the GPU
-box. Every stage is built and passes its correctness gates (74 tests). Each stage has a spec with
+box. Every stage is built and passes its correctness gates (77 tests, including the E1 tooling). Each stage has a spec with
 pre-registered predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
 
 ## Advisors
