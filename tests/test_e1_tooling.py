@@ -73,3 +73,23 @@ def test_pretrain_finetune_chain(tmp_path):
         pass
     assert len(open(tmp_path / "r.jsonl").read().splitlines()) == 2
     json.loads(open(tmp_path / "r.jsonl").readline())
+
+
+def test_analysis_on_planted_rows():
+    import analyse as A
+
+    pre, ft, sc = E.run_configs(harness.config_hash)
+    tgt = E.tag(E.TARGET)
+    rows = {}
+    row = lambda c, split, e, d: rows.__setitem__(harness.config_hash(c), {"metrics": {f"{split}/{tgt}": dict(rel_err=e, rollout_drift=d)}})
+    for c in sc:
+        row(c, "val", 0.30, 0.60)
+    rng = np.random.default_rng(0)
+    for p, f in zip(pre, ft):
+        n, T = len(p["data"]["train"]), sum(len(x["seeds"]) for x in p["data"]["train"])
+        adv = 0.05 + 0.05 * np.log2(n) / 2 + 0.01 * np.log2(T / 32) + 0.002 * rng.standard_normal()
+        row(p, "test", 0.5 - 0.05 * np.log2(n), 1.0)
+        row(f, "val", 0.30 * (1 - adv), 0.60 * (1 - adv))
+    res = A.analyse(rows, pre, ft, sc)
+    assert res["verdicts"] == {f"E1-P{i}": "HIT" for i in range(1, 7)}
+    assert abs(res["cells"]["n2_T32"]["adv_rel_err_mean"] - 0.075) < 0.01

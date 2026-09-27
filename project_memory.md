@@ -275,3 +275,8 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
 * N_gen for the 33 regimes is being measured on CPU (`data/e1/ngen_lanes.sh` relaunches after a
   restart; results in `experiments/e1/results/ngen_{a,b}.json`).
 * Generation and training need the spec approved, then the GPU box.
+* **N_gen measured for all 33 E1 regimes:** 10 need 128 (Re ≤ 200 at k_f ≤ 5, and Re 125 at
+  k_f 6), and the other 23 need 256; none needs 512. The target (300, 4) is at 256 (F = 9.3e-7),
+  which agrees with Stage 2. The configs are written (`experiments/e1/configs/`, 326 trajectories).
+* Daily notes are in `notes/YYYY-MM-DD.md`, and each day's work is bundled as
+  `dist/UGP-II_<date>.zip` (see the note).

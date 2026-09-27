@@ -1,0 +1,5879 @@
+[
+ {
+  "name": "e1_pre_n2_T32_s0",
+  "prediction": "E1 pretrain cell (n=2, T=32), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T64_s0",
+  "prediction": "E1 pretrain cell (n=2, T=64), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T128_s0",
+  "prediction": "E1 pretrain cell (n=2, T=128), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T32_s0",
+  "prediction": "E1 pretrain cell (n=8, T=32), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T64_s0",
+  "prediction": "E1 pretrain cell (n=8, T=64), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T128_s0",
+  "prediction": "E1 pretrain cell (n=8, T=128), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T32_s0",
+  "prediction": "E1 pretrain cell (n=32, T=32), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T64_s0",
+  "prediction": "E1 pretrain cell (n=32, T=64), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T128_s0",
+  "prediction": "E1 pretrain cell (n=32, T=128), seed 0: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T32_s1",
+  "prediction": "E1 pretrain cell (n=2, T=32), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T64_s1",
+  "prediction": "E1 pretrain cell (n=2, T=64), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T128_s1",
+  "prediction": "E1 pretrain cell (n=2, T=128), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T32_s1",
+  "prediction": "E1 pretrain cell (n=8, T=32), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T64_s1",
+  "prediction": "E1 pretrain cell (n=8, T=64), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T128_s1",
+  "prediction": "E1 pretrain cell (n=8, T=128), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T32_s1",
+  "prediction": "E1 pretrain cell (n=32, T=32), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T64_s1",
+  "prediction": "E1 pretrain cell (n=32, T=64), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T128_s1",
+  "prediction": "E1 pretrain cell (n=32, T=128), seed 1: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T32_s2",
+  "prediction": "E1 pretrain cell (n=2, T=32), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T64_s2",
+  "prediction": "E1 pretrain cell (n=2, T=64), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n2_T128_s2",
+  "prediction": "E1 pretrain cell (n=2, T=128), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T32_s2",
+  "prediction": "E1 pretrain cell (n=8, T=32), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T64_s2",
+  "prediction": "E1 pretrain cell (n=8, T=64), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n8_T128_s2",
+  "prediction": "E1 pretrain cell (n=8, T=128), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T32_s2",
+  "prediction": "E1 pretrain cell (n=32, T=32), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T64_s2",
+  "prediction": "E1 pretrain cell (n=32, T=64), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0,
+      1
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e1_pre_n32_T128_s2",
+  "prediction": "E1 pretrain cell (n=32, T=128), seed 2: its test/re300_kf4 error is the zero-shot input to E1-P5 (n=32 beats n=2 at every T); handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ }
+]

@@ -1,0 +1,2189 @@
+[
+ {
+  "name": "e1_ft_n2_T32_s0",
+  "prediction": "E1 fine-tune of cell (n=2, T=32), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "bcc51f9a70968099",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T64_s0",
+  "prediction": "E1 fine-tune of cell (n=2, T=64), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "430018cd37fea08f",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T128_s0",
+  "prediction": "E1 fine-tune of cell (n=2, T=128), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "b2f30dfe268b2923",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T32_s0",
+  "prediction": "E1 fine-tune of cell (n=8, T=32), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "780ed8fd171c29e7",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T64_s0",
+  "prediction": "E1 fine-tune of cell (n=8, T=64), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "ddafa141f2ccb350",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T128_s0",
+  "prediction": "E1 fine-tune of cell (n=8, T=128), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "1f9770484e3daf4d",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T32_s0",
+  "prediction": "E1 fine-tune of cell (n=32, T=32), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "de0c4045d6785e46",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T64_s0",
+  "prediction": "E1 fine-tune of cell (n=32, T=64), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "0a5455d4bda8c512",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T128_s0",
+  "prediction": "E1 fine-tune of cell (n=32, T=128), seed 0: with scratch seed 0 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "2f09979ae05dea9b",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T32_s1",
+  "prediction": "E1 fine-tune of cell (n=2, T=32), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "16e66b8fb0a52420",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T64_s1",
+  "prediction": "E1 fine-tune of cell (n=2, T=64), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "d5273b10bbb0726a",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T128_s1",
+  "prediction": "E1 fine-tune of cell (n=2, T=128), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "1a985ed310cc405c",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T32_s1",
+  "prediction": "E1 fine-tune of cell (n=8, T=32), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "15b780391a27fc88",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T64_s1",
+  "prediction": "E1 fine-tune of cell (n=8, T=64), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "0b298e6e656caecd",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T128_s1",
+  "prediction": "E1 fine-tune of cell (n=8, T=128), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "906af33b45411525",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T32_s1",
+  "prediction": "E1 fine-tune of cell (n=32, T=32), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "8f15288dec4614e2",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T64_s1",
+  "prediction": "E1 fine-tune of cell (n=32, T=64), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "da013b8902f9def9",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T128_s1",
+  "prediction": "E1 fine-tune of cell (n=32, T=128), seed 1: with scratch seed 1 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "5db40205e89d8179",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T32_s2",
+  "prediction": "E1 fine-tune of cell (n=2, T=32), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "6e27b29c30c920e4",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T64_s2",
+  "prediction": "E1 fine-tune of cell (n=2, T=64), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "64c0cc8b402e6b6b",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n2_T128_s2",
+  "prediction": "E1 fine-tune of cell (n=2, T=128), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "3750360249fec1df",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T32_s2",
+  "prediction": "E1 fine-tune of cell (n=8, T=32), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "50c73b5a70c581be",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T64_s2",
+  "prediction": "E1 fine-tune of cell (n=8, T=64), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "564bff2cfeed942c",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n8_T128_s2",
+  "prediction": "E1 fine-tune of cell (n=8, T=128), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "e11ddbb9a882e882",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T32_s2",
+  "prediction": "E1 fine-tune of cell (n=32, T=32), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "9527b91c97ec1444",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T64_s2",
+  "prediction": "E1 fine-tune of cell (n=32, T=64), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "0f772c4472ec9fbd",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e1_ft_n32_T128_s2",
+  "prediction": "E1 fine-tune of cell (n=32, T=128), seed 2: with scratch seed 2 gives adv for E1-P1 to E1-P4 and E1-P6; handouts/e1_volume_diversity.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "de64b0578094f14c",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ }
+]
