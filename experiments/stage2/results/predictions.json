@@ -1,0 +1,68 @@
+{
+ "rows": [
+  {
+   "id": "Q1",
+   "quantity": "N_gen, 64 band",
+   "prediction": "Re100 128, Re300 256, Re1000 256",
+   "measured": "Re100: 128, Re300: 256, Re1000: 512",
+   "verdict": "MISS"
+  },
+  {
+   "id": "Q2",
+   "quantity": "N_gen, 128 band",
+   "prediction": "Re100 256, Re300 256, Re1000 512",
+   "measured": "Re100: 128, Re300: 256, Re1000: 512",
+   "verdict": "MISS"
+  },
+  {
+   "id": "Q3",
+   "quantity": "cross-process sha256",
+   "prediction": "all equal",
+   "measured": "2/3 equal",
+   "verdict": "MISS"
+  },
+  {
+   "id": "Q4",
+   "quantity": "reduced \u03c7\u00b2 of per-trajectory \u27e8E\u27e9",
+   "prediction": "in [0.2, 3] each",
+   "measured": "Re100: 2.87, Re300: 1.44, Re1000: 1.25",
+   "verdict": "HIT"
+  },
+  {
+   "id": "Q5",
+   "quantity": "max |slope \u2212 regime mean|, k\u2208[8,16]",
+   "prediction": "\u2264 0.15 every trajectory",
+   "measured": "Re100: 0.149, Re300: 0.103, Re1000: 0.042",
+   "verdict": "HIT"
+  },
+  {
+   "id": "Q6",
+   "quantity": "max_k |E_i(k)/\u0112(k) \u2212 1|, 1\u2264k\u226431",
+   "prediction": "< 0.3 every trajectory",
+   "measured": "Re100: 0.299, Re300: 0.225, Re1000: 0.230",
+   "verdict": "HIT"
+  },
+  {
+   "id": "Q7",
+   "quantity": "regime-mean spectrum vs Stage 1, 1\u2264k\u226431",
+   "prediction": "every shell within 15%",
+   "measured": "Re100: 0.148, Re300: 0.048, Re1000: 0.069",
+   "verdict": "HIT"
+  },
+  {
+   "id": "Q8",
+   "quantity": "first vs second half \u27e8E\u27e9",
+   "prediction": "within 3 combined SE",
+   "measured": "Re100: 0.23 SE, Re300: 0.61 SE, Re1000: 0.16 SE",
+   "verdict": "HIT"
+  },
+  {
+   "id": "Q9",
+   "quantity": "loader windows/s, batch 32, n_in 2",
+   "prediction": "\u2265 2000 at 64; \u2265 500 at 128",
+   "measured": "64: 28959, 128: 8864",
+   "verdict": "HIT"
+  }
+ ],
+ "command": ".venv/bin/python experiments/stage2/analyse.py --dataset acc_v1"
+}
