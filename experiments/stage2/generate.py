@@ -35,7 +35,7 @@ if args.finalize:
     man = finalize(root, partial=args.partial)
     print(f"manifest: {len(man['trajectories'])} trajectories verified")
 elif args.only:
-    from kdata import generate_trajectory, regime_tag, traj_dir  # noqa: E402
+    from kdata import generate_trajectory, regime_seeds, regime_tag, traj_dir  # noqa: E402
 
     regs = {regime_tag(r["Re"], r["kf"]): r for r in cfg["regimes"]}
     os.makedirs(root, exist_ok=True)
@@ -45,7 +45,7 @@ elif args.only:
         tag, seed = item.split(":")
         r, seed = regs[tag], int(seed)
         d = traj_dir(root, tag, seed)
-        if seed not in cfg["seeds"] or os.path.exists(os.path.join(d, "meta.json")):
+        if seed not in regime_seeds(cfg, r) or os.path.exists(os.path.join(d, "meta.json")):
             continue
         # per-trajectory lock, so parallel lanes never work on the same trajectory; a lock whose
         # process is gone (e.g. after a container restart) is taken over

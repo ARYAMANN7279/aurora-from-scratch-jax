@@ -199,8 +199,13 @@ def load_config(path):
         return json.load(f)
 
 
+def regime_seeds(cfg, r):
+    """A regime may carry its own "seeds" list; otherwise the dataset-level list applies."""
+    return r["seeds"] if "seeds" in r else cfg["seeds"]
+
+
 def tasks(cfg):
-    return [(r, s) for r in cfg["regimes"] for s in cfg["seeds"]]
+    return [(r, s) for r in cfg["regimes"] for s in regime_seeds(cfg, r)]
 
 
 def generate_dataset(cfg, root, shard=0, n_shards=1, verbose=True):

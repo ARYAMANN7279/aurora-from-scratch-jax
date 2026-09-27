@@ -93,8 +93,12 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
     N, stride = d["N"], d.get("stride", 1)
     load = lambda tag, s: np.load(os.path.join(traj_dir(ds, tag, s), f"frames_{N}.npy"))[::stride]
     raw_train = [(tag, s, load(tag, s)) for tag, s in sp["train"]]
-    allf = np.concatenate([a for _, _, a in raw_train])
-    mu, sd = allf.mean(axis=(0, 2, 3)), allf.std(axis=(0, 2, 3))
+    if d.get("norm_from_init"):  # keep the normalisation the initial weights were trained with
+        z = np.load(os.path.join(runs_root, t["init_from"], "params.npz"))
+        mu, sd = z["mean"], z["std"]
+    else:
+        allf = np.concatenate([a for _, _, a in raw_train])
+        mu, sd = allf.mean(axis=(0, 2, 3)), allf.std(axis=(0, 2, 3))
     norm = lambda a: jnp.asarray(((a - mu[:, None, None]) / sd[:, None, None]).astype(np.float32))
     tags = list(dict.fromkeys(tag for tag, _, _ in raw_train))
     by_tag = {tag: jnp.stack([norm(a) for tt, _, a in raw_train if tt == tag]) for tag in tags}
