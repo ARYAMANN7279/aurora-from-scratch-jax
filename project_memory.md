@@ -281,6 +281,24 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   k_f 6), and the other 23 need 256; none needs 512. The target (300, 4) is at 256 (F = 9.3e-7),
   which agrees with Stage 2. The spec's cost estimate stands.
 
+### 2026-09-27 — E2–E5 specs drafted; E3–E5 configs; E1 runbook
+* **Draft specs** (awaiting review): `handouts/e2_heterogeneous_fusion.md`, `e3_ood_transfer.md`,
+  `e4_ablations.md` and `e5_lora_vs_full.md`, each with pre-registered predictions anchored on the
+  Stage 8/9/10 results.
+* **E3–E5 configs:** `experiments/designs.py` → `experiments/make_configs.py` →
+  `experiments/e{3,4,5}/configs/`. Runs: E3 33, E4 27, E5 39. Tested in `tests/test_designs.py`.
+  * E3 reuses E1's data.
+  * E4 and E5 use `acc_v1`.
+* **E4 switch:** `backbone.Config.shift` (default True, so earlier results are unchanged). False
+  gives unshifted windows in every block. Gate in `tests/test_stage6_gates.py`.
+* **E2** needs new code: per-source formats in the harness, a masked loss, and the pad-and-mask
+  and per-dataset-encoder baselines. It will be built after the design is reviewed.
+* **E1 runbook** for the VM: `experiments/e1/GPU_RUNBOOK.md`. Each lane writes its own rows file.
+* **Remote compute:** this cloud container cannot SSH (no client; port 22 blocked), so the VM is
+  unreachable from here. Kaggle would work if `www.kaggle.com` and `storage.googleapis.com` are
+  allowed and `KAGGLE_USERNAME` / `KAGGLE_KEY` are set in the environment settings. But its quota
+  (~30 GPU-h/week, P100 / T4) is small next to E1–E5's total.
+
 ## 6. Status (27 Sep 2026)
 
 **Done:**
@@ -292,15 +310,14 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
 * Stage 4: built and gates pass.
 * E1: spec drafted; tooling, N_gen and configs ready.
+* E2–E5: specs drafted. E3–E5 configs are ready; E2 needs code after review.
+* 82 tests pass.
 
 **Remaining:**
-1. Advisor review of the E1 spec, then freeze it.
-2. On the GPU box:
-   * the Stage 4 S1–S6 learning runs;
-   * E1 generation (~8 GPU-h) and runs (~7 GPU-h), followed by the E1 report.
-3. E2–E5: specs, runs and reports.
-   * E2: the Perceiver vs pad-and-mask vs per-dataset encoders.
-   * E3: out-of-distribution transfer.
-   * E4: component ablations, including MAE vs MSE and pushforward at matched steps vs matched compute.
-   * E5: LoRA vs full fine-tuning across fine-tuning set sizes.
-4. Write-up.
+1. Advisor review of the E1–E5 specs, then freeze them.
+2. On the GPU box (≈ 22 GPU-h in total):
+   * Stage 4 S1–S6;
+   * E1: data ~8 h, runs ~7 h;
+   * E3 ~3 h, E4 ~2.5 h, E5 ~1.5 h (`acc_v1` regenerated on the VM, per the Stage 4 runbook).
+3. E2: build the harness support and the baselines after review, then about 30 runs.
+4. Reports for E1–E5, then the write-up.

@@ -1,0 +1,731 @@
+[
+ {
+  "name": "e3_pre_s0",
+  "prediction": "E3 pretrain on the band Re 125-250, seed 0: zero-shot errors at the 5 out-of-band regimes feed E3-P1, E3-P4; handouts/e3_ood_transfer.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e3_pre_s1",
+  "prediction": "E3 pretrain on the band Re 125-250, seed 1: zero-shot errors at the 5 out-of-band regimes feed E3-P1, E3-P4; handouts/e3_ood_transfer.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ },
+ {
+  "name": "e3_pre_s2",
+  "prediction": "E3 pretrain on the band Re 125-250, seed 2: zero-shot errors at the 5 out-of-band regimes feed E3-P1, E3-P4; handouts/e3_ood_transfer.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re125_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re125_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re160_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re200_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf3",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf5",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re250_kf6",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re350_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re450_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re560_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    },
+    {
+     "tag": "re700_kf4",
+     "seeds": [
+      2,
+      3
+     ]
+    }
+   ],
+   "val": []
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 20000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "test"
+   ]
+  }
+ }
+]

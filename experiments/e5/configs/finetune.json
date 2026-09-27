@@ -1,0 +1,1928 @@
+[
+ {
+  "name": "e5_full_k1_s0",
+  "prediction": "E5 full fine-tune on 1 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k1_s0",
+  "prediction": "E5 lora fine-tune on 1 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k2_s0",
+  "prediction": "E5 full fine-tune on 2 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k2_s0",
+  "prediction": "E5 lora fine-tune on 2 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k4_s0",
+  "prediction": "E5 full fine-tune on 4 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k4_s0",
+  "prediction": "E5 lora fine-tune on 4 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k6_s0",
+  "prediction": "E5 full fine-tune on 6 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k6_s0",
+  "prediction": "E5 lora fine-tune on 6 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": "45651a6bdd88a014",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k1_s1",
+  "prediction": "E5 full fine-tune on 1 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k1_s1",
+  "prediction": "E5 lora fine-tune on 1 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k2_s1",
+  "prediction": "E5 full fine-tune on 2 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k2_s1",
+  "prediction": "E5 lora fine-tune on 2 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k4_s1",
+  "prediction": "E5 full fine-tune on 4 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k4_s1",
+  "prediction": "E5 lora fine-tune on 4 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k6_s1",
+  "prediction": "E5 full fine-tune on 6 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k6_s1",
+  "prediction": "E5 lora fine-tune on 6 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": "93b177cc9790c935",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k1_s2",
+  "prediction": "E5 full fine-tune on 1 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k1_s2",
+  "prediction": "E5 lora fine-tune on 1 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k2_s2",
+  "prediction": "E5 full fine-tune on 2 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k2_s2",
+  "prediction": "E5 lora fine-tune on 2 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k4_s2",
+  "prediction": "E5 full fine-tune on 4 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k4_s2",
+  "prediction": "E5 lora fine-tune on 4 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_full_k6_s2",
+  "prediction": "E5 full fine-tune on 6 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.0001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_lora_k6_s2",
+  "prediction": "E5 lora fine-tune on 6 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ],
+   "norm_from_init": true
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 2000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": "8b47a03351ac3294",
+   "lora_rank": 4
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ }
+]

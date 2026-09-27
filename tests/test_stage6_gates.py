@@ -110,3 +110,31 @@ def test_U6_gradient():
         worst = max(worst, abs(float(fd - g[i])) / max(abs(float(g[i])), gmed))
     report("U6 grad vs finite differences (mixed)", worst, 1e-6)
     assert worst <= 1e-6
+
+
+def test_shift_flag():
+    """E4 ablation switch: shift=False runs every block unshifted; the default is unchanged."""
+    import jax
+    import jax.numpy as jnp
+
+    from aurora import swin
+
+    cfg = bb.Config(16, (2, 2), (1, 2), (2, 2), (2, 1), (2, 4, 4))
+    off = cfg._replace(shift=False)
+    key = jax.random.PRNGKey(0)
+    p = bb.init(key, cfg)
+    leaves, tdef = jax.tree_util.tree_flatten(p)  # random weights: at init the blocks are identities
+    ks = jax.random.split(jax.random.PRNGKey(3), len(leaves))
+    p = jax.tree_util.tree_unflatten(tdef, [l + 0.1 * jax.random.normal(k, l.shape, l.dtype) for l, k in zip(leaves, ks)])
+    res = (2, 8, 8)
+    x = jax.random.normal(jax.random.PRNGKey(1), (1, 2 * 8 * 8, 16))
+    t = jax.random.normal(jax.random.PRNGKey(2), (1, 16))
+    y_on, y_off = bb.apply(p, x, t, res, cfg), bb.apply(p, x, t, res, off)
+    assert float(jnp.max(jnp.abs(y_on - y_off))) > 1e-6
+    # reference for shift=False: the encoder's first stage, every block called with zero shift
+    c = jax.nn.silu(t @ p["time"]["W1"] + p["time"]["b1"]) @ p["time"]["W2"] + p["time"]["b2"]
+    ref = x
+    for b in p["enc"][0]["blocks"]:
+        ref = swin.block(b, ref, c, res, 1, cfg.window, (0, 0, 0), cfg.periodic)
+    got = bb._run_blocks(p["enc"][0]["blocks"], x, c, res, 1, off)
+    assert float(jnp.max(jnp.abs(got - ref))) == 0.0
