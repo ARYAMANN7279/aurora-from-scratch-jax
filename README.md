@@ -60,7 +60,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | # | Deliverable | Acceptance test | Status |
 |---|---|---|---|
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
-| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | 🔧 built, gates pass; acceptance dataset generating |
+| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds at Re 100 / 300 but not for the Re 1000 trajectory tested (machine-dependent) |
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
 | 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | 🔧 built, gates pass; learning runs need the GPU |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
@@ -123,10 +123,11 @@ python3.11 -m venv .venv
 
 ## Status
 
-**Ongoing.** Stages 1, 3, 5, 6, 7, 8 and 11 are complete. Stage 9's acceptance test was not met
-(pushforward does not pay at matched compute). Stages 2 and 10 wait on the last Re 1000
-trajectories, which are generating, and the Stage 4 learning runs need the GPU box. Every stage is
-built and passes its correctness gates (74 tests). Each stage has a spec with
+**Ongoing.** Stages 1–3 and 5–11 have their results. Stages 1, 3, 5, 6, 7, 8 and 11 met their
+acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
+little adaptation from two trajectories). Stage 2's data are statistically sound, but bitwise
+regeneration of a Re 1000 trajectory is machine-dependent. The Stage 4 learning runs need the GPU
+box. Every stage is built and passes its correctness gates (74 tests). Each stage has a spec with
 pre-registered predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
 
 ## Advisors

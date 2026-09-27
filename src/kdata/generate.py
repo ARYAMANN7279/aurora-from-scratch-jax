@@ -47,6 +47,22 @@ def git_commit():
         return None
 
 
+def _environment():
+    """Host CPU and software versions (bitwise output depends on them)."""
+    import platform
+
+    cpu = ""
+    try:
+        with open("/proc/cpuinfo") as f:
+            cpu = next((line.split(":", 1)[1].strip() for line in f if line.startswith("model name")), "")
+    except OSError:
+        pass
+    import jaxlib
+
+    return dict(cpu=cpu or platform.processor(), machine=platform.machine(), jax=jax.__version__,
+                jaxlib=jaxlib.__version__, numpy=np.__version__, xla_flags=os.environ.get("XLA_FLAGS", ""))
+
+
 def make_frame_fn(g, prm, dt, out_res):
     diag, _ = make_diagnostics(g, prm)
 
@@ -117,6 +133,9 @@ def generate_trajectory(root, Re, kf, seed, N_gen, T_spin=50.0, T_rec=100.0, sav
         if verbose:
             print(f"  {tag} seed {seed}: spin-up {spin_done}/{n_spin} steps", flush=True)
 
+    # the post-spin-up state lets this trajectory be re-derived exactly, independent of the machine
+    # that did the spin-up (bitwise results depend on the CPU ISA XLA compiles for; Stage 2 report)
+    np.save(os.path.join(d, "state_t0.npy"), np.asarray(wh))
     resume = ck is not None and int(ck["i"]) > 0
     mm = {n: np.lib.format.open_memmap(paths[n] + ".part", mode="r+" if resume else "w+", dtype=np.float32,
                                         shape=(n_frames, 4, n, n)) for n in out_res}
@@ -167,7 +186,7 @@ def generate_trajectory(root, Re, kf, seed, N_gen, T_spin=50.0, T_rec=100.0, sav
                 m=m, dt=dt, T_spin=T_spin, T_rec=T_rec, save_dt=save_dt, t0=T_spin, n_frames=n_frames,
                 out_res=list(out_res), channels=list(CHANNELS), max_cfl=max_cfl,
                 dtype=str(g.k2.dtype), sha256=files, wall_s=time.time() - t_start,
-                git_commit=git_commit())
+                git_commit=git_commit(), environment=_environment())
     with open(os.path.join(d, "meta.json"), "w") as f:  # written last: marks the trajectory complete
         json.dump(meta, f, indent=1)
     if os.path.exists(ckpt_path):

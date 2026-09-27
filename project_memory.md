@@ -250,3 +250,12 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   trajectories and 1000 steps there is little to adapt with. Zero-shot transfer from Re 100/300 to
   the unseen Re1000 is already 0.58× persistence. This moves to E5 (fine-tuning set size sweep,
   plus an in-distribution Re1000 ceiling).
+
+### 2026-09-27 — Stage 2 result
+* `acc_v1` complete: 3 regimes × 8 seeds × 501 frames (64², 128²), all checksums verified. Spectra
+  stable across seeds (Q4–Q8 HIT; Re100 right at the bars). Loader 29k / 8.9k windows/s.
+* **Q3 MISS: a Re1000 trajectory did not regenerate bitwise** in a fresh process (Re 100 / 300 did).
+  The solver is deterministic across processes, threads and concurrent load. The result depends on
+  the CPU ISA XLA compiles for (SSE4.2 ≠ AVX2 = default). The exact cause for that trajectory is
+  unproven; the leading suspect is VM pause/restore across hosts. **For the experiment datasets:
+  store the post-spin-up state with every trajectory and record the host CPU / XLA ISA in meta.**

@@ -1,0 +1,26 @@
+{
+ "dataset": "acc_v1",
+ "batch": 32,
+ "results": {
+  "64": {
+   "windows": 11976,
+   "windows_per_s": 28958.98017061198,
+   "epoch_s": [
+    0.4814884350053035,
+    0.43031182299455395,
+    0.41327422200265573
+   ]
+  },
+  "128": {
+   "windows": 11976,
+   "windows_per_s": 8864.419476672892,
+   "epoch_s": [
+    1.6167827250028495,
+    1.3501166129935882,
+    1.4898398690056638
+   ]
+  }
+ },
+ "cpu_count": 4,
+ "command": ".venv/bin/python experiments/stage2/loader_bench.py --dataset acc_v1"
+}
