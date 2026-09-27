@@ -125,7 +125,6 @@ python3.11 -m venv .venv
 | `tests/` | Correctness gates (`pytest tests`) |
 | `experiments/stageN/` | Per-stage run scripts, result JSONs, figures and reports |
 | `experiments/e1/` | E1 design, N_gen measurement (all 33 regimes), configs and analysis |
-| `notes/` | Daily notes: what was done, what is waiting, what is next |
 | `experiments/run.py` | Runs harness configs (lists, sweeps, `--skip-done`, sharding); rows go to `experiments/results.jsonl` |
 
 ## Status
