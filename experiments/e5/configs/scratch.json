@@ -1,0 +1,953 @@
+[
+ {
+  "name": "e5_scratch_k1_s0",
+  "prediction": "E5 scratch on 1 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k2_s0",
+  "prediction": "E5 scratch on 2 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k4_s0",
+  "prediction": "E5 scratch on 4 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k6_s0",
+  "prediction": "E5 scratch on 6 Re 1000 trajectories, seed 0",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k1_s1",
+  "prediction": "E5 scratch on 1 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k2_s1",
+  "prediction": "E5 scratch on 2 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k4_s1",
+  "prediction": "E5 scratch on 4 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k6_s1",
+  "prediction": "E5 scratch on 6 Re 1000 trajectories, seed 1",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k1_s2",
+  "prediction": "E5 scratch on 1 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k2_s2",
+  "prediction": "E5 scratch on 2 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k4_s2",
+  "prediction": "E5 scratch on 4 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e5_scratch_k6_s2",
+  "prediction": "E5 scratch on 6 Re 1000 trajectories, seed 2",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re1000_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 12000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ]
+  }
+ }
+]

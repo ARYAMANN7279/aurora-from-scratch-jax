@@ -17,6 +17,7 @@ class Config(NamedTuple):
     dec_heads: tuple
     window: tuple
     periodic: tuple = swin.PERIODIC
+    shift: bool = True  # False: every block uses unshifted windows (E4 ablation)
 
 
 def _tn(key, shape, dtype):
@@ -94,7 +95,8 @@ def stage_resolutions(res, S):
 def _run_blocks(blocks, x, c, res, heads, cfg):
     half = tuple(w // 2 for w in cfg.window)
     for j, b in enumerate(blocks):
-        x = swin.block(b, x, c, res, heads, cfg.window, (0, 0, 0) if j % 2 == 0 else half, cfg.periodic)
+        shift = half if (cfg.shift and j % 2 == 1) else (0, 0, 0)
+        x = swin.block(b, x, c, res, heads, cfg.window, shift, cfg.periodic)
     return x
 
 

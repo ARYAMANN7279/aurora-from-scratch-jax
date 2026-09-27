@@ -1,0 +1,2705 @@
+[
+ {
+  "name": "e4_base_s0",
+  "prediction": "E4 ablation 'base', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_base_s1",
+  "prediction": "E4 ablation 'base', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_base_s2",
+  "prediction": "E4 ablation 'base', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_noshift_s0",
+  "prediction": "E4 ablation 'noshift', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ],
+    "shift": false
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_noshift_s1",
+  "prediction": "E4 ablation 'noshift', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ],
+    "shift": false
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_noshift_s2",
+  "prediction": "E4 ablation 'noshift', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ],
+    "shift": false
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_depth6_s0",
+  "prediction": "E4 ablation 'depth6', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     1,
+     1,
+     1
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     1,
+     1,
+     1
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_depth6_s1",
+  "prediction": "E4 ablation 'depth6', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     1,
+     1,
+     1
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     1,
+     1,
+     1
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_depth6_s2",
+  "prediction": "E4 ablation 'depth6', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     1,
+     1,
+     1
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     1,
+     1,
+     1
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_depth24_s0",
+  "prediction": "E4 ablation 'depth24', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     4,
+     4,
+     4
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     4,
+     4,
+     4
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_depth24_s1",
+  "prediction": "E4 ablation 'depth24', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     4,
+     4,
+     4
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     4,
+     4,
+     4
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_depth24_s2",
+  "prediction": "E4 ablation 'depth24', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     4,
+     4,
+     4
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     4,
+     4,
+     4
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_L1_s0",
+  "prediction": "E4 ablation 'L1', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 1,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_L1_s1",
+  "prediction": "E4 ablation 'L1', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 1,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_L1_s2",
+  "prediction": "E4 ablation 'L1', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 1,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_L6_s0",
+  "prediction": "E4 ablation 'L6', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 6,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_L6_s1",
+  "prediction": "E4 ablation 'L6', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 6,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_L6_s2",
+  "prediction": "E4 ablation 'L6', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 6,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_pf_steps_s0",
+  "prediction": "E4 ablation 'pf_steps', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": true,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_pf_steps_s1",
+  "prediction": "E4 ablation 'pf_steps', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": true,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_pf_steps_s2",
+  "prediction": "E4 ablation 'pf_steps', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": true,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_pf_compute_s0",
+  "prediction": "E4 ablation 'pf_compute', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 5000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": true,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_pf_compute_s1",
+  "prediction": "E4 ablation 'pf_compute', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 5000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": true,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_pf_compute_s2",
+  "prediction": "E4 ablation 'pf_compute', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 5000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": true,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_mae_s0",
+  "prediction": "E4 ablation 'mae', seed 0: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mae",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_mae_s1",
+  "prediction": "E4 ablation 'mae', seed 1: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mae",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ },
+ {
+  "name": "e4_mae_s2",
+  "prediction": "E4 ablation 'mae', seed 2: handouts/e4_ablations.md E4-P1..P5",
+  "data": {
+   "dataset": "acc_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re100_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mae",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 50,
+   "splits": [
+    "val"
+   ]
+  }
+ }
+]
