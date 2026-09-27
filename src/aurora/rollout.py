@@ -9,7 +9,7 @@ def rollout(p, x_prev, x_cur, n, dt, mc=model.ModelConfig()):
     """Feed predictions back n times. x_prev, x_cur: (4, N, N) (all variables) -> (n, 4, N, N)."""
     def body(carry, _):
         a, b = carry
-        c = model.apply(p, a, b, model.VARS, dt, mc)
+        c = model.apply(p, a, b, model.VARS, dt, mc).astype(b.dtype)
         return (b, c), c
 
     return jax.lax.scan(body, (x_prev, x_cur), None, length=n)[1]
