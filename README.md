@@ -73,7 +73,8 @@ Each stage has an acceptance test and is not passed until that test is met.
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
-**Experiments.** Every experiment has a draft spec with pre-registered predictions, awaiting review:
+**Experiments.** Every experiment has a spec with pre-registered predictions, frozen in git on 28 Sep 2026
+before any run. The runs are under way on the lab GPU box:
 
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
@@ -140,8 +141,9 @@ python3.11 -m venv .venv
 acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
 little adaptation from two trajectories). Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. The Stage 4 learning runs need the GPU
-box. Every stage is built and passes its correctness gates (91 tests, including the experiment tooling). Each stage has a spec with
-pre-registered predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
+box, where they now run alongside E1–E5 (specs frozen 28 Sep 2026). Every stage is built and passes its
+correctness gates (91 tests, including the experiment tooling). Each stage has a spec with pre-registered
+predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
 
 ## Advisors
 

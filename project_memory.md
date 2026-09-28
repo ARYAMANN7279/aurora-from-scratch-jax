@@ -319,6 +319,23 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   * The VM side works on branch `vm-results`. It touches only results, reports, spec status lines,
     README and memory, never `src/` or configs (a config change breaks `init_from` hashes).
 
+### 2026-09-28 — Specs frozen; GPU runs started on the VM
+* **E1–E5 specs frozen** in git before any run (PR #13): only the status lines changed. The open
+  points stay open and are to be addressed in the reports.
+* **VM run:**
+  * clone at `/SML_DISK_24TB/rajeshr/Aryamann/aurora-from-scratch-jax`, on branch `vm-results`
+    (pushes go through the Mac);
+  * cards 1–3, since card 0 is another user's;
+  * thermal guard: no start ≥ 85 °C; pause ≥ 87 °C; resume ≤ 80 °C;
+  * shard count fixed per experiment.
+* **Precision rule** (set before measuring): `JAX_DEFAULT_MATMUL_PRECISION=highest` for every run,
+  unless it costs > 1.5× the TF32 step time. The choice is recorded in every report.
+* **Benchmarks:**
+  * E1 trajectory: 132 s at N_gen 128 and 304 s at N_gen 256 (GPU);
+  * `acc_v1` Re 1000 at 512²: ~16 min per trajectory (GPU), against ~3 h on CPU;
+  * E1 generation is therefore ≈ 21 GPU-h against the spec's 8 (a deviation for the E1 report,
+    not a prediction).
+
 ## 6. Status (28 Sep 2026)
 
 **Done:**
@@ -329,15 +346,10 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
     * Stage 10: LoRA adapts little from 2 trajectories.
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
 * Stage 4: built and gates pass.
-* E1: spec drafted; tooling, N_gen and configs ready.
-* E2–E5: specs drafted; code, configs and analysis ready for all of them.
+* E1–E5: specs frozen (28 Sep); code, configs and analysis ready for all of them.
 * 91 tests pass.
 
-**Remaining:**
-1. Advisor review of the E1–E5 specs, then freeze them.
-2. On the GPU box (≈ 22 GPU-h in total):
-   * Stage 4 S1–S6;
-   * E1: data ~8 h, runs ~7 h;
-   * E3 ~3 h, E4 ~2.5 h, E5 ~1.5 h (`acc_v1` regenerated on the VM, per the Stage 4 runbook).
-3. E2: 30 runs (~3 GPU-h) on the VM.
-4. Reports for E1–E5, then the write-up.
+**Running (lab VM):** data generation (`acc_v1`, `e1_v1`), then Stage 4 S1–S6, E4, E2, E5, E1, E3.
+
+**Remaining:** the results, then `REPORT.md` for Stage 4 and E1–E5 (verdicts against the frozen
+predictions), and README / memory updates. These come from the VM side as PRs from `vm-results`.
