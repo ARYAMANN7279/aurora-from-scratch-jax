@@ -78,7 +78,7 @@ Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are t
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
 | E1 volume vs diversity | [`handouts/e1_volume_diversity.md`](handouts/e1_volume_diversity.md) | 57 | new, 326 trajectories (grids measured) | configs, analysis and [GPU runbook](experiments/e1/GPU_RUNBOOK.md) ready |
-| E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | design only; baselines to build after review |
+| E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | configs ready (fusion trainer and both baselines built, `src/aurora/fusion.py`) |
 | E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | E1's data | configs ready |
 | E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | configs ready (shifted-window switch added) |
 | E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | configs ready |
@@ -131,7 +131,7 @@ python3.11 -m venv .venv
 | `tests/` | Correctness gates (`pytest tests`) |
 | `experiments/stageN/` | Per-stage run scripts, result JSONs, figures and reports |
 | `experiments/e1/` | E1 design, N_gen measurement (all 33 regimes), configs and analysis |
-| `experiments/designs.py`, `make_configs.py`, `analyse_e345.py` | E3–E5 designs, the config writer (`experiments/e{3,4,5}/configs/`), and the analysis (verdicts per prediction) |
+| `experiments/designs.py`, `make_configs.py`, `analyse_e345.py` | E2–E5 designs, the config writer (`experiments/e{2,3,4,5}/configs/`), and the analysis (verdicts per prediction) |
 | `experiments/run.py` | Runs harness configs (lists, sweeps, `--skip-done`, sharding); rows go to `experiments/results.jsonl` |
 
 ## Status
@@ -140,7 +140,7 @@ python3.11 -m venv .venv
 acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
 little adaptation from two trajectories). Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. The Stage 4 learning runs need the GPU
-box. Every stage is built and passes its correctness gates (77 tests, including the E1 tooling). Each stage has a spec with
+box. Every stage is built and passes its correctness gates (91 tests, including the experiment tooling). Each stage has a spec with
 pre-registered predictions in `handouts/` and a report in `experiments/stageN/REPORT.md`.
 
 ## Advisors

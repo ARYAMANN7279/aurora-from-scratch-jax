@@ -52,5 +52,6 @@ def apply(p, x_prev, x_cur, variables, dt, mc=ModelConfig()):
     delta = unembed(p["emb"], perceiver.decode(p["per"], y, C, mc.heads), VARS, mc.P, N)
     base = jnp.zeros((len(VARS), N, N), x_cur.dtype)
     for i, v in enumerate(variables):
-        base = base.at[VARS.index(v)].set(x_cur[i])
+        if v in VARS:  # extra embedded inputs (e.g. E2's presence masks) have no residual
+            base = base.at[VARS.index(v)].set(x_cur[i])
     return base + delta

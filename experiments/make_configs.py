@@ -1,6 +1,6 @@
-"""Write the E3, E4, E5 run configs from experiments/designs.py.
+"""Write the E2–E5 run configs from experiments/designs.py.
 
-usage: make_configs.py   ->  experiments/e3/configs/{pretrain,finetune,scratch}.json,
+usage: make_configs.py   ->  experiments/e2/configs/runs.json, experiments/e3/configs/{pretrain,finetune,scratch}.json,
                              experiments/e4/configs/runs.json, experiments/e5/configs/{pretrain,finetune,scratch}.json
 """
 import json
@@ -24,6 +24,7 @@ def write(exp, files):
     print(exp, {k: len(v) for k, v in files.items()})
 
 
+write("e2", {"runs.json": designs.e2()})
 pre, ft, sc = designs.e3(config_hash)
 write("e3", {"pretrain.json": pre, "finetune.json": ft, "scratch.json": sc})
 write("e4", {"runs.json": designs.e4()})

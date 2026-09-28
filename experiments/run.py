@@ -1,7 +1,8 @@
 """Run one config, or every config of a sweep, through the ablation harness (Stage 11).
 
 usage: run.py experiments/configs/<name>.json [more.json ...] [--skip-done] [--shard i --n-shards k]
-A file holds a config, a sweep {"base": ..., "grid": ...}, or a list of configs.
+A file holds a config, a sweep {"base": ..., "grid": ...}, or a list of configs. Configs with a
+"method" key are E2 fusion runs (aurora.fusion); all others go through the harness.
 Each run appends one row to experiments/results.jsonl; parameters go to data/runs/<config_hash>/.
 --skip-done skips configs whose hash already has a row (resume after an interruption).
 --shard i --n-shards k runs every k-th config starting at i (one lane per GPU).
@@ -14,7 +15,7 @@ import sys
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-from aurora import harness  # noqa: E402
+from aurora import fusion, harness  # noqa: E402
 
 ap = argparse.ArgumentParser()
 ap.add_argument("configs", nargs="+")
@@ -36,4 +37,4 @@ for c in todo:
     if harness.config_hash(c) in done:
         print(f"skip {c.get('name')}: already in {os.path.relpath(args.results, ROOT)}", flush=True)
         continue
-    harness.run(c, results_path=args.results, verbose=True)
+    (fusion.run if "method" in c else harness.run)(c, results_path=args.results, verbose=True)

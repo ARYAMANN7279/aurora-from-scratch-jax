@@ -1,0 +1,2936 @@
+[
+ {
+  "name": "e2_a_perceiver_s0",
+  "prediction": "E2 set (a), method perceiver, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_perceiver_s1",
+  "prediction": "E2 set (a), method perceiver, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_perceiver_s2",
+  "prediction": "E2 set (a), method perceiver, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_pad_s0",
+  "prediction": "E2 set (a), method pad, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_pad_s1",
+  "prediction": "E2 set (a), method pad, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_pad_s2",
+  "prediction": "E2 set (a), method pad, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_per_source_s0",
+  "prediction": "E2 set (a), method per_source, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_per_source_s1",
+  "prediction": "E2 set (a), method per_source, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_a_per_source_s2",
+  "prediction": "E2 set (a), method per_source, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_perceiver_s0",
+  "prediction": "E2 set (b), method perceiver, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_perceiver_s1",
+  "prediction": "E2 set (b), method perceiver, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_perceiver_s2",
+  "prediction": "E2 set (b), method perceiver, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_pad_s0",
+  "prediction": "E2 set (b), method pad, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_pad_s1",
+  "prediction": "E2 set (b), method pad, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_pad_s2",
+  "prediction": "E2 set (b), method pad, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_per_source_s0",
+  "prediction": "E2 set (b), method per_source, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_per_source_s1",
+  "prediction": "E2 set (b), method per_source, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_b_per_source_s2",
+  "prediction": "E2 set (b), method per_source, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_perceiver_s0",
+  "prediction": "E2 set (c), method perceiver, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_perceiver_s1",
+  "prediction": "E2 set (c), method perceiver, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_perceiver_s2",
+  "prediction": "E2 set (c), method perceiver, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_pad_s0",
+  "prediction": "E2 set (c), method pad, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_pad_s1",
+  "prediction": "E2 set (c), method pad, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_pad_s2",
+  "prediction": "E2 set (c), method pad, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "pad",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_per_source_s0",
+  "prediction": "E2 set (c), method per_source, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_per_source_s1",
+  "prediction": "E2 set (c), method per_source, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_c_per_source_s2",
+  "prediction": "E2 set (c), method per_source, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "per_source",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 128,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_h_perceiver_s0",
+  "prediction": "E2 set (h), method perceiver, seed 0: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 0
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_h_perceiver_s1",
+  "prediction": "E2 set (h), method perceiver, seed 1: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 1
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ },
+ {
+  "name": "e2_h_perceiver_s2",
+  "prediction": "E2 set (h), method perceiver, seed 2: handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+  "method": "perceiver",
+  "data": {
+   "dataset": "acc_v1",
+   "sources": [
+    {
+     "name": "A",
+     "tag": "re100_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    },
+    {
+     "name": "B",
+     "tag": "re300_kf4",
+     "N": 64,
+     "vars": [
+      "u",
+      "v",
+      "p",
+      "omega"
+     ],
+     "train_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "val_seeds": [
+      6,
+      7
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 10000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "seed": 2
+  },
+  "eval": {
+   "rollout_steps": 20
+  }
+ }
+]

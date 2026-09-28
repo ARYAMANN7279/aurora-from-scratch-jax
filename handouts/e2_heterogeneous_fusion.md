@@ -1,6 +1,7 @@
 # Experiment E2 Spec: Does the Perceiver encoder earn its place? (RQ2)
 
-**Status: DESIGN DRAFT for advisor review. Code not built yet (section 4).**
+**Status: DRAFT for advisor review.** Frozen on approval; later changes go in dated amendments. The
+code is built and tested (section 4).
 **Question:** Aurora's Perceiver encoder lets one model train on datasets with different
 resolutions and different variable sets. Does it fuse such data better than the simple
 alternatives?
@@ -35,23 +36,41 @@ persistence, and 20-step rollout drift. The loss covers only the variables a sou
 
 Each set × method uses 3 seeds, with (h) run once per seed as the reference: 3 × 3 × 3 + 3 = 30 runs.
 
-## 3. Pre-registered predictions (to be finalised with the design)
+## 3. Pre-registered predictions
+Every comparison is the relative change in one-step relative error on validation seeds 6–7, in the
+source's own format, paired by seed (mean over seeds 0–2).
 
 | # | Prediction |
 |---|---|
-| E2-P1 | Perceiver on (a), (b), (c) is within 5% of the homogeneous reference (h) on the shared format |
-| E2-P2 | pad-and-mask is worse than the Perceiver on B (the upsampled or zero-filled source) by > 5% in (a) and (c) |
-| E2-P3 | per-dataset encoders are worse than the Perceiver on the smaller-format source by > 5%, because each encoder sees half the data |
+| E2-P1 | The Perceiver is within ±5% of the homogeneous reference (h) on every source whose format is the same as in (h): B in set (a), A in set (b) |
+| E2-P2 | Pad-and-mask is worse than the Perceiver by > 5% on B (the upsampled source) in sets (a) and (c) |
+| E2-P3 | Per-dataset encoders are worse than the Perceiver by > 5% on B in sets (a), (b) and (c), since each encoder sees half the data |
 
-## 4. Code needed (after approval)
-* **Harness:** per-source data format (N and a variable list) in the data config; batches drawn
-  per source, so one batch never mixes shapes; a loss masked to the variables present.
-* **The two baselines:** pad-and-mask (a spectral upsample and a mask channel in the embedding) and
-  per-dataset encoders (a dict of embed/Perceiver pytrees keyed by format).
+## 4. Implementation (built; `tests/test_e2_fusion.py`)
+* **`src/aurora/fusion.py`:**
+  * sources with their own N and variables;
+  * per-variable normalisation over the training frames that provide the variable;
+  * batches drawn per source, so one batch never mixes shapes;
+  * loss and metrics over the source's own variables at its own N;
+  * the three methods, through one `predict` function.
+* **Pad-and-mask:** spectral zero-padding to the largest N, zero-filled missing variables, and one
+  presence field per variable (1 where present), embedded as an extra input. The prediction is
+  spectrally truncated back to the source's N.
+* **Per-dataset encoders:** an embedding and a Perceiver per source; the backbone, frame
+  embeddings and mid-projection are shared.
 * **Gates:**
-  * pad-and-mask on a homogeneous set equals the base model with an all-ones mask;
-  * per-dataset encoders with one source equal the base model;
-  * a masked loss ignores the missing variables exactly.
+  * spectral up and down round trip;
+  * per-source encoders with one source equal the base model bitwise;
+  * pad-and-mask with zero mask embeddings, on a source already at the largest N, equals the base
+    model;
+  * every method predicts exactly the source's variables at its own N;
+  * each method runs end to end;
+  * a train/val seed overlap is refused.
+* **Configs:** `experiments/e2/configs/runs.json`, 30 runs (10,000 steps, batch 16, lr 1e-3 with
+  cosine decay, 20-step rollout). Run with `experiments/run.py`, which routes configs that carry
+  `method` to `aurora.fusion`.
+* **Analysis:** `experiments/analyse_e345.py --exp e2`.
+* **Cost:** about 3 GPU-h. Sources at 128² cost about 4× per step.
 
 ## 5. Open points for review
 1. Is a 2× resolution gap (64 vs 128) enough heterogeneity? 32² vs 128² would stress it more.
