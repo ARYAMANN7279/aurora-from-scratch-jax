@@ -1,8 +1,6 @@
 # Experiment E1 Spec: Volume vs diversity of pretraining data (RQ1)
 
-**Status: DRAFT for advisor review.** The design and predictions below are pre-registered only once
-approved. They are then frozen before any E1 data is generated. Changes after approval go in a
-dated amendment.
+**Status: FROZEN 28 Sep 2026.** Launched on the owner's instruction; the open points in the last section were not resolved before launch and stay open for the report.
 **Question (PROJECT_PLAN.md RQ1):** at a fixed number of pretraining trajectories, is it better to
 have many trajectories from few flow regimes, or few trajectories from many regimes?
 **Tools:** Stage 2 generator, Stage 7 model, Stage 11 harness (one config → one run → one row).

@@ -1,6 +1,6 @@
 # Experiment E2 Spec: Does the Perceiver encoder earn its place? (RQ2)
 
-**Status: DRAFT for advisor review.** Frozen on approval; later changes go in dated amendments. The
+**Status: FROZEN 28 Sep 2026.** Launched on the owner's instruction; the open points in the last section were not resolved before launch and stay open for the report. The
 code is built and tested (section 4).
 **Question:** Aurora's Perceiver encoder lets one model train on datasets with different
 resolutions and different variable sets. Does it fuse such data better than the simple
