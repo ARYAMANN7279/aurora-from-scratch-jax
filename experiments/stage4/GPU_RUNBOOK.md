@@ -10,13 +10,22 @@ differs from CPU, so regenerated data is statistically, not bitwise, identical t
 * Set `CUDA_VISIBLE_DEVICES` explicitly on every command. Kill only by explicit PID.
 * Work under the project directory, never `/tmp` or the root partition.
 
+## GPU notes (measured 28 Sep 2026)
+* Run the tests and every training run with `JAX_DEFAULT_MATMUL_PRECISION=highest`. At the
+  default precision, float32 matrix multiplies use TF32, and three float32 gates fail (Stage 3 H7,
+  Stage 5 W3/W4, Stage 6 U2/U3). `highest` costs only 1.07× the step time.
+* Gate D9 fails on the GPU for a diagnostics-only reason (`experiments/stage2/REPORT.md`,
+  addendum). The other gates pass: 90/91 were measured before W10 was added, so expect 91/92.
+* To run several processes on one card, set `XLA_PYTHON_CLIENT_PREALLOCATE=false` on each.
+  Otherwise the first process reserves 75% of the card's memory.
+
 ## Steps
 
 ```bash
 git clone https://github.com/ARYAMANN7279/aurora-from-scratch-jax.git && cd aurora-from-scratch-jax
 python3.11 -m venv .venv && .venv/bin/pip install "jax[cuda12]" numpy scipy sympy pytest matplotlib optax
 export CUDA_VISIBLE_DEVICES=0            # pick a cool, idle card
-.venv/bin/python -m pytest tests -q       # all gates must pass on the GPU too
+JAX_DEFAULT_MATMUL_PRECISION=highest .venv/bin/python -m pytest tests -q   # see the GPU notes above
 
 # data: the re300_kf4 trajectories of acc_v1 (seeds 0-7), and the 512^2 frames for C = 8
 .venv/bin/python experiments/stage2/generate.py --config experiments/stage2/configs/acc_v1.json

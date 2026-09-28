@@ -9,7 +9,7 @@ Reference: Aurora's own `Swin3DTransformerBlock` (microsoft-aurora 2.0.1, torch 
 
 **Accepted.** Our block matches Aurora's to **2.8e-7 in float32** (the plan's bar is 1e-5) and
 **5.2e-16 in float64**, which is machine precision, on four cases (two shapes × unshifted/shifted).
-All 9 gates pass, and both predictions HIT.
+All 9 gates pass, and both predictions HIT. (Gate W10 was added on 28 Sep 2026; see Bugs fixed.)
 
 ## Gates
 
@@ -39,6 +39,14 @@ Command: `.venv/bin/python -m pytest tests/test_stage5_gates.py -q -s` → 9 pas
   float32 → float64 round trip, while the float64 reference output used the unrounded weights. W4
   showed a systematic 4e-8 gap. `make_reference.py` now saves the weights before any cast and runs
   the float32 case on a deep copy. After the fix W4 is 5e-16.
+
+* **Masked shift under `jit` (found 28 Sep 2026).** `shift_mask` converted a `jnp` array back to
+  numpy. That works eagerly (all of W1–W9) but fails inside `jax.jit`. The path is reached only when
+  a non-periodic axis is shifted, which in the full model means the level axis with L > 3: E4's
+  L = 6 variant. A real-data smoke test of the E4 configs found it before any GPU run reached it.
+  The mask is now built with numpy alone, and the values are identical. New gate **W10**: the masked
+  block under `jit` matches Aurora's reference to < 1e-12 (float64), and jit equals eager with a
+  shifted level axis. The Stage 5 verdict is unchanged.
 
 ## Design note
 Aurora's mask is periodic only in longitude (W). This project's domain is periodic in both x and y,

@@ -86,6 +86,24 @@ Figures: `figs/spectra_by_seed.png` (the 8 seeds per regime overlap), `figs/ener
   restarts through per-chunk checkpoints (amendment A1, gate D9).
 * The loader throughput was measured with the dataset in the page cache (warm).
 
+## Addendum (28 Sep 2026): gates on the GPU box
+All gates pass on CPU. On the lab VM (RTX PRO 6000, JAX 0.10.2, CUDA 12.8), **gate D9 fails**:
+* After an interrupted-then-resumed trajectory, both frame files are bitwise identical to the
+  uninterrupted run, but `diag.npz` differs.
+* **Likely cause (not yet confirmed on the GPU):** `shell_spectrum`
+  (`src/kolmogorov/diagnostics.py`) bins energy into shells with a scatter-add. On GPUs, XLA
+  implements scatter-add with atomics, so the summation order, and hence the last bits, can change
+  from run to run. The frames involve no scatter.
+* **Confirmation check:** rerun D9 with `XLA_FLAGS=--xla_gpu_deterministic_ops=true`, which is
+  expected to pass. Or compare two *uninterrupted* GPU runs, which are expected to differ in
+  `diag.npz` only.
+* **Consequences:**
+  * the training data (the frames) is unaffected;
+  * the gate is unchanged;
+  * the experiment datasets are generated on CPU where possible (`e1_v1` entirely; `acc_v1` for
+    Re 100 / 300), and a GPU-generated trajectory's checksums are only reproducible bitwise for the
+    frames.
+
 ## Commands
 ```
 .venv/bin/python -m pytest tests/test_stage2_gates.py -q

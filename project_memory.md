@@ -112,6 +112,35 @@ behave as the literature expects. That contrast is itself worth a paragraph in t
 * ⛔ Never scratch to `/tmp` or the VM root partition. Work under the project directory.
 * Timings are worthless on a contended card — check utilisation, and use best-of-N.
 
+**VM facts (measured 28 Sep 2026):**
+* **Clone and access:** `/SML_DISK_24TB/rajeshr/Aryamann/aurora-from-scratch-jax`, branch
+  `vm-results`. The shared `rajeshr` account holds no GitHub credentials, so every push goes
+  through the Mac.
+* **Software:**
+  * Python 3.11 from `Aryamann/env`; JAX 0.10.2; driver 570, CUDA 12.8;
+  * a persistent JAX compile cache (the first run in a process otherwise compiles for about
+    8 min);
+  * scratch (TMPDIR, pip, matplotlib, XDG) under `Aryamann/ugp2_scratch`;
+  * `LD_LIBRARY_PATH` unset for our jobs (the account's OpenFOAM / PETSc / anaconda libraries sit
+    on it);
+  * `CUDA_DEVICE_ORDER=PCI_BUS_ID`.
+* **Cards:** all 4 are shared with other users' jobs, at 74–93 °C. Our lanes take a card only when
+  nobody else is computing on it and it is below 85 °C. They SIGSTOP our own process group at
+  ≥ 87 °C or on thermal slowdown, and resume at ≤ 80 °C. Failed jobs get 3 retries, since
+  everything resumes.
+* **CPU:** Xeon w3-2525, 8 cores / 16 threads, typically loaded ~6. Single-core generation takes
+  787 s per E1 trajectory at N_gen 256.
+* **Precision:**
+  * On the GPU, float32 matrix multiplies default to TF32. At that default, 3 float32 gates fail
+    (Stage 3 H7, Stage 5 W3/W4, Stage 6 U2/U3), and they pass with
+    `JAX_DEFAULT_MATMUL_PRECISION=highest`.
+  * **Every GPU run uses `highest`**, which costs 1.07× (128.8 s vs 120.5 s per 1000 steps).
+* **Determinism:**
+  * Gate D9 fails on the GPU: the frames are bitwise identical, `diag.npz` is not.
+  * Likely cause: the scatter-add in `shell_spectrum`, which uses atomics on the GPU (Stage 2
+    report, addendum).
+  * Check: `XLA_FLAGS=--xla_gpu_deterministic_ops=true`.
+
 **Repo.** UGP-II: `ARYAMANN7279/aurora-from-scratch-jax`.
 (`ARYAMANN7279/RealPDE-Track1` is the closed UGP-I competition repo, last push 27 Aug 2026.)
 
@@ -336,6 +365,44 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   * E1 generation is therefore ≈ 21 GPU-h against the spec's 8 (a deviation for the E1 report,
     not a prediction).
 
+### 2026-09-28 — GPU checks, measured costs, run plan
+* **GPU tests:** 87/91 pass at the default precision.
+  * With `highest`, 90/91 pass. The three that recover were TF32 artefacts; their tolerances are
+    unchanged.
+  * D9 fails for a diagnostics-only reason (§3).
+* **Training cost:** ~120 ms per step for the E1 pretrain model (batch 16, shared card), about 5×
+  the specs' 20–30 ms.
+  * Likely launch-bound on a tiny model; running several processes per card is the numerics-neutral
+    remedy.
+  * Projected E1–E5 training: ~62–77 GPU-h. E2's 128² sources cost 4× per step.
+* **Data route (owner's decision, since the cards are shared):**
+  * `e1_v1` is generated **entirely on CPU**: 4 lanes, one pinned core each, single-threaded XLA,
+    about 13 h. It is bitwise reproducible.
+  * The two GPU-made benchmark trajectories are kept aside in `data/stage2/e1_v1_gpubench`, for a
+    GPU-vs-CPU comparison.
+  * `acc_v1` is **mixed-device**: Re 100 / 300 on CPU, Re 1000 on GPU (~16 min per trajectory).
+    E2, E4 and E5 compare within this one copy. Only absolute comparisons with the cloud-CPU Stage
+    7–10 numbers carry a device caveat.
+* **Run plan (all on code 28c09e5, the frozen specs):**
+  * Stage 4 lane: `make_512`, then S1–S6.
+  * Lanes a0–a2 (`--n-shards 3` fixed; `rows_{i}.jsonl` / `rows_ft_{i}.jsonl`): E4, then E2,
+    then E5 pretrain + scratch, a barrier, then the E5 fine-tunes. They start once `acc_v1` is
+    finalised.
+  * E1 and E3 follow the same layout once `e1_v1` is done.
+* **Decision: no `src/` change before the first E-run.** Nothing found affects training numerics,
+  so every E-result comes from one code version.
+* **Real-data smoke test** (cloud container, 28 Sep): 28 committed configs from all five
+  experiments, cut to 2 steps, were run end to end. E2/E4/E5 used the real `acc_v1`; E1/E3 used a
+  tiny stand-in with E1's exact tags and seed lists.
+  * The runs covered: the pretrain → fine-tune chains with `norm_from_init`, LoRA, all 9 E4
+    variants, 128² and (u, v) sources, and the 20- and 50-step rollouts.
+  * **It found one real bug.** `swin.shift_mask` failed under `jit` whenever a non-periodic axis is
+    shifted, i.e. E4's **L = 6** variant, which would have crashed on the VM.
+  * Fixed in PR #17 (`171b239`): the mask is built with numpy only, with identical values. Every
+    other config returns before that line and is unaffected.
+  * New gate W10 (Stage 5 amendment A1); the E4 design test now runs jitted. After the fix, all 28
+    smoke runs pass.
+
 ## 6. Status (28 Sep 2026)
 
 **Done:**
@@ -346,10 +413,35 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
     * Stage 10: LoRA adapts little from 2 trajectories.
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
 * Stage 4: built and gates pass.
-* E1–E5: specs frozen (28 Sep); code, configs and analysis ready for all of them.
-* 91 tests pass.
+* E1–E5: specs frozen (28 Sep); code, configs (186 runs) and analysis ready for all of them. The
+  real-data smoke test passes after the W10 fix.
+* 92 tests pass on CPU.
 
-**Running (lab VM):** data generation (`acc_v1`, `e1_v1`), then Stage 4 S1–S6, E4, E2, E5, E1, E3.
+**Running (lab VM):**
+* `e1_v1` on CPU (~13 h);
+* `acc_v1` finishing (Re 1000 on GPU);
+* then Stage 4 S1–S6 and lanes a0–a2: E4 → E2 → E5; then E1 and E3.
 
-**Remaining:** the results, then `REPORT.md` for Stage 4 and E1–E5 (verdicts against the frozen
-predictions), and README / memory updates. These come from the VM side as PRs from `vm-results`.
+**Action for the VM (before its E4 lanes reach L6):** bring `main` at `171b239` or later onto the
+VM, via a new bundle from the Mac, and fast-forward `vm-results`. The fix only touches the L = 6
+path, so the lanes can pick it up on their next start; the retry after a crash is enough.
+Otherwise the three `e4_L6` runs fail.
+
+**Remaining:**
+1. The runs themselves (~62–77 GPU-h, shared cards).
+2. `REPORT.md` for Stage 4 and E1–E5: verdicts against the frozen predictions, figures, and
+   README / memory updates. These come as PRs from `vm-results`.
+3. Things each report must state:
+   * E1–E5: the precision rule (`highest`); CPU vs GPU generation; the measured compute against the
+     specs' estimates.
+   * E2: in set (b), pad-and-mask runs at 64² with C = 5 (no source is at 128²), so the spec's
+     "upsample to 128², C = 6" applies to sets (a) and (c) only.
+   * E4: the L = 6 runs use the W10-fixed code (identical numerics for every other variant).
+   * E1 and E3: the spec's open points (the distance confound; extrapolation in one direction).
+4. Optional, after `e1_v1` is finished: a deterministic `shell_spectrum` (a fixed-layout sum per
+   shell), so D9 also holds on the GPU. It only affects `diag.npz`.
+
+**Watch items:**
+* E1's T = 128 pretrain cells hold about 8.4 GB of host RAM per process: raw frames plus the
+  normalisation copy.
+* E2's 128² runs cost about 4× per step.
