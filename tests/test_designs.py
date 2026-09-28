@@ -55,3 +55,54 @@ def test_e5():
         assert not set(f["data"]["train"][0]["seeds"]) & set(D.E5_EVAL)
         assert (f["train"]["lora_rank"] == 4) == ("_lora_" in f["name"])
     assert len({harness.config_hash(c) for c in pre + ft + sc}) == 39
+
+
+def _row(rows, c, key, **vals):
+    rows.setdefault(harness.config_hash(c), {"metrics": {}})["metrics"][key] = vals
+
+
+def test_analysis_e3_e4_e5_on_planted_rows():
+    import numpy as np
+
+    import analyse_e345 as A
+
+    rng = np.random.default_rng(0)
+    jit = lambda: 1 + 0.002 * rng.standard_normal()
+    # E3: zero-shot ratio rises with distance, the advantage falls but stays positive
+    rows = {}
+    pre, ft, sc = D.e3(harness.config_hash)
+    for p in pre:
+        for r in D.E3_TESTS:
+            _row(rows, p, f"test/{D.tag(r)}", ratio=0.4 + 0.3 * np.log(r[0] / 250) * jit())
+    for c in ft + sc:
+        t = c["data"]["train"][0]["tag"]
+        d = np.log(int(t[2:].split("_")[0]) / 250)
+        e = 0.2 * (1 - (0.25 - 0.15 * d)) if c in ft else 0.2
+        _row(rows, c, f"val/{t}", rel_err=e * jit(), rollout_drift=2 * e * jit())
+    assert A.e3(rows)["verdicts"] == {f"E3-P{i}": "HIT" for i in range(1, 5)}
+    # E4: every planted effect inside its predicted range
+    eff = {"base": (0, 0), "noshift": (0.1, 0.1), "depth6": (0.08, 0.05), "depth24": (0.0, 0.0),
+           "L1": (0.08, 0.05), "L6": (0.01, 0.0), "pf_steps": (0.0, -0.12), "pf_compute": (0.02, 0.02),
+           "mae": (0.05, 1.0)}
+    rows = {}
+    for c in D.e4():
+        one, drift = eff[c["name"].rsplit("_s", 1)[0][3:]]
+        for t in ("re100_kf4", "re300_kf4"):
+            _row(rows, c, f"val/{t}", rel_err=0.1 * (1 + one) * jit(), rollout_drift=0.5 * (1 + drift) * jit())
+    res = A.e4(rows)
+    assert res["verdicts"] == {f"E4-P{i}": "HIT" for i in range(1, 6)}
+    # E5: gains rise with k, LoRA falls behind, the advantage over scratch shrinks
+    rows = {}
+    pre, ft, sc = D.e5(harness.config_hash)
+    for p in pre:
+        _row(rows, p, "test/re1000_kf4", rel_err=0.2)
+    gain_full = {1: 0.02, 2: 0.05, 4: 0.08, 6: 0.10}
+    ratio = {1: 0.9, 2: 0.7, 4: 0.5, 6: 0.3}
+    adv = {1: 0.4, 2: 0.3, 4: 0.2, 6: 0.1}
+    for c in ft + sc:
+        k = len(c["data"]["train"][0]["seeds"])
+        ef = 0.2 * (1 - gain_full[k])
+        e = 0.2 * (1 - gain_full[k] * ratio[k]) if c["train"]["lora_rank"] else ef
+        e = ef / (1 - adv[k]) if c in sc else e
+        _row(rows, c, "val/re1000_kf4", rel_err=e * jit())
+    assert A.e5(rows)["verdicts"] == {f"E5-P{i}": "HIT" for i in range(1, 5)}

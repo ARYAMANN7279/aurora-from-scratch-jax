@@ -131,7 +131,7 @@ python3.11 -m venv .venv
 | `tests/` | Correctness gates (`pytest tests`) |
 | `experiments/stageN/` | Per-stage run scripts, result JSONs, figures and reports |
 | `experiments/e1/` | E1 design, N_gen measurement (all 33 regimes), configs and analysis |
-| `experiments/designs.py`, `experiments/make_configs.py` | E3–E5 designs, and the config writer (`experiments/e{3,4,5}/configs/`) |
+| `experiments/designs.py`, `make_configs.py`, `analyse_e345.py` | E3–E5 designs, the config writer (`experiments/e{3,4,5}/configs/`), and the analysis (verdicts per prediction) |
 | `experiments/run.py` | Runs harness configs (lists, sweeps, `--skip-done`, sharding); rows go to `experiments/results.jsonl` |
 
 ## Status
