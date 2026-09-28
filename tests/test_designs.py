@@ -41,7 +41,8 @@ def test_e4_variants_build_and_run():
         m["backbone"] = dict(m["backbone"], enc_heads=[1, 2, 2], dec_heads=[2, 2, 1])
         mc = harness.model_config(m)
         p = model.init(jax.random.PRNGKey(0), mc, dtype=jnp.float32)
-        y = model.apply(p, x, x, model.VARS, 0.2, mc)
+        # under jit, as in training: L = 6 shifts the level axis, which needs the attention mask
+        y = jax.jit(lambda p, a, b: model.apply(p, a, b, model.VARS, 0.2, mc))(p, x, x)
         assert y.shape == (4, 32, 32)
 
 

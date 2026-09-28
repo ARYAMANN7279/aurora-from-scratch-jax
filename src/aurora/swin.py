@@ -50,7 +50,9 @@ def shift_mask(res, ws, ss, periodic=PERIODIC):
         return None
     g = [_axis_groups(r, w, s, p) for r, w, s, p in zip(res, ws, ss, periodic)]
     ids = (g[0][:, None, None] * 9 + g[1][None, :, None] * 3 + g[2][None, None, :]).astype(np.float64)
-    win = np.asarray(window_partition(jnp.asarray(ids)[None, ..., None], ws)).reshape(-1, ws[0] * ws[1] * ws[2])
+    # numpy throughout, so the mask is a trace-time constant: under jit, a jnp array here would be a
+    # tracer, and converting it back to numpy fails (reached when a non-periodic axis is shifted)
+    win = window_partition(ids[None, ..., None], ws).reshape(-1, ws[0] * ws[1] * ws[2])
     return jnp.asarray(win[:, :, None] == win[:, None, :])
 
 
