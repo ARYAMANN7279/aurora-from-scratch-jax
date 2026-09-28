@@ -319,25 +319,50 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   * The VM side works on branch `vm-results`. It touches only results, reports, spec status lines,
     README and memory, never `src/` or configs (a config change breaks `init_from` hashes).
 
-## 6. Status (28 Sep 2026)
+### 2026-09-28 — VM launch: benchmarks, GPU gates, compute
+* Lab VM: RTX PRO 6000 ×4, Xeon w3-2525 (8 cores); JAX 0.10.2 (CUDA 12), Python 3.11 venv. E1–E5
+  specs frozen on `main` (PR #13) before the first run.
+* Benchmarks. Generation (f64, GPU): 132 s / 304 s per E1 trajectory at N_gen 128 / 256, and 953 s
+  per `acc_v1` Re1000 trajectory at 512². One CPU core: 787 s at N_gen 256. Training (harness, E1
+  pretrain model, batch 16): ~120 ms/step (the specs assumed 20–30 ms), ~8 min compile per process.
+* Precision: every GPU run uses float32 with matmul precision `highest` (1.07× the cost of TF32).
+* GPU gates: 87/91 at default precision. H7, W3_W4 and U2_U3 (float32) fail under TF32 and pass at
+  `highest`: a GPU finding, tolerances unchanged. **D9 fails on GPU:** after a restart the frames are
+  bitwise identical, but `diag.npz` differs (round-off in the accumulated diagnostics).
+* Compute: all four cards are shared with other users' jobs (74–93 °C). By the owner's decision,
+  data is generated on CPU: `e1_v1` entirely on 4 pinned CPU cores (bitwise-reproducible); `acc_v1`
+  Re 100 / 300 on CPU and Re 1000 on GPU. GPU jobs start only on an idle card below 85 °C and pause at
+  ≥ 87 °C.
+* **E4 amendment A1:** the three L6 runs crash under `jit` in `swin.shift_mask` (the level axis is
+  longer than the window). They are held for a fix; the other 24 E4 runs proceed.
+
+### 2026-09-29 — Stage 4 S1–S6 measured: acceptance NOT met
+* Shared L = 3 model, relative L2 error 0.167 / 0.085 / 0.063 / 0.060 at C = 3 / 5 / 6 / 8 (bars
+  0.02 / 0.02 / 0.03 / 0.05): S1–S4 MISS. Still falling at 6000 steps (16²: 0.187 → 0.167 over the
+  last 1000).
+* S5 HIT: single-resolution L = C controls reach 0.043 / 0.041 / 0.040 / 0.049. S6 MISS: with level
+  encodings ablated the error is 0.049 (bar > 0.171).
+* Spec amendment A1: S5 and S6 are confounded with the budget (the controls get 4× the
+  per-resolution steps); verdicts kept. Matched 64² pair: encodings on 0.041 vs off 0.049, with
+  curves identical to step 3000.
+
+## 6. Status (29 Sep 2026)
 
 **Done:**
-* Stages 1–3 and 5–11: built, gates pass, results reported.
+* Stages 1–11: built, gates pass, results reported.
   * Acceptance met: 1, 3, 5, 6, 7, 8, 11.
   * Not met, with the causes measured:
+    * Stage 4: the shared Perceiver is under-trained at 6000 steps (0.06–0.17 vs bars 0.02–0.05).
     * Stage 9: pushforward does not pay at matched compute.
     * Stage 10: LoRA adapts little from 2 trajectories.
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
-* Stage 4: built and gates pass.
-* E1: spec drafted; tooling, N_gen and configs ready.
-* E2–E5: specs drafted; code, configs and analysis ready for all of them.
-* 91 tests pass.
+* E1–E5: specs frozen on 28 Sep 2026; code, configs and analysis ready.
+* 91 tests pass on CPU; on GPU, 87 at default precision and 90 at `highest` (D9 fails, see log).
 
-**Remaining:**
-1. Advisor review of the E1–E5 specs, then freeze them.
-2. On the GPU box (≈ 22 GPU-h in total):
-   * Stage 4 S1–S6;
-   * E1: data ~8 h, runs ~7 h;
-   * E3 ~3 h, E4 ~2.5 h, E5 ~1.5 h (`acc_v1` regenerated on the VM, per the Stage 4 runbook).
-3. E2: 30 runs (~3 GPU-h) on the VM.
-4. Reports for E1–E5, then the write-up.
+**In progress on the VM:**
+1. `e1_v1` generation on CPU.
+2. E4 (24 runs without L6), then E2 and E5, on whichever cards are free.
+3. E1 and E3 once `e1_v1` is finalized.
+4. E4's L6 runs after the `shift_mask` fix (amendment A1).
+
+**Remaining:** reports for E1–E5, then the write-up.
