@@ -44,3 +44,15 @@ trick and the loss choice each contribute?
    convergence. The alternative is 20k steps, at 2× the cost.
 2. **Data:** only two regimes. Running E4 on an E1 pretraining set (the 32-regime cell) would test
    the components where diversity is high.
+
+## 4. Amendments
+
+**A1 (28 Sep 2026): the L6 cell could not run on the frozen code.** On first launch, all three L6
+runs (`e4_L6_s0` to `e4_L6_s2`) failed before their first step with
+`jax.errors.TracerArrayConversionError` in `swin.shift_mask`. With L = 6 the level axis (6) is
+longer than the window (3), so alternate blocks need a shifted-window mask along the levels, and
+that mask is built by `np.asarray` on a `jnp` array, which fails inside `jit`. No other E4 cell
+builds this mask (with L ≤ 3 the window covers the whole level axis), so the other 24 runs proceed
+on the frozen code. The L6 runs wait for a fix confined to `shift_mask`: it is `171b239` (PR #17;
+the mask is built with numpy only, identical values; new gate W10, Stage 5 amendment A1), and the L6
+half of E4-P5 is scored on runs made with it. No prediction changed.

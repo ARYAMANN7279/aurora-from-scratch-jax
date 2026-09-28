@@ -5,11 +5,17 @@ Tests: `tests/test_stage4_gates.py`. Numbers are copied from `results/gates.txt`
 
 ## Verdict
 
-**Implementation complete; all 8 gates pass. The learning measurements (S1–S6) are pending on
-the GPU box.** They are specified, scripted (`train_perceiver.py`) and documented in
-`GPU_RUNBOOK.md`. On this 4-core CPU a training step takes 0.17 / 0.35 / 7.8 s at 16² / 64² /
-128², and minutes at 512², so the pre-registered 6000-step runs are not feasible here. Stage 4's
-acceptance test (S1 and S4) therefore stays **open** until those results come back.
+**Stage 4 acceptance NOT met.** The acceptance test needs S1 and S4 to hit; both miss. Through
+L = 3 latent levels, the one shared model reconstructs the evaluation frames to a relative L2
+error of **0.167** (C = 3, 16²), **0.085** (C = 5, 64²), **0.063** (C = 6, 128²) and **0.060**
+(C = 8, 512²), against bars of 0.02–0.05. The implementation is correct (all 8 gates pass). The
+misses look like under-training rather than a capacity limit, but that is not measured: every
+error of the shared model was still falling at step 6000 (16²: 0.187 → 0.167 over the last 1000
+steps), each resolution gets only 1500 of the 6000 steps, and a model trained on one resolution
+for all 6000 steps reaches 0.040–0.049 at every C (S5).
+
+Predictions: S5 HIT; S1–S4 and S6 MISS. S5 and S6 turned out to be confounded with the training
+budget (amendment A1 in the spec); their original verdicts are kept.
 
 ## Gates
 
@@ -33,4 +39,57 @@ Command: `.venv/bin/python -m pytest tests/test_stage4_gates.py -q -s` → 9 pas
   then stopped to free a core for Stages 6–8.
 
 ## Predictions S1–S6
-Not yet measured (GPU). They stay pre-registered as written.
+
+Measured on the lab GPU box, one run each (key 0), as the spec prescribes; there are no seed
+repeats, so no standard errors. Numbers from `results/{main,nocompress_*,nolevelenc_64}.json`.
+
+| # | Measurement | Prediction | Measured | Verdict |
+|---|---|---|---|---|
+| S1 | relative L2 error on evaluation frames, C = 3 (16²), shared L = 3 model | < 0.02 | 0.167 | **MISS** |
+| S2 | same, C = 5 (64²) | < 0.02 | 0.085 | **MISS** |
+| S3 | same, C = 6 (128²) | < 0.03 | 0.063 | **MISS** |
+| S4 | same, C = 8 (512²) | < 0.05 | 0.060 | **MISS** |
+| S5 | control without compression (L = C, one run per C): each error below the L = 3 error | each below | 0.043 / 0.041 / 0.040 / 0.049 vs 0.167 / 0.085 / 0.063 / 0.060 | **HIT** (confounded, see below) |
+| S6 | level encodings ablated, C = 5 (64²) | > 2 × S2 = 0.171 | 0.049 | **MISS** (ill-posed as written, A1) |
+
+Evaluation error of the shared model during training (it had not levelled off):
+
+| step | 16² | 64² | 128² | 512² |
+|---|---|---|---|---|
+| 1000 | 0.492 | 0.246 | 0.182 | 0.186 |
+| 3000 | 0.261 | 0.130 | 0.101 | 0.096 |
+| 5000 | 0.187 | 0.095 | 0.070 | 0.068 |
+| 6000 | 0.167 | 0.085 | 0.063 | 0.060 |
+
+**What S5 and S6 do and do not show.**
+* Each control is a separate run on one resolution for all 6000 steps, so it differs from the
+  shared model in two ways at once: no compression (L = C) and 4× the per-resolution training
+  budget. S5 therefore does not isolate compression. At C = 3 there is nothing to decompress
+  (L = C = 3), and that control still cuts the error from 0.167 to 0.043: the budget and sharing
+  effect is at least as large as any compression effect.
+* The S6 ablation is also a dedicated 64² run, so comparing it with S2 (from the shared run)
+  mixes the ablation with the budget. The closest matched pair is the 64² control (level
+  encodings on, L = 5) against the ablation (encodings off, L = 3): 0.041 vs 0.049, with curves that
+  coincide to step 3000 (0.114 / 0.081 / 0.068 vs 0.114 / 0.082 / 0.067). Exploratory reading:
+  at C = 5 the aggregator tells the bands apart without level encodings, plausibly because the
+  bands differ strongly in content (scale and spectrum). A matched run (L = 3, 64² only, encodings
+  on) would settle it.
+
+## GPU runs: environment, data and commands
+
+* Lab VM, NVIDIA RTX PRO 6000 Blackwell; JAX 0.10.2 with CUDA 12; float32 with matmul precision
+  `highest` (TF32 off), the same setting as every E-run.
+* Data: `acc_v1` re300_kf4 seeds 0–6 were regenerated on the VM's CPU (Xeon w3-2525, single-threaded
+  XLA). They are statistically, not bitwise, identical to the copy used for Stages 7–10 (see the
+  Stage 2 report). The 512² frames came from `make_512.py` on the GPU.
+* Median time per step (shared model): 7.2 / 8.0 / 14.0 / 236 ms at 16² / 64² / 128² / 512²; the
+  512² control (L = 8) takes 402 ms. The shared run's wall time (3.2 h) includes about 2 h in which
+  the run was paused because another user's job had heated the card to 87 °C; the medians
+  exclude it.
+
+```bash
+.venv/bin/python experiments/stage4/make_512.py
+.venv/bin/python experiments/stage4/train_perceiver.py --run main
+for n in 16 64 128 512; do .venv/bin/python experiments/stage4/train_perceiver.py --run nocompress --res $n; done
+.venv/bin/python experiments/stage4/train_perceiver.py --run nolevelenc --res 64
+```

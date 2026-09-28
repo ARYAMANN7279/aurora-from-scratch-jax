@@ -403,34 +403,52 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   * New gate W10 (Stage 5 amendment A1); the E4 design test now runs jitted. After the fix, all 28
     smoke runs pass.
 
-## 6. Status (28 Sep 2026)
+### 2026-09-28 — VM notes: hardware, costs, the L6 crash
+* Hardware: RTX PRO 6000 ×4, shared with other users' jobs at 74–93 °C; Xeon w3-2525 (8 cores);
+  JAX 0.10.2 (CUDA 12); Python 3.11 venv built from `Aryamann/env`.
+* `highest` costs 1.07× TF32 (128.8 s vs 120.5 s for 1000 steps), so the precision rule keeps it.
+  One CPU core generates an N_gen-256 E1 trajectory in 787 s. The first run in a training process
+  pays ~8 min of compile; a persistent JAX compile cache is enabled.
+* D9 on the GPU: after a restart the frames are bitwise identical; only `diag.npz` differs.
+* GPU jobs start only on a card where nobody else computes, below 85 °C.
+* E4's three L6 runs had already crashed on the VM before the fix reached it (E4 amendment A1).
+  They are held and run on the fixed code; the other 24 E4 runs continue on `28c09e5`.
+
+### 2026-09-29 — Stage 4 S1–S6 measured: acceptance NOT met
+* Shared L = 3 model, relative L2 error 0.167 / 0.085 / 0.063 / 0.060 at C = 3 / 5 / 6 / 8 (bars
+  0.02 / 0.02 / 0.03 / 0.05): S1–S4 MISS. Still falling at 6000 steps (16²: 0.187 → 0.167 over the
+  last 1000).
+* S5 HIT: single-resolution L = C controls reach 0.043 / 0.041 / 0.040 / 0.049. S6 MISS: with level
+  encodings ablated the error is 0.049 (bar > 0.171).
+* Spec amendment A1: S5 and S6 are confounded with the budget (the controls get 4× the
+  per-resolution steps); verdicts kept. Matched 64² pair: encodings on 0.041 vs off 0.049, with
+  curves identical to step 3000.
+
+## 6. Status (29 Sep 2026)
 
 **Done:**
-* Stages 1–3 and 5–11: built, gates pass, results reported.
+* Stages 1–11: built, gates pass, results reported.
   * Acceptance met: 1, 3, 5, 6, 7, 8, 11.
   * Not met, with the causes measured:
+    * Stage 4: the shared Perceiver is under-trained at 6000 steps (0.06–0.17 vs bars 0.02–0.05).
     * Stage 9: pushforward does not pay at matched compute.
     * Stage 10: LoRA adapts little from 2 trajectories.
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
-* Stage 4: built and gates pass.
 * E1–E5: specs frozen (28 Sep); code, configs (186 runs) and analysis ready for all of them. The
   real-data smoke test passes after the W10 fix.
-* 92 tests pass on CPU.
+* 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
+  at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* `e1_v1` on CPU (~13 h);
-* `acc_v1` finishing (Re 1000 on GPU);
-* then Stage 4 S1–S6 and lanes a0–a2: E4 → E2 → E5; then E1 and E3.
-
-**Action for the VM (before its E4 lanes reach L6):** bring `main` at `171b239` or later onto the
-VM, via a new bundle from the Mac, and fast-forward `vm-results`. The fix only touches the L = 6
-path, so the lanes can pick it up on their next start; the retry after a crash is enough.
-Otherwise the three `e4_L6` runs fail.
+* `e1_v1` on CPU (4 lanes; 238/326 at 29 Sep 00:17);
+* E4 without L6 (24 runs), then E2 and E5: lanes a0–a2, on cards as they come free;
+* then E1 and E3, once `e1_v1` is finalized;
+* E4's three L6 runs, on the W10-fixed code (`171b239`, now merged into `vm-results`).
 
 **Remaining:**
 1. The runs themselves (~62–77 GPU-h, shared cards).
-2. `REPORT.md` for Stage 4 and E1–E5: verdicts against the frozen predictions, figures, and
-   README / memory updates. These come as PRs from `vm-results`.
+2. `REPORT.md` for E1–E5: verdicts against the frozen predictions, figures, and README / memory
+   updates. These come as PRs from `vm-results`.
 3. Things each report must state:
    * E1–E5: the precision rule (`highest`); CPU vs GPU generation; the measured compute against the
      specs' estimates.

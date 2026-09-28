@@ -98,3 +98,12 @@ shared parameters, for all four resolutions.
 
 **Stage 4 acceptance:** K1–K8 pass, and S1 and S4 are both HITs (C = 3 and C = 8 recovered through
 L = 3).
+
+## 5. Amendments
+
+**A1 (29 Sep 2026): S5 and S6 are confounded with the training budget.** Both controls are
+separate single-resolution runs with all 6000 steps, while S1–S4 come from the shared run, which
+gives each resolution 1500 steps. S5 therefore measures compression and budget together, and S6's
+bar (> 2 × S2) compares the ablation with a model that had a quarter of its per-resolution budget.
+The original verdicts (S5 HIT, S6 MISS) are kept. A matched comparison needs single-resolution
+runs with and without the component at equal steps (for S6: L = 3, 64² only, level encodings on).

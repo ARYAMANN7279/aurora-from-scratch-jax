@@ -65,7 +65,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
 | 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds at Re 100 / 300 but not for the Re 1000 trajectory tested (machine-dependent) |
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
-| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | 🔧 built, gates pass; learning runs (S1–S6) queued on the GPU box |
+| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05 |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
 | 6 | U-Net backbone with skips | overfits a single trajectory | ✅ **done**: matches Aurora's backbone to 3 × 10⁻¹⁶; overfits to 0.07× persistence (16k steps) |
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
@@ -143,14 +143,15 @@ python3.11 -m venv .venv
 
 ## Status
 
-**Ongoing.** Stages 1–3 and 5–11 have their results. Stages 1, 3, 5, 6, 7, 8 and 11 met their
+**Ongoing.** All eleven stages have their results. Stages 1, 3, 5, 6, 7, 8 and 11 met their
 acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
 little adaptation from two trajectories). Stage 2's data are statistically sound, but bitwise
-regeneration of a Re 1000 trajectory is machine-dependent. The Stage 4 learning runs and experiments
-E1–E5 (specs frozen 28 Sep 2026) are running on the lab GPU box. Every stage is built and passes its
-correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in `project_memory.md`).
-Each stage has a spec with pre-registered predictions in `handouts/` and a report in
-`experiments/stageN/REPORT.md`.
+regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet its acceptance
+test either: the shared Perceiver was still improving when its 6000-step budget ran out.
+Experiments E1–E5 (specs frozen 28 Sep 2026) are running on the lab GPU box. Every stage is built
+and passes its correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in
+`project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
+report in `experiments/stageN/REPORT.md`.
 
 ## Advisors
 
