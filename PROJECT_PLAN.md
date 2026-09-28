@@ -3,6 +3,15 @@
 **Aryamann Srivastava · Dept. of Aerospace Engineering**
 Follow-on to the NeurIPS 2026 RealPDE Track 1 UGP.
 
+> This is the original plan (26 Sep 2026). What changed since is recorded in `project_memory.md`:
+> * levels are spectral octave bands of the field (C = log₂N − 1);
+> * the code is pure JAX + Optax, with no Flax;
+> * the experiments train with **MSE**, not the MAE of §4, because the MAE-trained model blew up in
+>   rollout (Stage 8). MAE vs MSE is tested in E4.
+>
+> The experiment designs in §6 are specified in full, with frozen predictions, in
+> `handouts/e1_…` to `handouts/e5_…`.
+
 ---
 
 ## 0. One-line goal
