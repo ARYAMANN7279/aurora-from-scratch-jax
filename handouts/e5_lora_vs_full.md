@@ -1,6 +1,6 @@
 # Experiment E5 Spec: LoRA vs full fine-tuning across fine-tuning set sizes (RQ5)
 
-**Status: DRAFT for advisor review.** Frozen on approval; later changes go in dated amendments.
+**Status: FROZEN 28 Sep 2026.** Launched on the owner's instruction; the open points in the last section were not resolved before launch and stay open for the report.
 **Question:** does LoRA match full fine-tuning when fine-tuning data is scarce, and how does
 that change as data grows? This picks up Stage 10, where two trajectories were too few to adapt
 with at all.

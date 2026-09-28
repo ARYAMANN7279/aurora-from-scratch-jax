@@ -1,6 +1,6 @@
 # Experiment E3 Spec: How far does pretraining transfer out of distribution? (RQ3)
 
-**Status: DRAFT for advisor review.** Frozen on approval; later changes go in dated amendments.
+**Status: FROZEN 28 Sep 2026.** Launched on the owner's instruction; the open points in the last section were not resolved before launch and stay open for the report.
 **Question:** pretrain on a band of Reynolds numbers. How do the zero-shot error and the
 pretraining advantage change with distance beyond the band?
 **Tools:** the E1 dataset `e1_v1` (no new data), the Stage 7 model, and the Stage 11 harness.

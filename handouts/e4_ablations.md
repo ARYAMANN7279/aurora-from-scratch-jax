@@ -1,6 +1,6 @@
 # Experiment E4 Spec: Which architectural components matter? (RQ4)
 
-**Status: DRAFT for advisor review.** Frozen on approval; later changes go in dated amendments.
+**Status: FROZEN 28 Sep 2026.** Launched on the owner's instruction; the open points in the last section were not resolved before launch and stay open for the report.
 **Question:** how much do shifted windows, depth, the number of latent levels, the pushforward
 trick and the loss choice each contribute?
 **Tools:** the dataset `acc_v1` (Stage 2), the Stage 7 model, and the Stage 11 harness.
