@@ -40,12 +40,15 @@ to measure.
 
 The Reynolds number (via ν) and the forcing wavenumber k_f define the flow regimes.
 
-**Model:** a scaled-down Aurora with 2–10 M parameters:
-* **Encoder:** Perceiver with patch embeddings, patch-area and time encodings, and a fixed set of
-  latent levels.
+**Model:** a scaled-down Aurora, 5.1 M parameters in the default configuration (D = 64, 12 Swin blocks):
+* **Encoder:** per-variable patch embeddings of the field's spectral octave bands (the "levels"),
+  with position, patch-area and level encodings. A Perceiver maps any number of levels to L = 3
+  latent levels. The time step enters through the backbone's adaptive LayerNorm.
 * **Backbone:** Swin Transformer U-Net with shifted-window attention.
 * **Decoder:** mirrors the encoder.
-* **Training:** a one-step simulator, rolled out autoregressively and trained with an MAE loss.
+* **Training:** a one-step simulator, rolled out autoregressively. The experiments train with an
+  MSE loss. Aurora uses MAE, but the MAE-trained model blew up in rollout (Stage 8), so MAE is
+  tested as an E4 ablation.
 
 **Protocol**, applied to every experiment:
 * Every run has a prediction written down **before** it is launched.
@@ -73,16 +76,16 @@ Each stage has an acceptance test and is not passed until that test is met.
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
-**Experiments.** Every experiment has a spec with pre-registered predictions, frozen on 28 Sep 2026
-before its first run. The runs are in progress on the lab GPU box:
+**Experiments.** Every experiment has a spec with pre-registered predictions, frozen in git on 28 Sep 2026
+before any run. They run on the lab GPU box; results arrive as PRs from the `vm-results` branch:
 
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
-| E1 volume vs diversity | [`handouts/e1_volume_diversity.md`](handouts/e1_volume_diversity.md) | 57 | new, 326 trajectories (grids measured) | configs, analysis and [GPU runbook](experiments/e1/GPU_RUNBOOK.md) ready |
-| E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | configs ready (fusion trainer and both baselines built, `src/aurora/fusion.py`) |
-| E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | E1's data | configs ready |
-| E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | configs ready (shifted-window switch added) |
-| E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | configs ready |
+| E1 volume vs diversity | [`handouts/e1_volume_diversity.md`](handouts/e1_volume_diversity.md) | 57 | new `e1_v1`, 326 trajectories (grids measured) | data generating; runs queued ([runbook](experiments/e1/GPU_RUNBOOK.md)) |
+| E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | queued (trainer and both baselines in `src/aurora/fusion.py`) |
+| E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | queued after E1's data |
+| E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | queued |
+| E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | queued |
 
 ## Stage 1 results: the data generator
 
@@ -109,10 +112,13 @@ Full report: [`experiments/stage1/REPORT.md`](experiments/stage1/REPORT.md).
 
 ```bash
 python3.11 -m venv .venv
-.venv/bin/pip install jax numpy scipy sympy pytest matplotlib
+.venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
 
-# correctness gates (~5 s)
+# correctness gates (92 tests, ~10 min on a 4-core CPU)
 .venv/bin/python -m pytest tests -q
+
+# one config -> one run -> one row: reproduces the Stage 7 result (needs the acc_v1 dataset)
+.venv/bin/python experiments/run.py experiments/configs/h1_stage7_repro.json
 
 # a long run: Re = 1000 on a 256² grid, 250 time units (resumable; raw output in data/)
 .venv/bin/python experiments/stage1/run_long.py --name L1000 --re 1000 --n 256
@@ -128,12 +134,12 @@ python3.11 -m venv .venv
 | `handouts/` | Per-stage specs: equations, tests, tolerances and pre-registered predictions |
 | `src/kolmogorov/` | Pseudo-spectral Kolmogorov flow solver |
 | `src/kdata/` | Dataset generator (resumable, checksummed) and regime-split window loader |
-| `src/aurora/` | The model in pure JAX: spectral-band levels, embedding, Perceiver, Swin3D blocks, U-Net backbone, full model, rollout |
+| `src/aurora/` | The model in pure JAX: spectral-band levels, embedding, Perceiver, Swin3D blocks, U-Net backbone, full model, rollout, LoRA; the ablation harness (`harness.py`) and E2's multi-source trainer (`fusion.py`) |
 | `tests/` | Correctness gates (`pytest tests`) |
 | `experiments/stageN/` | Per-stage run scripts, result JSONs, figures and reports |
 | `experiments/e1/` | E1 design, N_gen measurement (all 33 regimes), configs and analysis |
 | `experiments/designs.py`, `make_configs.py`, `analyse_e345.py` | E2–E5 designs, the config writer (`experiments/e{2,3,4,5}/configs/`), and the analysis (verdicts per prediction) |
-| `experiments/run.py` | Runs harness configs (lists, sweeps, `--skip-done`, sharding); rows go to `experiments/results.jsonl` |
+| `experiments/run.py` | Runs configs (lists, sweeps, `--skip-done`, sharding); one row per run, by default in `experiments/results.jsonl` |
 
 ## Status
 
@@ -141,10 +147,11 @@ python3.11 -m venv .venv
 acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
 little adaptation from two trajectories). Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet its acceptance
-test either: the shared Perceiver was still improving when its 6000-step budget ran out. Every
-stage is built and passes its correctness gates (91 tests on CPU, including the experiment
-tooling). Each stage has a spec with pre-registered predictions in `handouts/` and a report in
-`experiments/stageN/REPORT.md`. Experiments E1–E5 are running on the lab GPU box.
+test either: the shared Perceiver was still improving when its 6000-step budget ran out.
+Experiments E1–E5 (specs frozen 28 Sep 2026) are running on the lab GPU box. Every stage is built
+and passes its correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in
+`project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
+report in `experiments/stageN/REPORT.md`.
 
 ## Advisors
 

@@ -79,3 +79,9 @@ modulation, inputs and Aurora outputs), which is committed so the tests need no 
 | T2 | W4 worst float64 error | ≤ 1e-12; guess 1e-14 |
 
 **Stage 5 acceptance:** W1–W9 pass (W3 is the plan's test).
+
+## Amendment A1 (28 Sep 2026): gate W10
+Adds **W10**: the masked shifted-window block (a shifted non-periodic axis) must run under
+`jax.jit` and match the eager result and Aurora's reference (< 1e-12, float64). W1–W9 exercised
+the mask only eagerly, and the first jitted use (E4's L = 6 variant) failed. W1–W9 and T1–T2 are
+unchanged.

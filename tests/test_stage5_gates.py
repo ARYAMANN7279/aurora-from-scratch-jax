@@ -130,3 +130,28 @@ def test_W9_adjust_and_divisibility():
     p = swin.init_block(jax.random.PRNGKey(0), 16, 16)
     with pytest.raises(ValueError):
         swin.block(p, jnp.zeros((1, 2 * 6 * 8, 16)), jnp.zeros((1, 16)), (2, 6, 8), 2, (2, 4, 4), (0, 0, 0))
+
+
+def test_W10_masked_shift_under_jit():
+    """Added 28 Sep 2026: the masked shifted-window path (a shifted non-periodic axis) must work
+    under jax.jit. Until then only eager calls reached it; E4's L = 6 variant is the first model
+    that shifts the level axis inside a jitted training step."""
+    for name in ("a_shift", "b_shift"):
+        p, x, c, res, heads, ws, ss = case(name)
+        f = jax.jit(lambda p, x, c: swin.block(p, x, c, res, heads, ws, ss, periodic=AURORA_PERIODIC))
+        y = f(p, x, c)
+        ref = REF[f"{name}/y64"]
+        assert float(np.max(np.abs(np.asarray(y) - ref)) / np.max(np.abs(ref))) < 1e-12
+    # this project's periodicity, level axis shifted (C = 6 levels, window 3)
+    key = jax.random.PRNGKey(0)
+    D, heads, res, ws, ss = 16, 2, (6, 8, 8), (3, 4, 4), (1, 2, 2)
+    p = swin.init_block(key, D, D)
+    leaves, tdef = jax.tree_util.tree_flatten(p)
+    ks = jax.random.split(jax.random.PRNGKey(1), len(leaves))
+    p = jax.tree_util.tree_unflatten(tdef, [l + 0.1 * jax.random.normal(k, l.shape, l.dtype) for l, k in zip(leaves, ks)])
+    x = jax.random.normal(jax.random.PRNGKey(2), (2, 6 * 8 * 8, D))
+    c = jax.random.normal(jax.random.PRNGKey(3), (2, D))
+    eager = swin.block(p, x, c, res, heads, ws, ss)
+    jitted = jax.jit(lambda p, x, c: swin.block(p, x, c, res, heads, ws, ss))(p, x, c)
+    assert float(jnp.max(jnp.abs(eager - jitted))) < 1e-12
+    assert swin.shift_mask(res, ws, ss) is not None

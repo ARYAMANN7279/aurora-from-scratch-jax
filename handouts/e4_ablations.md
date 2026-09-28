@@ -53,5 +53,6 @@ runs (`e4_L6_s0` to `e4_L6_s2`) failed before their first step with
 longer than the window (3), so alternate blocks need a shifted-window mask along the levels, and
 that mask is built by `np.asarray` on a `jnp` array, which fails inside `jit`. No other E4 cell
 builds this mask (with L ≤ 3 the window covers the whole level axis), so the other 24 runs proceed
-on the frozen code. The L6 runs wait for a fix confined to `shift_mask`; the fixing commit will be
-recorded here and the L6 half of E4-P5 is scored on those runs. No prediction changed.
+on the frozen code. The L6 runs wait for a fix confined to `shift_mask`: it is `171b239` (PR #17;
+the mask is built with numpy only, identical values; new gate W10, Stage 5 amendment A1), and the L6
+half of E4-P5 is scored on runs made with it. No prediction changed.
