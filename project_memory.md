@@ -299,7 +299,27 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   allowed and `KAGGLE_USERNAME` / `KAGGLE_KEY` are set in the environment settings. But its quota
   (~30 GPU-h/week, P100 / T4) is small next to E1–E5's total.
 
-## 6. Status (27 Sep 2026)
+### 2026-09-28 — E2 code built; E2–E5 analysis; VM hand-off
+* **E2 trainer** in `src/aurora/fusion.py`:
+  * sources with their own N and variables, and a loss and metrics over present variables only;
+  * the methods perceiver / pad (spectral zero-pad, zero-filled variables, presence fields as extra
+    embedded inputs) / per_source (encoder per source, shared backbone).
+  * `model.apply` accepts extra non-physical inputs (no residual).
+  * 7 gates in `tests/test_e2_fusion.py`, including bitwise equality with the base model in the
+    degenerate cases.
+* **E2 predictions** pinned to specific sources (spec §3) before any run.
+* **Configs:** `experiments/e2/configs/runs.json`, 30 runs; `run.py` routes configs with `method`
+  to the fusion trainer.
+* **Analysis:** `experiments/analyse_e345.py --exp e2|e3|e4|e5` gives the verdicts per prediction.
+  Tested on planted rows.
+* **VM hand-off (28 Sep):** the GPU work goes to the VM:
+  * data generation;
+  * Stage 4 S1–S6;
+  * E1–E5 runs, reports, README.
+  * The VM side works on branch `vm-results`. It touches only results, reports, spec status lines,
+    README and memory, never `src/` or configs (a config change breaks `init_from` hashes).
+
+## 6. Status (28 Sep 2026)
 
 **Done:**
 * Stages 1–3 and 5–11: built, gates pass, results reported.
@@ -310,8 +330,8 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
 * Stage 4: built and gates pass.
 * E1: spec drafted; tooling, N_gen and configs ready.
-* E2–E5: specs drafted. E3–E5 configs are ready; E2 needs code after review.
-* 82 tests pass.
+* E2–E5: specs drafted; code, configs and analysis ready for all of them.
+* 91 tests pass.
 
 **Remaining:**
 1. Advisor review of the E1–E5 specs, then freeze them.
@@ -319,5 +339,5 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
    * Stage 4 S1–S6;
    * E1: data ~8 h, runs ~7 h;
    * E3 ~3 h, E4 ~2.5 h, E5 ~1.5 h (`acc_v1` regenerated on the VM, per the Stage 4 runbook).
-3. E2: build the harness support and the baselines after review, then about 30 runs.
+3. E2: 30 runs (~3 GPU-h) on the VM.
 4. Reports for E1–E5, then the write-up.

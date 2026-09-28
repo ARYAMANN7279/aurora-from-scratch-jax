@@ -1,4 +1,5 @@
-"""Run configs for E3, E4, E5 (handouts/e3_ood_transfer.md, e4_ablations.md, e5_lora_vs_full.md).
+"""Run configs for E2–E5 (handouts/e2_heterogeneous_fusion.md, e3_ood_transfer.md, e4_ablations.md,
+e5_lora_vs_full.md).
 
 The design of each experiment lives here, in one place. make_configs.py writes the files, and
 tests/test_designs.py checks them against the specs.
@@ -101,4 +102,35 @@ def e5(hash_fn):
     return pre, ft, sc
 
 
-__all__ = ["e3", "e4", "e5", "MODEL"]
+# ---------------- E2: heterogeneous fusion (dataset acc_v1) ----------------
+E2_ALL, E2_UV = ["u", "v", "p", "omega"], ["u", "v"]
+E2_SETS = {  # set -> (A = re100_kf4 format, B = re300_kf4 format) as (N, variables)
+    "a": ((128, E2_ALL), (64, E2_ALL)),
+    "b": ((64, E2_ALL), (64, E2_UV)),
+    "c": ((128, E2_ALL), (64, E2_UV)),
+    "h": ((64, E2_ALL), (64, E2_ALL)),
+}
+E2_METHODS = ("perceiver", "pad", "per_source")
+E2_STEPS = 10_000
+
+
+def e2():
+    out = []
+    for name, (fa, fb) in E2_SETS.items():
+        sources = [{"name": "A", "tag": "re100_kf4", "N": fa[0], "vars": fa[1], "train_seeds": [0, 1, 2, 3, 4, 5],
+                    "val_seeds": [6, 7]},
+                   {"name": "B", "tag": "re300_kf4", "N": fb[0], "vars": fb[1], "train_seeds": [0, 1, 2, 3, 4, 5],
+                    "val_seeds": [6, 7]}]
+        for method in (E2_METHODS if name != "h" else ("perceiver",)):
+            for s in SEEDS:
+                out.append({"name": f"e2_{name}_{method}_s{s}",
+                            "prediction": f"E2 set ({name}), method {method}, seed {s}: "
+                                          f"handouts/e2_heterogeneous_fusion.md E2-P1..P3",
+                            "method": method, "data": {"dataset": "acc_v1", "sources": copy.deepcopy(sources)},
+                            "model": copy.deepcopy(MODEL),
+                            "train": {"steps": E2_STEPS, "batch": 16, "lr": 1e-3, "schedule": "cosine", "seed": s},
+                            "eval": {"rollout_steps": 20}})
+    return out
+
+
+__all__ = ["e2", "e3", "e4", "e5", "MODEL"]

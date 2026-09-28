@@ -106,3 +106,22 @@ def test_analysis_e3_e4_e5_on_planted_rows():
         e = ef / (1 - adv[k]) if c in sc else e
         _row(rows, c, "val/re1000_kf4", rel_err=e * jit())
     assert A.e5(rows)["verdicts"] == {f"E5-P{i}": "HIT" for i in range(1, 5)}
+
+
+def test_e2_design_and_analysis():
+    import numpy as np
+
+    import analyse_e345 as A
+
+    runs = D.e2()
+    assert len(runs) == 30 and len({harness.config_hash(c) for c in runs}) == 30
+    assert all(c["method"] in ("perceiver", "pad", "per_source") for c in runs)
+    rng = np.random.default_rng(0)
+    base = {"A": 0.10, "B": 0.20}
+    factor = {"perceiver": 1.0, "pad": 1.10, "per_source": 1.08}
+    rows = {}
+    for c in runs:
+        for src in ("A", "B"):
+            f = 1.0 if (src == "A" and c["method"] != "perceiver") else factor[c["method"]]
+            _row(rows, c, f"val/{src}", rel_err=base[src] * f * (1 + 0.002 * rng.standard_normal()))
+    assert A.e2(rows)["verdicts"] == {f"E2-P{i}": "HIT" for i in range(1, 4)}

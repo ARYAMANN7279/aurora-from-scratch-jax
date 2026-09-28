@@ -1,6 +1,7 @@
-"""Analysis of E3, E4, E5 (handouts/e3_ood_transfer.md, e4_ablations.md, e5_lora_vs_full.md).
+"""Analysis of E2–E5 (handouts/e2_heterogeneous_fusion.md, e3_ood_transfer.md, e4_ablations.md,
+e5_lora_vs_full.md).
 
-usage: analyse_e345.py --exp e3|e4|e5 --results <rows.jsonl> [more.jsonl ...]
+usage: analyse_e345.py --exp e2|e3|e4|e5 --results <rows.jsonl> [more.jsonl ...]
 Rows are matched to the design (experiments/designs.py) by config hash, never by name. Writes
 experiments/<exp>/results/analysis.json and prints the table and verdicts (HIT / MISS).
 """
@@ -31,6 +32,28 @@ def _rho(x, y):
 
 def _verdicts(v):
     return {k: "HIT" if bool(x) else "MISS" for k, x in v.items()}
+
+
+def e2(rows):
+    runs = D.e2()
+    err = {}
+    for c in runs:
+        _, st, *meth, s = c["name"].split("_")
+        for src in ("A", "B"):
+            err.setdefault((st, "_".join(meth), src), {})[c["train"]["seed"]] = \
+                rows[config_hash(c)]["metrics"][f"val/{src}"]["rel_err"]
+    rel = lambda st, m, src, ref: _ms([err[(st, m, src)][s] / err[ref + (src,)][s] - 1 for s in D.SEEDS])
+    out = {f"{st}/{m}/{src}": _ms(list(v.values())) for (st, m, src), v in err.items()}
+    # P1: on each source whose format is the reference's, Perceiver is within 5% of (h)
+    p1 = [rel("a", "perceiver", "B", ("h", "perceiver")), rel("b", "perceiver", "A", ("h", "perceiver"))]
+    # P2: pad-and-mask worse than Perceiver on B (the upsampled / zero-filled source) by > 5%, sets a and c
+    p2 = [rel(st, "pad", "B", (st, "perceiver")) for st in ("a", "c")]
+    # P3: per-source encoders worse than Perceiver on B by > 5%, all three sets
+    p3 = [rel(st, "per_source", "B", (st, "perceiver")) for st in ("a", "b", "c")]
+    v = {"E2-P1": all(abs(m) <= 0.05 for m, _ in p1), "E2-P2": all(m > 0.05 for m, _ in p2),
+         "E2-P3": all(m > 0.05 for m, _ in p3)}
+    return dict(rel_err=out, p1_vs_h=p1, p2_pad_vs_perceiver=p2, p3_per_source_vs_perceiver=p3,
+                verdicts=_verdicts(v))
 
 
 def e3(rows):
@@ -107,7 +130,7 @@ def e5(rows):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--exp", required=True, choices=["e3", "e4", "e5"])
+    ap.add_argument("--exp", required=True, choices=["e2", "e3", "e4", "e5"])
     ap.add_argument("--results", nargs="+", required=True)
     args = ap.parse_args()
     rows = {}
@@ -116,7 +139,7 @@ if __name__ == "__main__":
             if line.strip():
                 r = json.loads(line)
                 rows[r["config_hash"]] = r
-    res = {"e3": e3, "e4": e4, "e5": e5}[args.exp](rows)
+    res = {"e2": e2, "e3": e3, "e4": e4, "e5": e5}[args.exp](rows)
     out = os.path.join(HERE, args.exp, "results", "analysis.json")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(res, open(out, "w"), indent=1)
