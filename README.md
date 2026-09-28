@@ -124,6 +124,7 @@ python3.11 -m venv .venv
 |---|---|
 | `PROJECT_PLAN.md` | Research questions, testbed, architecture, staged deliverables, experiments |
 | `project_memory.md` | Decision record and open issues. Read §2 (protocol rules) before running any experiment |
+| `writeup/REPORT.md` | The write-up: question, protocol, testbed, instrument validation, experiment designs; results filled in as they arrive |
 | `handouts/` | Per-stage specs: equations, tests, tolerances and pre-registered predictions |
 | `src/kolmogorov/` | Pseudo-spectral Kolmogorov flow solver |
 | `src/kdata/` | Dataset generator (resumable, checksummed) and regime-split window loader |
