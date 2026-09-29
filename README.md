@@ -82,7 +82,7 @@ before any run. They run on the lab GPU box; results arrive as PRs from the `vm-
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
 | E1 volume vs diversity | [`handouts/e1_volume_diversity.md`](handouts/e1_volume_diversity.md) | 57 | new `e1_v1`, 326 trajectories (generated on CPU) | data done; runs starting ([runbook](experiments/e1/GPU_RUNBOOK.md)) |
-| E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | running (trainer and both baselines in `src/aurora/fusion.py`) |
+| E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | ✅ **done** ([report](experiments/e2/REPORT.md)): 1/3 predictions HIT; pad-and-mask beats the Perceiver by 23% on the upsampled source; fusion costs the Perceiver 13–39% even on sources whose format did not change |
 | E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | queued after E1 |
 | E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% even at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
 | E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | running |
@@ -149,8 +149,8 @@ little adaptation from two trajectories). E4, with 3.3× Stage 9's budget and 3 
 opposite for pushforward. Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet its acceptance
 test either: the shared Perceiver was still improving when its 6000-step budget ran out.
-E4 is done (1 of 5 predictions hit). E1, E2, E3 and E5 (specs frozen 28 Sep 2026) are running
-on the lab GPU box. Every stage is built
+E4 (1 of 5 predictions hit) and E2 (1 of 3) are done. E1, E3 and E5 (specs frozen 28 Sep 2026)
+are running on the lab GPU box. Every stage is built
 and passes its correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in
 `project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
 report in `experiments/stageN/REPORT.md`.

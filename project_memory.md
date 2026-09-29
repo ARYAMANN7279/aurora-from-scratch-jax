@@ -437,6 +437,17 @@ Report: `experiments/e4/REPORT.md`. 27 runs, 3 seeds; change vs base, mean ± SE
 * Base: one-step ratio to persistence 0.192 / 0.330 (Re 100 / 300), drift 1.52 / 1.94. A base run is
   about 8 min on an unshared card (10k steps plus evaluation).
 
+### 2026-09-29 — E2 done: 1 of 3 HIT
+Report: `experiments/e2/REPORT.md`. 30 runs, 3 seeds; relative change in one-step error, mean ± SE.
+* E2-P1 MISS: the Perceiver vs the homogeneous reference on unchanged formats is +12.8 ± 2.5% (B,
+  set a) and +38.8 ± 7.5% (A, set b). Fusion costs accuracy even where a source's format did not
+  change.
+* E2-P2 MISS, reversed: pad-and-mask beats the Perceiver on the upsampled source B by
+  23.1 ± 1.9% (a) and 22.5 ± 2.8% (c); on A in (a) as well (0.039 vs 0.048).
+* E2-P3 HIT: per-source encoders are worse than the Perceiver on B by 7.4 / 22.1 / 8.3% (a / b / c).
+* Absolute errors are in each source's own format, so compare within a set. All runs used
+  `b940e74`; median 16.5–21.6 min per run.
+
 ## 6. Status (29 Sep 2026)
 
 **Done:**
@@ -450,12 +461,13 @@ Report: `experiments/e4/REPORT.md`. 27 runs, 3 seeds; change vs base, mean ± SE
 * E1–E5: specs frozen (28 Sep); code, configs (186 runs) and analysis ready for all of them. The
   real-data smoke test passes after the W10 fix.
 * E4: done, 1 of 5 HIT (pushforward wins even at matched compute; MAE is stable; depth 24 helps).
+* E2: done, 1 of 3 HIT (pad-and-mask beats the Perceiver on the upsampled source).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* E2, then E5 (pretrain and scratch, then the fine-tunes): lanes a0–a2, on cards as they come free;
+* E5: all 39 runs finished; its report is next;
 * E1, then E3 (lanes b0–b2), starting with the `e1_v1` finalize.
 
 **Remaining:**
