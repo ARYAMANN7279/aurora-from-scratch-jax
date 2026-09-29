@@ -410,7 +410,8 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   One CPU core generates an N_gen-256 E1 trajectory in 787 s. The first run in a training process
   pays ~8 min of compile; a persistent JAX compile cache is enabled.
 * D9 on the GPU: after a restart the frames are bitwise identical; only `diag.npz` differs.
-* GPU jobs start only on a card where nobody else computes, below 85 °C.
+* GPU jobs start only on a card where nobody else computes, below 85 °C. *(Correction, 29 Sep: this
+  was not in effect until 29 Sep 18:20 VM time. Every job ran on card 0; see the incident entry.)*
 * E4's three L6 runs had already crashed on the VM before the fix reached it (E4 amendment A1).
   They are held and run on the fixed code; the other 24 E4 runs continue on `28c09e5`.
 
@@ -434,8 +435,8 @@ Report: `experiments/e4/REPORT.md`. 27 runs, 3 seeds; change vs base, mean ± SE
 * E4-P3 HIT: noshift +6.0 ± 4.5% one-step.
 * E4-P4 MISS: depth6 +9.8 ± 1.6%, depth24 −6.7 ± 3.1% (it helps).
 * E4-P5 MISS: L1 +2.0 ± 2.8%, L6 −3.9 ± 4.4% (both within noise).
-* Base: one-step ratio to persistence 0.192 / 0.330 (Re 100 / 300), drift 1.52 / 1.94. A base run is
-  about 8 min on an unshared card (10k steps plus evaluation).
+* Base: one-step ratio to persistence 0.192 / 0.330 (Re 100 / 300), drift 1.52 / 1.94. A base run
+  took about 8 min (10k steps plus evaluation) on card 0, which may have been shared.
 
 ### 2026-09-29 — E2 done: 1 of 3 HIT
 Report: `experiments/e2/REPORT.md`. 30 runs, 3 seeds; relative change in one-step error, mean ± SE.
@@ -458,6 +459,28 @@ Report: `experiments/e5/REPORT.md`. 39 runs, 3 seeds; Re 1000 one-step error; ze
 * E5-P4 HIT: adv(k) 40.9 / 30.8 / 16.2 / 4.9%. Scratch 0.290 → 0.165 catches up with zero-shot by
   k = 6.
 
+### 2026-09-29 — Incident: every GPU job ran on card 0 (fixed)
+* **What happened.** The lab account's `~/.bashrc` (line 25) exports `CUDA_VISIBLE_DEVICES=0`.
+  Every job the runner launched started through a shell that read that file, which overrode the
+  card the runner had chosen. So every GPU job since the launch on 28 Sep ran on card 0 (P0): the
+  benchmarks, the GPU tests, `acc_v1` Re 1000, `make_512`, Stage 4, E2, E4, E5 and the first E1
+  runs. That was up to 3–4 of our jobs at once, alongside other users' jobs. The runner believed it
+  was on idle cards 1–3, so its thermal guard read those cards and never saw card 0's heat.
+* **Found** on 29 Sep after the professor's notice that P0 had 4 jobs and was thermal-throttling. At
+  18:16 VM time card 0 carried only our two E1 jobs, at 93 °C with slowdown active. They were stopped
+  at once.
+* **Effect on results: none on the numbers** (identical cards, same code; a pause does not change
+  the computation). All GPU timings before the fix (benchmarks, wall times) were measured on a
+  shared card. The reports for Stage 4, E2, E4 and E5 carry a dated correction.
+* **Fix** (`glane3.sh` in the VM scratch area):
+  * jobs start in a bash that skips `~/.bashrc`, with `CUDA_VISIBLE_DEVICES` set inside the command;
+  * an interlock kills a job whose processes appear on any card other than the claimed one;
+  * our job pauses whenever any other process is on its card, or at ≥ 87 °C, and resumes only when
+    the card is idle and ≤ 80 °C;
+  * card 0 is excluded for now.
+  * Verified with a test job: it claimed card 2 and ran on card 2. E1/E3 restarted on cards 1–3 at
+    18:22; the two interrupted E1 runs restart from step 0.
+
 ## 6. Status (29 Sep 2026)
 
 **Done:**
@@ -478,7 +501,8 @@ Report: `experiments/e5/REPORT.md`. 39 runs, 3 seeds; Re 1000 one-step error; ze
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* E1, then E3 (lanes b0–b2), starting with the `e1_v1` finalize.
+* E1, then E3 (lanes b0–b2), only on idle cards among 1–3 (`glane3.sh`; card 0 excluded after the
+  29 Sep incident).
 
 **Remaining:**
 1. The runs themselves (~62–77 GPU-h, shared cards).

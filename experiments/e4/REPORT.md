@@ -77,8 +77,8 @@ Base, absolute (mean ± SE over seeds 0–2): one-step error ratio to persistenc
 
 * **Hardware and precision.** Lab GPU box (RTX PRO 6000 Blackwell), JAX 0.10.2, float32 with
   matmul precision `highest` (TF32 off), the setting for every E-run. The spec estimated about
-  2.5 GPU-h at 20–30 ms per step. A base run took 7.6–7.9 min (10,000 steps plus evaluation) on an
-  unshared card.
+  2.5 GPU-h at 20–30 ms per step. A base run took 7.6–7.9 min (10,000 steps plus evaluation), on a
+  card that may have been shared (next point).
 * **Data.** E4 uses `acc_v1` Re 100 and Re 300 only, regenerated on the VM's CPU (Xeon w3-2525,
   single-threaded XLA). It is statistically, not bitwise, identical to the copy behind Stages 7–10,
   so absolute comparisons with Stage 8 and 9 numbers carry a regeneration caveat. The comparisons
@@ -87,9 +87,13 @@ Base, absolute (mean ± SE over seeds 0–2): one-step error ratio to persistenc
   `28c09e5`) and 11 recorded `b940e74`, which adds the `shift_mask` fix `171b239`. The three L6
   runs used `b940e74`. Only L6 reaches the changed code, so the other variants' numerics are
   identical under either commit.
-* **Thermal pauses.** The box is shared and runs hot, so the runner paused some runs (SIGSTOP)
-  while a card was at ≥ 87 °C: the longest wall time was 298 min (`e4_L1_s2`). A pause stops the
-  process and does not change the computation.
+* **Card placement (corrected 29 Sep 2026).** A launcher bug sent every E4 run to card 0: the lab
+  account's `~/.bashrc` exports `CUDA_VISIBLE_DEVICES=0`, which overrode the card chosen for each
+  job. The runs therefore shared card 0 with each other and, at times, with other users' jobs. The
+  thermal guard watched the claimed card instead, so its pauses (the longest wall time was 298 min,
+  `e4_L1_s2`) and all wall times do not reflect the job's own card. The numerics are unaffected
+  (identical cards and code; a pause stops the process and does not change the computation). Fixed
+  and verified on 29 Sep; see `project_memory.md`.
 * **Open points (spec §3), still open.** Budget: E4 trains 10,000 steps, and Stage 4 showed that
   under-training can dominate a comparison; the pushforward and depth effects may change at
   convergence. Data: E4 still uses two regimes only.

@@ -84,8 +84,13 @@ Evaluation error of the shared model during training (it had not levelled off):
   Stage 2 report). The 512² frames came from `make_512.py` on the GPU.
 * Median time per step (shared model): 7.2 / 8.0 / 14.0 / 236 ms at 16² / 64² / 128² / 512²; the
   512² control (L = 8) takes 402 ms. The shared run's wall time (3.2 h) includes about 2 h in which
-  the run was paused because another user's job had heated the card to 87 °C; the medians
-  exclude it.
+  it was paused; the medians exclude the pause.
+* **Card placement (corrected 29 Sep 2026).** A launcher bug sent these runs to card 0: the lab
+  account's `~/.bashrc` exports `CUDA_VISIBLE_DEVICES=0`, which overrode the card chosen for each
+  job. They therefore shared card 0 with our other jobs and, at times, with other users' jobs. The
+  thermal guard was watching the claimed card, so pauses and wall times do not reflect the job's
+  own card. The numerics are unaffected (identical cards and code). Fixed and verified on 29 Sep;
+  see `project_memory.md`.
 
 ```bash
 .venv/bin/python experiments/stage4/make_512.py
