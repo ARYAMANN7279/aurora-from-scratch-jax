@@ -63,6 +63,11 @@ variables than in (a) and (h).
   matmul precision `highest` (TF32 off). All 30 runs recorded commit `b940e74`. Median wall time
   per run: 16.5 min (Perceiver), 21.6 min (pad-and-mask), 16.6 min (per-source), against the spec's
   estimate of about 3 GPU-h for all 30.
+* **Card placement (corrected 29 Sep 2026).** A launcher bug sent every E2 run to card 0: the lab
+  account's `~/.bashrc` exports `CUDA_VISIBLE_DEVICES=0`, which overrode the card chosen for each
+  job. The runs shared card 0 with our other jobs and, at times, with other users' jobs, so the
+  wall times above are not those of a dedicated card. The numerics are unaffected (identical cards
+  and code). Fixed and verified on 29 Sep; see `project_memory.md`.
 * **Pad-and-mask in set (b).** No source is at 128² there, so pad-and-mask runs at 64² with C = 5
   rather than upsampling to 128² with C = 6. The spec's "upsample 64² to 128², C = 6" applies to
   sets (a) and (c) only.

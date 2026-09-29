@@ -64,6 +64,11 @@ adv(k) = 1 − e_full / e_scratch, computed per seed.
 
 * **Hardware and precision.** Lab GPU box (RTX PRO 6000 Blackwell), JAX 0.10.2, float32 with
   matmul precision `highest` (TF32 off). All 39 runs recorded commit `b940e74`.
+* **Card placement (corrected 29 Sep 2026).** A launcher bug sent every E5 run to card 0: the lab
+  account's `~/.bashrc` exports `CUDA_VISIBLE_DEVICES=0`, which overrode the card chosen for each
+  job. The runs shared card 0 with our other jobs and, at times, with other users' jobs. The
+  numerics are unaffected (identical cards and code). Fixed and verified on 29 Sep; see
+  `project_memory.md`.
 * **Data.** `acc_v1` is mixed-device: pretraining uses Re 100 and 300, regenerated on the VM's CPU,
   and fine-tuning and evaluation use Re 1000, generated on the GPU (512² grid, down-sampled to 64²).
   Both are statistically, not bitwise, identical to the copy behind Stages 7–10.
