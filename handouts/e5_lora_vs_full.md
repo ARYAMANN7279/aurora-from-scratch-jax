@@ -38,3 +38,11 @@ with at all.
 2. **Re 1000 frames:** they come from the 512² generation grid, down-sampled to 64². At 64² the
    Re 1000 small scales are not resolved in the saved frames. The regime is still learnable, but
    harder than the others.
+
+## 4. Amendments
+
+**A1 (29 Sep 2026): E5-P3's ratio is ill-posed where the full gain is negative.** gain(lora, k) /
+gain(full, k) assumes gain(full, k) > 0. At k = 1 full fine-tuning is worse than zero-shot
+(gain −3.0 ± 0.4%), so the ratio changes sign and the rank test over k no longer measures "LoRA
+falls behind as data grows". The pre-registered verdict (MISS) is kept. Over k ∈ {2, 4, 6}, where
+the ratio is defined, it falls: 0.56 → 0.34 → 0.31.

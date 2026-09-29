@@ -448,6 +448,16 @@ Report: `experiments/e2/REPORT.md`. 30 runs, 3 seeds; relative change in one-ste
 * Absolute errors are in each source's own format, so compare within a set. All runs used
   `b940e74`; median 16.5–21.6 min per run.
 
+### 2026-09-29 — E5 done: 2 of 4 HIT
+Report: `experiments/e5/REPORT.md`. 39 runs, 3 seeds; Re 1000 one-step error; zero-shot 0.166.
+* E5-P1 HIT: gain(full, k) −3.0 / +2.3 / +4.7 / +5.3% for k = 1 / 2 / 4 / 6. With one trajectory,
+  full fine-tuning is worse than zero-shot.
+* E5-P2 MISS: gain(full, 6) = 5.3% (predicted ≥ 8%); the k = 2 half holds (2.30%).
+* E5-P3 MISS: LoRA/full ratio −0.19 / 0.56 / 0.34 / 0.31. Ill-posed at k = 1, where full's gain is
+  negative (spec amendment A1); it falls over k = 2–6. LoRA gains 0.6–1.7%.
+* E5-P4 HIT: adv(k) 40.9 / 30.8 / 16.2 / 4.9%. Scratch 0.290 → 0.165 catches up with zero-shot by
+  k = 6.
+
 ## 6. Status (29 Sep 2026)
 
 **Done:**
@@ -462,12 +472,12 @@ Report: `experiments/e2/REPORT.md`. 30 runs, 3 seeds; relative change in one-ste
   real-data smoke test passes after the W10 fix.
 * E4: done, 1 of 5 HIT (pushforward wins even at matched compute; MAE is stable; depth 24 helps).
 * E2: done, 1 of 3 HIT (pad-and-mask beats the Perceiver on the upsampled source).
+* E5: done, 2 of 4 HIT (the pretraining advantage over scratch fades from 41% to 5% as k goes 1 → 6).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* E5: all 39 runs finished; its report is next;
 * E1, then E3 (lanes b0–b2), starting with the `e1_v1` finalize.
 
 **Remaining:**
