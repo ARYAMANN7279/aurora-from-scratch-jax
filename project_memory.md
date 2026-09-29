@@ -424,6 +424,19 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   per-resolution steps); verdicts kept. Matched 64² pair: encodings on 0.041 vs off 0.049, with
   curves identical to step 3000.
 
+### 2026-09-29 — E4 done: 1 of 5 HIT
+Report: `experiments/e4/REPORT.md`. 27 runs, 3 seeds; change vs base, mean ± SE.
+* E4-P1 MISS: MAE Re 300 drift −11.1 ± 6.5% (predicted > +50%). Stage 8's MAE blow-up does not
+  reproduce at 10k steps with 3 seeds; MAE drifts less than MSE in both regimes (Re 100 −19.2 ± 0.8%).
+* E4-P2 MISS: pushforward drift at matched steps −49.8 ± 3.8% / −31.3 ± 8.1%, **and at matched
+  compute −44.6 ± 4.6% / −47.1 ± 6.9%** (~10 SE), which reverses Stage 9 (3000 vs 1500 steps, 1 seed,
+  20-step drift). Matched compute costs +21.5 ± 3.8% one-step error.
+* E4-P3 HIT: noshift +6.0 ± 4.5% one-step.
+* E4-P4 MISS: depth6 +9.8 ± 1.6%, depth24 −6.7 ± 3.1% (it helps).
+* E4-P5 MISS: L1 +2.0 ± 2.8%, L6 −3.9 ± 4.4% (both within noise).
+* Base: one-step ratio to persistence 0.192 / 0.330 (Re 100 / 300), drift 1.52 / 1.94. A base run is
+  about 8 min on an unshared card (10k steps plus evaluation).
+
 ## 6. Status (29 Sep 2026)
 
 **Done:**
@@ -436,14 +449,14 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
 * E1–E5: specs frozen (28 Sep); code, configs (186 runs) and analysis ready for all of them. The
   real-data smoke test passes after the W10 fix.
+* E4: done, 1 of 5 HIT (pushforward wins even at matched compute; MAE is stable; depth 24 helps).
+* `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* `e1_v1` on CPU (4 lanes; 238/326 at 29 Sep 00:17);
-* E4 without L6 (24 runs), then E2 and E5: lanes a0–a2, on cards as they come free;
-* then E1 and E3, once `e1_v1` is finalized;
-* E4's three L6 runs, on the W10-fixed code (`171b239`, now merged into `vm-results`).
+* E2, then E5 (pretrain and scratch, then the fine-tunes): lanes a0–a2, on cards as they come free;
+* E1, then E3 (lanes b0–b2), starting with the `e1_v1` finalize.
 
 **Remaining:**
 1. The runs themselves (~62–77 GPU-h, shared cards).
