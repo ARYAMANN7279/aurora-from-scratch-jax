@@ -85,7 +85,7 @@ before any run. They run on the lab GPU box; results arrive as PRs from the `vm-
 | E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | ✅ **done** ([report](experiments/e2/REPORT.md)): 1/3 predictions HIT; pad-and-mask beats the Perceiver by 23% on the upsampled source; fusion costs the Perceiver 13–39% even on sources whose format did not change |
 | E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | queued after E1 |
 | E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% even at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
-| E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | running |
+| E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | ✅ **done** ([report](experiments/e5/REPORT.md)): 2/4 predictions HIT; the pretraining advantage over scratch falls from 41% (1 trajectory) to 5% (6); fine-tuning gains ≤ 5.3% (full) and ≤ 1.7% (LoRA) |
 
 ## Stage 1 results: the data generator
 
@@ -149,8 +149,8 @@ little adaptation from two trajectories). E4, with 3.3× Stage 9's budget and 3 
 opposite for pushforward. Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet its acceptance
 test either: the shared Perceiver was still improving when its 6000-step budget ran out.
-E4 (1 of 5 predictions hit) and E2 (1 of 3) are done. E1, E3 and E5 (specs frozen 28 Sep 2026)
-are running on the lab GPU box. Every stage is built
+E4 (1 of 5 predictions hit), E2 (1 of 3) and E5 (2 of 4) are done. E1 and E3 (specs frozen
+28 Sep 2026) are running on the lab GPU box. Every stage is built
 and passes its correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in
 `project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
 report in `experiments/stageN/REPORT.md`.
