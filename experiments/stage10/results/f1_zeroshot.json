@@ -1,0 +1,17 @@
+{
+ "arm": "zeroshot",
+ "steps": 0,
+ "lr": 0.0001,
+ "r": null,
+ "n_trainable": 0,
+ "n_total": 5106688,
+ "trainable_frac": 0.0,
+ "eval": {
+  "rel_err": 0.21279427122445527,
+  "persistence": 0.3645428793559076,
+  "ratio": 0.5837290570602578
+ },
+ "curve": [],
+ "wall_s": 11.365944385528564,
+ "command": ".venv/bin/python experiments/stage10/finetune.py --arm zeroshot --out f1_zeroshot"
+}

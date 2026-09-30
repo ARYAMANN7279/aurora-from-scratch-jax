@@ -16,6 +16,12 @@ What the stage does show is that **zero-shot transfer is already reasonable**. T
 trained only on Re 100 and 300, predicts the never-seen Re1000 at 0.58× persistence, against 0.46×
 in-distribution at Re300.
 
+**Follow-up F1 (pre-registered 30 Sep 2026; the verdicts above stand).** A LoRA rank sweep on a
+retrained base model. The gain grows with rank but stays small: 0.2% at r = 1 and 1.0% at r = 64,
+against 2.7% for full fine-tuning. Even r = 64, with 13.5% of the parameters trainable, gets only 37%
+of full fine-tuning's gain, so rank is not what holds LoRA back here (F1-P1 and F1-P2 HIT). See
+"Follow-up F1" below.
+
 ## Gates
 
 | Gate | Measured | Bar |
@@ -59,6 +65,50 @@ full, swept over fine-tuning set size), not to this stage:
 * an in-distribution Re1000 model as the ceiling;
 * LoRA on the MLPs and embeddings as well as attention.
 
+## Follow-up F1: LoRA rank sweep (pre-registered 30 Sep 2026)
+
+Spec: F1 and amendment F1-A1 in `handouts/stage10_lora.md`, both committed before any run.
+Results: `results/f1_*.json`; scored by `score_f1.py` → `results/f1_analysis.json`. One run per arm
+(seed 0), as in Stage 10, so there are no standard errors.
+
+**Base model: a retrain (F1-A1).** The original Stage 7 parameters are gone, so the Stage 7 command
+was rerun unchanged on the lab machine's CPU, with that machine's copy of `acc_v1`. That copy is not
+bitwise identical to the original: persistence on the Re 300 evaluation seeds is 0.309 against
+0.315. The retrain reproduces Stage 7 closely:
+
+| | Re 100 error (ratio) | Re 300 error (ratio) |
+|---|---|---|
+| Stage 7 | 0.0702 (0.322) | 0.1457 (0.463) |
+| retrain | 0.0720 (0.330) | 0.1450 (0.470) |
+
+Every F1 arm, including the re-run baselines, uses this retrain; Stage 10's own numbers are not
+mixed in. gain = 1 − error / zero-shot error, on the Re 1000 evaluation seeds 6–7.
+
+| Arm | Trainable | Error (ratio) | Gain |
+|---|---|---|---|
+| zero-shot | 0 | 0.2128 (0.584) | — |
+| LoRA r = 1 | 10,752 (0.21%) | 0.2123 | 0.21% |
+| LoRA r = 4 | 43,008 (0.84%) | 0.2120 | 0.37% |
+| LoRA r = 16 | 172,032 (3.4%) | 0.2115 | 0.61% |
+| LoRA r = 64 | 688,128 (13.5%) | 0.2107 | 0.98% |
+| full | 5,106,688 (100%) | 0.2071 | 2.69% |
+
+| # | Prediction | Measured | Verdict |
+|---|---|---|---|
+| F1-P1 | the gain does not fall with rank: gain(1) ≤ gain(4) ≤ gain(16) ≤ gain(64), within 0.1 points | 0.21 → 0.37 → 0.61 → 0.98% | **HIT** |
+| F1-P2 | gain(64) < 1.5% | 0.98% | **HIT** |
+
+* **Rank helps, but little.** Each 4× in rank adds 0.16–0.37 points. At r = 64 LoRA trains 13.5% of
+  the model and gets 37% of full fine-tuning's gain, below the half that F1-P2 was written to test.
+* **So the Stage 10 miss is not a rank limit.** What remains is where LoRA adapts (attention only)
+  and how little any arm can learn from two trajectories. Even full fine-tuning gains only 2.7%
+  here (3.0% in Stage 10), in line with E5, where it gains at most 5.3% from six. LoRA on the MLPs
+  was not tested.
+* **The re-run baselines agree with Stage 10:** zero-shot 0.584× persistence (Stage 10: 0.581×),
+  LoRA r = 4 gains 0.37% (0.52%), full fine-tuning 2.69% (3.02%).
+* Ran on 4 cores of the lab machine's CPU: the retrain took 0.41 s per step (26 min; Stage 7 took
+  1.03 s per step on the original 4-core machine), each LoRA run about 6 min, full fine-tuning 7.5 min.
+
 ## Commands
 ```
 .venv/bin/python -m pytest tests/test_stage10_gates.py -q -s
@@ -66,4 +116,10 @@ full, swept over fine-tuning set size), not to this stage:
 .venv/bin/python experiments/stage10/finetune.py --arm lora
 .venv/bin/python experiments/stage10/finetune.py --arm full
 .venv/bin/python experiments/stage10/finetune.py --arm lora --lr 1e-2   # exploratory
+# follow-up F1 (amendment F1-A1), on CPU: retrain the base, then the baselines and the rank sweep
+.venv/bin/python experiments/stage7/train_onestep.py --loss mse --out onestep_mse_retrain
+.venv/bin/python experiments/stage10/finetune.py --arm zeroshot --out f1_zeroshot
+for r in 1 4 16 64; do .venv/bin/python experiments/stage10/finetune.py --arm lora --rank $r --out f1_lora_r$r; done
+.venv/bin/python experiments/stage10/finetune.py --arm full --out f1_full
+python experiments/stage10/score_f1.py
 ```

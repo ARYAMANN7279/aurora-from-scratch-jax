@@ -50,6 +50,14 @@ The same configuration trained with **MAE** (for Stage 8) reaches 0.067 / 0.148,
   every 250 steps. The relaunched run reproduced the killed run's step-250 loss bitwise
   (0.018555916845798492), so resuming does not change results.
 
+## Retrain (1 Oct 2026)
+The trained parameters were never kept in git, and the machine that held them is gone. Stage 10's
+follow-up F1 therefore retrained this model with the command below, unchanged apart from `--out`,
+which keeps this report's result file. It ran on the lab machine's CPU with that machine's copy of
+`acc_v1`, which is not bitwise identical to the original (Re 300 persistence 0.309 vs 0.315). The
+retrain gives 0.0720 / 0.1450 (ratios 0.330 / 0.470), against 0.0702 / 0.1457 (0.322 / 0.463)
+above. Result: `results/onestep_mse_retrain.json`.
+
 ## Commands
 ```
 .venv/bin/python -m pytest tests/test_stage7_gates.py -q -s

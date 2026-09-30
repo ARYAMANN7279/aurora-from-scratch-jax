@@ -17,6 +17,11 @@ for all 6000 steps reaches 0.040–0.049 at every C (S5).
 Predictions: S5 HIT; S1–S4 and S6 MISS. S5 and S6 turned out to be confounded with the training
 budget (amendment A1 in the spec); their original verdicts are kept.
 
+**Follow-ups (pre-registered 30 Sep 2026; the verdicts above stand).** F1 trained the 16² control
+(C = 3) for 48,000 steps and reached **0.016**, below S1's bar of 0.02: the bar is within reach of
+this autoencoder given more training (F1-P1 HIT, F1-P2 MISS). F2, the shared model at a matched
+per-resolution budget, waits for an idle GPU card. See "Follow-ups" below.
+
 ## Gates
 
 Command: `.venv/bin/python -m pytest tests/test_stage4_gates.py -q -s` → 9 passed.
@@ -75,6 +80,40 @@ Evaluation error of the shared model during training (it had not levelled off):
   bands differ strongly in content (scale and spectrum). A matched run (L = 3, 64² only, encodings
   on) would settle it.
 
+## Follow-ups (pre-registered 30 Sep 2026)
+
+Predictions in the spec (§5, F1 and F2), committed before any run. Scored by
+`score_followups.py` → `results/followups_analysis.json`.
+
+**F1: can the 16² autoencoder reach S1's bar at all?** The C = 3 control (L = C = 3, so no
+compression) was trained 8× longer: 48,000 steps at the same constant learning rate. The spec's
+mention of a stretched cosine schedule was wrong; see the F1 note in §5. One run (key 0), as for
+S1–S6. Result: `results/f1_nocompress_16_48k.json`.
+
+| # | Prediction | Measured | Verdict |
+|---|---|---|---|
+| F1-P1 | error < 0.029 (a third below the 6000-step control's 0.043) | 0.0160 | **HIT** |
+| F1-P2 | S1's bar still not reached: error > 0.02 | 0.0160 | **MISS** |
+
+| step | 6000 | 12,000 | 24,000 | 36,000 | 48,000 |
+|---|---|---|---|---|---|
+| error, 16² | 0.0430 | 0.0323 | 0.0212 | 0.0207 | 0.0160 |
+
+* **S1's bar is within reach at 16².** The error first dips below 0.02 at step 22,000, and every
+  one of the 24 checks after step 36,000 is below it (0.012–0.020). The S1 miss is therefore not a
+  limit of this autoencoder at C = 3. Whether the shared model, which also serves the other
+  resolutions, gets there is F2's question.
+* **A single end-point is a noisy reading.** At a constant learning rate the evaluation error moves
+  between 0.012 and 0.020 over the last 12,000 steps. The S1–S6 numbers are single end-points at a
+  constant rate too.
+* The first 6000 steps repeat the original control: 0.0430154 at step 6000 on the lab machine's
+  CPU, against 0.0430152 on its GPU.
+* Ran on one CPU core of the lab machine (single-threaded XLA): 8.0 ms per step, 6.8 min in all.
+
+**F2: the shared model at a matched per-resolution budget** (24,000 steps, the controls' 6000 per
+resolution). Not yet run: it needs an idle GPU card, and none has been free since the launch on 30
+Sep. Its lane waits for one.
+
 ## GPU runs: environment, data and commands
 
 * Lab VM, NVIDIA RTX PRO 6000 Blackwell; JAX 0.10.2 with CUDA 12; float32 with matmul precision
@@ -97,4 +136,8 @@ Evaluation error of the shared model during training (it had not levelled off):
 .venv/bin/python experiments/stage4/train_perceiver.py --run main
 for n in 16 64 128 512; do .venv/bin/python experiments/stage4/train_perceiver.py --run nocompress --res $n; done
 .venv/bin/python experiments/stage4/train_perceiver.py --run nolevelenc --res 64
+# follow-ups: F1 on one CPU core, F2 on an idle GPU card
+.venv/bin/python experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k
+.venv/bin/python experiments/stage4/train_perceiver.py --run main --steps 24000 --out f2_main_24k
+python experiments/stage4/score_followups.py
 ```
