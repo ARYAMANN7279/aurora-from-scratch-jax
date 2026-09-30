@@ -496,6 +496,19 @@ drift.
 * 16 runs ran on card 0 before the 29 Sep fix; the other 41 on idle cards. ~10 ms/step on an idle
   card.
 
+### 2026-09-30 — E3 done: 3 of 4 HIT
+Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3–6; tests at k_f = 4.
+* E3-P1 HIT: zero-shot ratio 0.301 / 0.326 / 0.356 / 0.383 / 0.412 at Re 300 / 350 / 450 / 560 / 700
+  (ρ = 1.0).
+* E3-P2 HIT: one-step adv 35.8–41.4% at every distance (≥ 6.2 SE).
+* E3-P3 MISS: adv(700) 36.4 ± 3.5% vs adv(300) 41.4 ± 4.7%; the gap is below 2 SE (flat from Re 350).
+* E3-P4 HIT: z(700) = 0.41. Fine-tuned models drift 64–80% more than scratch, as in E1.
+* Against E1 at (300, 4): the E3 band (extrapolating, but with k_f = 4) gets 0.30× zero-shot vs E1
+  n = 2/8 (enclosing, no k_f = 4) 0.61× and n = 32 0.27×. Zero-shot follows the distance in k_f. The
+  fine-tuned adv is similar (41% vs 42–50%).
+* All 33 runs ran on idle cards after the fix; ~10 ms/step (a 20k-step pretrain takes a median
+  3.5 min).
+
 ## 6. Status (30 Sep 2026)
 
 **Done:**
@@ -513,27 +526,24 @@ drift.
 * E5: done, 2 of 4 HIT (the pretraining advantage over scratch fades from 41% to 5% as k goes 1 → 6).
 * E1: done, 2 of 6 HIT (pretraining halves one-step error in every cell; diversity and volume do not
   move it; zero-shot follows distance; fine-tuned models drift more than scratch).
+* E3: done, 3 of 4 HIT (zero-shot degrades slowly with distance; the fine-tuned advantage stays at
+  36–41%).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
-**Running (lab VM):** nothing. All GPU runs finished on 30 Sep, 09:17 VM time; E3's report is next.
+**Running (lab VM):** nothing. All GPU runs finished on 30 Sep, 09:17 VM time. No process of ours
+is left on the cards.
 
 **Remaining:**
-1. The runs themselves (~62–77 GPU-h, shared cards).
-2. `REPORT.md` for E1–E5: verdicts against the frozen predictions, figures, and README / memory
-   updates. These come as PRs from `vm-results`.
-3. Things each report must state:
-   * E1–E5: the precision rule (`highest`); CPU vs GPU generation; the measured compute against the
-     specs' estimates.
-   * E2: in set (b), pad-and-mask runs at 64² with C = 5 (no source is at 128²), so the spec's
-     "upsample to 128², C = 6" applies to sets (a) and (c) only.
-   * E4: the L = 6 runs use the W10-fixed code (identical numerics for every other variant).
-   * E1 and E3: the spec's open points (the distance confound; extrapolation in one direction).
-4. Optional, after `e1_v1` is finished: a deterministic `shell_spectrum` (a fixed-layout sum per
-   shell), so D9 also holds on the GPU. It only affects `diag.npz`.
-
-**Watch items:**
-* E1's T = 128 pretrain cells hold about 8.4 GB of host RAM per process: raw frames plus the
-  normalisation copy.
-* E2's 128² runs cost about 4× per step.
+1. The write-up: RQ1–RQ5 from the five experiment reports.
+2. Open points carried by the reports:
+   * E1: a distance-matched 32-regime control; pretraining steps scaled with T.
+   * E3: a downward-in-Re arm and a k_f-distance arm (E1 suggests k_f distance matters most).
+   * E2: a wider resolution gap, and an unseen format.
+   * E4: longer budgets (the pushforward and depth effects may change at convergence).
+   * E5: a LoRA rank sweep.
+3. Optional: a deterministic `shell_spectrum` (a fixed-layout sum per shell), so D9 also holds on the
+   GPU. It only affects `diag.npz`.
+4. Before any further GPU run: use `glane3.sh` (idle cards only, card-placement interlock). Card 0
+   stays excluded unless the lab agrees otherwise.

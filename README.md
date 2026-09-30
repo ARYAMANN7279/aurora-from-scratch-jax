@@ -77,13 +77,13 @@ Each stage has an acceptance test and is not passed until that test is met.
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
 **Experiments.** Every experiment has a spec with pre-registered predictions, frozen in git on 28 Sep 2026
-before any run. They run on the lab GPU box; results arrive as PRs from the `vm-results` branch:
+before any run. All five ran on the lab GPU box and are reported against those predictions:
 
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
 | E1 volume vs diversity | [`handouts/e1_volume_diversity.md`](handouts/e1_volume_diversity.md) | 57 | new `e1_v1`, 326 trajectories (generated on CPU) | ✅ **done** ([report](experiments/e1/REPORT.md)): 2/6 predictions HIT; pretraining halves one-step error in every cell (advantage 42–50%), but neither diversity nor volume changes it; zero-shot follows the nearest regime at the target's k_f; fine-tuned models drift more than scratch |
 | E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | ✅ **done** ([report](experiments/e2/REPORT.md)): 1/3 predictions HIT; pad-and-mask beats the Perceiver by 23% on the upsampled source; fusion costs the Perceiver 13–39% even on sources whose format did not change |
-| E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | queued after E1 |
+| E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | ✅ **done** ([report](experiments/e3/REPORT.md)): 3/4 predictions HIT; zero-shot degrades slowly (0.30× → 0.41× persistence out to 2.8× the band's top Re); the fine-tuned advantage stays at 36–41% at every distance |
 | E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% even at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
 | E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | ✅ **done** ([report](experiments/e5/REPORT.md)): 2/4 predictions HIT; the pretraining advantage over scratch falls from 41% (1 trajectory) to 5% (6); fine-tuning gains ≤ 5.3% (full) and ≤ 1.7% (LoRA) |
 
@@ -143,14 +143,14 @@ python3.11 -m venv .venv
 
 ## Status
 
-**Ongoing.** All eleven stages have their results. Stages 1, 3, 5, 6, 7, 8 and 11 met their
+**All stages and experiments have their results; the write-up is next.** All eleven stages have their results. Stages 1, 3, 5, 6, 7, 8 and 11 met their
 acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
 little adaptation from two trajectories). E4, with 3.3× Stage 9's budget and 3 seeds, finds the
 opposite for pushforward. Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet its acceptance
 test either: the shared Perceiver was still improving when its 6000-step budget ran out.
-E1 (2 of 6 predictions hit), E2 (1 of 3), E4 (1 of 5) and E5 (2 of 4) are done; E3 (spec frozen
-28 Sep 2026) is being written up. Every stage is built
+All five experiments are done: E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5 and E5 2
+of 4, each reported in `experiments/eN/REPORT.md`. Every stage is built
 and passes its correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in
 `project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
 report in `experiments/stageN/REPORT.md`.
