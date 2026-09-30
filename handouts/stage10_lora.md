@@ -61,3 +61,16 @@ finite-difference roundoff, not a gradient error. The LoRA gradients are tiny (m
 so the roundoff floor at h = 1e-4 (≈ ε·loss/h ≈ 2e-12 absolute) exceeds the tolerance. At
 h = 1e-3 all 5 entries agree to ≤ 7.1e-8. From now on L5 uses h = 1e-3 (mixed tolerance
 unchanged).
+
+**F1 (30 Sep 2026, pre-registered before running): is the LoRA miss a rank limit?**
+Stage 10's LoRA (r = 4) improved one-step error by 0.5% over zero-shot, against 3.0% for full
+fine-tuning. F1 repeats the exact Stage 10 LoRA arm (same Stage 7 model, two Re 1000
+trajectories, 1000 steps, lr 1e-3, seed 0) at ranks r ∈ {1, 16, 64}, which train 0.21% / 3.4% /
+13.5% of the parameters. Command: `finetune.py --arm lora --rank r`. It runs on CPU, like Stage 10.
+
+| # | Prediction |
+|---|---|
+| F1-P1 | the gain over zero-shot does not fall with rank: gain(1) ≤ gain(4) ≤ gain(16) ≤ gain(64), within 0.1 points |
+| F1-P2 | even r = 64 stays below half of full fine-tuning's gain: gain(64) < 1.5%. If so, the limit is *which* layers LoRA adapts (attention only), not its rank |
+
+The Stage 10 verdict (A2 MISS) stands whatever F1 finds. F1 only explains it.

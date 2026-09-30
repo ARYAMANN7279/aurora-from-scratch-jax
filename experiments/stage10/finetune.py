@@ -1,6 +1,6 @@
 """A1-A4 (handouts/stage10_lora.md, section 3): adapt the Stage 7 model to the unseen Re = 1000.
 
-usage: finetune.py --arm zeroshot|lora|full [--steps 1000]
+usage: finetune.py --arm zeroshot|lora|full [--steps 1000] [--rank r]  (results: finetune_<arm>[_lr..][_r..].json)
 """
 import argparse
 import json
@@ -26,6 +26,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--arm", choices=["zeroshot", "lora", "full"], required=True)
 ap.add_argument("--steps", type=int, default=1000)
 ap.add_argument("--lr", type=float, help="override the pre-registered learning rate (exploratory runs only)")
+ap.add_argument("--rank", type=int, help="LoRA rank (default: the pre-registered 4; follow-up F1 sweeps it)")
 args = ap.parse_args()
 MC, B, DT, R, TAG = model.ModelConfig(), 8, 0.2, 4, "re1000_kf4"
 VARS = model.VARS
@@ -41,6 +42,7 @@ F = train.shape[1]
 fwd = jax.vmap(partial(model.apply, variables=VARS, dt=DT, mc=MC), in_axes=(None, 0, 0))
 
 if args.arm == "lora":
+    R = args.rank or R
     trainable = lora.init(jax.random.PRNGKey(0), base, r=R)
     full = lambda t: lora.merge(base, t, r=R)
     lr = 1e-3
@@ -92,7 +94,7 @@ res = dict(arm=args.arm, steps=steps, lr=lr, r=R if args.arm == "lora" else None
            n_total=int(n_params(base)), trainable_frac=n_tr / n_params(base), eval=ev, curve=curve,
            wall_s=time.time() - t0,
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
-suffix = f"_lr{args.lr:g}" if args.lr else ""
+suffix = (f"_lr{args.lr:g}" if args.lr else "") + (f"_r{args.rank}" if args.rank else "")
 with open(os.path.join(HERE, "results", f"finetune_{args.arm}{suffix}.json"), "w") as f:
     json.dump(res, f, indent=1)
 print(args.arm, ev)
