@@ -107,3 +107,20 @@ gives each resolution 1500 steps. S5 therefore measures compression and budget t
 bar (> 2 × S2) compares the ablation with a model that had a quarter of its per-resolution budget.
 The original verdicts (S5 HIT, S6 MISS) are kept. A matched comparison needs single-resolution
 runs with and without the component at equal steps (for S6: L = 3, 64² only, level encodings on).
+
+**F1 (30 Sep 2026, pre-registered before running): can this autoencoder reach S1's bar at all?**
+Even the single-resolution 16² control (C = 3; with L = 3 there is no compression) reached only
+0.043 after 6000 steps, against S1's bar of 0.02, and it was still falling. F1 trains that exact
+control configuration for 48,000 steps (8×), with the cosine schedule stretched over the run.
+Command: `train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k`.
+It runs on CPU (16² is cheap there).
+
+| # | Prediction |
+|---|---|
+| F1-P1 | 8× the steps lowers the error below the 6000-step control's 0.043 by at least a third: < 0.029 |
+| F1-P2 | the S1 bar is still not reached: error > 0.02. If so, S1's bar is out of reach for this model at any practical budget, not only for the shared model |
+
+**F2 (for the GPU box; not yet run):** the shared model at a matched per-resolution budget,
+`train_perceiver.py --run main --steps 24000 --out f2_main_24k`, gives each resolution the
+controls' 6000 steps. Predictions, fixed now: every error within 1.3× of the single-resolution
+control at the same C (S5 values), and S4 (< 0.05 at 512²) met.

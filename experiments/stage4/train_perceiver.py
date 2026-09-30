@@ -33,6 +33,7 @@ ap.add_argument("--run", choices=["main", "nocompress", "nolevelenc"], required=
 ap.add_argument("--res", type=int, nargs="+", default=[16, 64, 128, 512])
 ap.add_argument("--steps", type=int, default=6000)
 ap.add_argument("--time-only", action="store_true")
+ap.add_argument("--out", help="results file name (default: the run name); follow-ups must not overwrite S1-S6 files")
 ap.add_argument("--tag", default="re300_kf4", help="regime for the 16/64/128 data (spec: re300_kf4)")
 args = ap.parse_args()
 D, H, L, P, B, LR = 128, 4, 3, 4, 4, 3e-4
@@ -141,7 +142,7 @@ res = dict(run=args.run, res=args.res, D=D, H=H, L=L if args.run != "nocompress"
            eval_rel_err={str(n): eval_err(params, n) for n in args.res}, curve=curve, step_s=step_s,
            wall_s=time.time() - t0,
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
-name = args.run + ("" if args.run == "main" else f"_{args.res[0]}")
+name = args.out or (args.run + ("" if args.run == "main" else f"_{args.res[0]}"))
 os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
 with open(os.path.join(HERE, "results", f"{name}.json"), "w") as f:
     json.dump(res, f, indent=1)
