@@ -1,4 +1,4 @@
-# UGP-II — Aurora-from-Scratch in JAX · Decision Record
+# UGP-II — Aurora from Scratch in JAX · Decision Record
 
 **Owner:** Aryamann Srivastava, 4th year, Dept. of Aerospace Engineering, IIT Kanpur
 **Advisors:** Prof. Rajesh Ranjan (ACAL) · Prashant Kumar (PhD)
@@ -47,7 +47,7 @@ That claim was **untestable inside the competition**: outside pretrained weights
 **no predictive power for the main accuracy channel** (fitted local→live slope −3.2, sec186).
 
 Aurora (Bodnar et al., *Nature* 2025, [arXiv 2405.13063](https://arxiv.org/html/2405.13063)) reports
-that **pretraining beats from-scratch by 25%**, but cannot say WHICH of its eight heterogeneous
+that **pretraining beats from-scratch by 25%**, but cannot say WHICH of its heterogeneous
 datasets earned that, because the ablation costs 32×A100 for 150k steps.
 
 **On Kolmogorov flow, that question is answerable.** You generate the data, so volume, diversity,
@@ -97,7 +97,7 @@ the data. Likewise the 2-D vorticity-transport equation explains only **4–12%*
 `d(omega)/dt` (R² 0.044–0.115), so a momentum loss would penalise a residual the measurement itself
 violates by ~95%.
 **On Kolmogorov flow this reverses** — the data IS 2-D and noise-free, so physics losses should
-behave as the literature expects. That contrast is itself worth a paragraph in the write-up.
+behave as the literature expects.
 
 ---
 
@@ -106,9 +106,15 @@ behave as the literature expects. That contrast is itself worth a paragraph in t
 **GPU box** (shared lab machine, SSH host `vm`, 4× RTX PRO 6000 Blackwell, 97 GB each):
 * ⛔ Never reboot. Never kill another user's process. Kill by explicit PID only — never
   `pkill -f <pattern>` where the pattern also matches your own ssh command.
-* ⛔ Do not launch at ≥90 °C or with SW thermal slowdown active. The box runs hot; idle cards have
-  been observed at 88–93 °C. Check `nvidia-smi` before every launch.
-* Set `CUDA_VISIBLE_DEVICES` explicitly on every command.
+* ⛔ **Idle cards only** (the professor's rule, 29 Sep: an overheated card cannot be restarted
+  without sudo). Start a job only on a card with nobody else's process on it, below 85 °C and
+  without thermal slowdown. Card 0 stays excluded. The box runs hot; cards have been observed at
+  88–93 °C. Check `nvidia-smi` before every launch.
+* ⛔ **Launch GPU jobs only through `glane3.sh`** (VM scratch area). The account's `~/.bashrc`
+  exports `CUDA_VISIBLE_DEVICES=0`, and a `bash -c` started under ssh re-reads it, so setting the
+  variable outside the command is not enough (incident, 29 Sep). `glane3.sh` starts jobs in a bash
+  that skips `~/.bashrc`, sets the card inside the command, checks where the job really runs, and
+  pauses it on heat or when anyone else's process appears on its card.
 * ⛔ Never scratch to `/tmp` or the VM root partition. Work under the project directory.
 * Timings are worthless on a contended card — check utilisation, and use best-of-N.
 
@@ -126,26 +132,27 @@ behave as the literature expects. That contrast is itself worth a paragraph in t
   * `CUDA_DEVICE_ORDER=PCI_BUS_ID`.
 * **Cards:** all 4 are shared with other users' jobs, at 74–93 °C. Our lanes take a card only when
   nobody else is computing on it and it is below 85 °C. They SIGSTOP our own process group at
-  ≥ 87 °C or on thermal slowdown, and resume at ≤ 80 °C. Failed jobs get 3 retries, since
-  everything resumes.
+  ≥ 87 °C or on thermal slowdown, and resume at ≤ 80 °C. Failed jobs get 3 retries.
 * **CPU:** Xeon w3-2525, 8 cores / 16 threads, typically loaded ~6. Single-core generation takes
   787 s per E1 trajectory at N_gen 256.
 * **Precision:**
   * On the GPU, float32 matrix multiplies default to TF32. At that default, 3 float32 gates fail
     (Stage 3 H7, Stage 5 W3/W4, Stage 6 U2/U3), and they pass with
     `JAX_DEFAULT_MATMUL_PRECISION=highest`.
-  * **Every GPU run uses `highest`**, which costs 1.07× (128.8 s vs 120.5 s per 1000 steps).
+  * **Every GPU run uses `highest`**, which costs 1.07× (128.8 s vs 120.5 s per 1000 steps, both
+    measured on a shared card before the 29 Sep fix).
 * **Determinism:**
   * Gate D9 fails on the GPU: the frames are bitwise identical, `diag.npz` is not.
   * Likely cause: the scatter-add in `shell_spectrum`, which uses atomics on the GPU (Stage 2
     report, addendum).
-  * Check: `XLA_FLAGS=--xla_gpu_deterministic_ops=true`.
 
 **Repo.** UGP-II: `ARYAMANN7279/aurora-from-scratch-jax`.
 (`ARYAMANN7279/RealPDE-Track1` is the closed UGP-I competition repo, last push 27 Aug 2026.)
 
-**Where things run.** Specs, solver development and CPU runs happen on a CPU machine (the Mac or a
-cloud container; Stage 1 ran on the latter). GPU runs go on the lab VM. Results come back as small result JSONs committed under `experiments/`. Raw data stays off git.
+**Where things run.** Specs and analysis happen on the Mac; CPU and GPU runs go on the lab VM. The
+cloud container used for the earlier CPU runs is gone (30 Sep), and so is everything it held
+outside git, including the Stage 7 parameters. Results come back as small result JSONs committed
+under `experiments/`. Raw data stays off git.
 
 ---
 
@@ -256,8 +263,8 @@ case has a dated amendment in the spec, and the original FAIL is kept in the rep
   (E 0.54–1.34× climatology), while the **MAE model blows up in 3 of 4 Re300 rollouts** after step
   25–38 (E up to 19×). One seed only: a lead for E4 (MAE vs MSE, 3 seeds) and for Stage 9 (does
   pushforward fix it?). Aurora trains with MAE, so this matters.
-* **Compute lesson:** this cloud container restarts whenever the session pauses (a question to the
-  user, or the end of a turn), and every background job dies. Everything long-running therefore
+* **Compute lesson:** this cloud container restarts whenever it goes idle, and every background job
+  dies. Everything long-running therefore
   checkpoints and resumes bitwise (gate D9; training checkpoints every 250 steps), and is relaunched
   with `data/stage2/lanes.sh`. Long jobs (Re1000 generation at 512², Stage 4 training) belong on the
   GPU box.
@@ -509,6 +516,20 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * All 33 runs ran on idle cards after the fix; ~10 ms/step (a 20k-step pretrain takes a median
   3.5 min).
 
+### 2026-09-30 — Results checked; follow-ups prepared
+* Independent check of E1–E5 from the committed files (PR #26): 186 of 186 rows, all five
+  `analysis.json` files recompute identically, and every report's verdicts and numbers match.
+* Follow-ups for the Stage 4 and 10 misses pre-registered before any run (PR #27); the README ⚠️
+  rows resolved or explained (PR #28).
+* The cloud container is gone, with everything it held outside git. That includes the Stage 7
+  parameters (`data/stage7/onestep_mse_params.npz`), which are not on the VM or the Mac either.
+* Stage 10 F1 amended before any run (F1-A1): it runs on a retrained base model and re-runs its
+  zero-shot, r = 4 and full baselines, because the base model and the VM's Re 1000 data both differ
+  from Stage 10's. `train_onestep.py` and `finetune.py` gained `--out`, so no follow-up overwrites a
+  committed result.
+* Where they run: Stage 4 F1 and Stage 10 F1 on the VM's CPU, as their specs say; Stage 4 F2 on the
+  first idle GPU card.
+
 ## 6. Status (30 Sep 2026)
 
 **Done:**
@@ -519,8 +540,8 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
     * Stage 9: pushforward does not pay at matched compute.
     * Stage 10: LoRA adapts little from 2 trajectories.
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
-* E1–E5: specs frozen (28 Sep); code, configs (186 runs) and analysis ready for all of them. The
-  real-data smoke test passes after the W10 fix.
+* E1–E5: specs frozen (28 Sep); all 186 runs done and analysed. The real-data smoke test passed
+  after the W10 fix.
 * E4: done, 1 of 5 HIT (pushforward wins even at matched compute; MAE is stable; depth 24 helps).
 * E2: done, 1 of 3 HIT (pad-and-mask beats the Perceiver on the upsampled source).
 * E5: done, 2 of 4 HIT (the pretraining advantage over scratch fades from 41% to 5% as k goes 1 → 6).
@@ -532,21 +553,19 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
-**Running (lab VM):** nothing. All GPU runs finished on 30 Sep, 09:17 VM time. No process of ours
-is left on the cards.
+**Running (lab VM):** the three follow-ups below, from 30 Sep evening. The E-runs all finished on
+30 Sep, 09:17 VM time.
 
-**Remaining:** nothing required. The owner decided against a separate write-up (29 Sep); the stage
-and experiment reports are the record.
+**Remaining:** the three follow-ups below. The stage and experiment reports are the record.
 
-**Pre-registered follow-ups (30 Sep; predictions committed in PR #27, not yet run):**
-* **Stage 10 F1**, a LoRA rank sweep:
-  `experiments/stage10/finetune.py --arm lora --rank {1,16,64}`. It needs
-  `data/stage7/onestep_mse_params.npz` (the Stage 7 model) and `acc_v1`, and takes ~15–20 min per
-  run on a 4-core CPU (much less on the GPU).
-* **Stage 4 F1**, the C = 3 control at 8× steps:
+**Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**
+* **Stage 10 F1**, a LoRA rank sweep (CPU). The original Stage 7 parameters are gone, so it runs on
+  a retrain and re-runs its baselines (amendment F1-A1 lists the commands). About 15–20 min per
+  fine-tune on 4 CPU cores.
+* **Stage 4 F1**, the C = 3 control at 8× steps (CPU):
   `experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k`.
-* **Stage 4 F2** (GPU): `train_perceiver.py --run main --steps 24000 --out f2_main_24k`. It needs
-  `make_512.py` data.
+* **Stage 4 F2** (GPU, first idle card): `train_perceiver.py --run main --steps 24000 --out f2_main_24k`.
+  It needs the `make_512.py` frames, which are on the VM.
 * Score each against its table in `handouts/stage10_lora.md` or `handouts/stage04_perceiver.md`,
   add the result to the stage report (the original verdicts stand), and update the README row.
 
