@@ -481,7 +481,22 @@ Report: `experiments/e5/REPORT.md`. 39 runs, 3 seeds; Re 1000 one-step error; ze
   * Verified with a test job: it claimed card 2 and ran on card 2. E1/E3 restarted on cards 1–3 at
     18:22; the two interrupted E1 runs restart from step 0.
 
-## 6. Status (29 Sep 2026)
+### 2026-09-30 — E1 done: 2 of 6 HIT
+Report: `experiments/e1/REPORT.md`. 57 runs, 3 seeds; target (300, 4); scratch 0.150 one-step, 0.70
+drift.
+* E1-P1 HIT: one-step adv 41.8–49.8% in every cell (≥ 5.6 SE); fine-tuned error 0.076–0.087.
+* E1-P2 / P3 MISS: diversity gain −3.4 points (n 2 → 32), volume gain +1.4 (T 32 → 128). Neither
+  moves the fine-tuned result at a fixed 20k-step budget.
+* E1-P4 MISS: best 49.8%, (2, 32) 47.4%; both above the predicted bands.
+* E1-P5 HIT: zero-shot n = 32 0.080–0.089 vs n = 2 0.184–0.186. **Distance, not diversity:** n = 8
+  has the same nearest neighbours as n = 2 (Δ ln Re 0.41, Δ k_f 1) and the same zero-shot error;
+  only n = 32 has k_f = 4 neighbours.
+* E1-P6 MISS: Spearman(one-step, drift) = −0.38. Fine-tuned models drift 51–123% more than
+  scratch; the penalty shrinks with n (−102 / −65 / −60%).
+* 16 runs ran on card 0 before the 29 Sep fix; the other 41 on idle cards. ~10 ms/step on an idle
+  card.
+
+## 6. Status (30 Sep 2026)
 
 **Done:**
 * Stages 1–11: built, gates pass, results reported.
@@ -496,13 +511,13 @@ Report: `experiments/e5/REPORT.md`. 39 runs, 3 seeds; Re 1000 one-step error; ze
 * E4: done, 1 of 5 HIT (pushforward wins even at matched compute; MAE is stable; depth 24 helps).
 * E2: done, 1 of 3 HIT (pad-and-mask beats the Perceiver on the upsampled source).
 * E5: done, 2 of 4 HIT (the pretraining advantage over scratch fades from 41% to 5% as k goes 1 → 6).
+* E1: done, 2 of 6 HIT (pretraining halves one-step error in every cell; diversity and volume do not
+  move it; zero-shot follows distance; fine-tuned models drift more than scratch).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
-**Running (lab VM):**
-* E1, then E3 (lanes b0–b2), only on idle cards among 1–3 (`glane3.sh`; card 0 excluded after the
-  29 Sep incident).
+**Running (lab VM):** nothing. All GPU runs finished on 30 Sep, 09:17 VM time; E3's report is next.
 
 **Remaining:**
 1. The runs themselves (~62–77 GPU-h, shared cards).
