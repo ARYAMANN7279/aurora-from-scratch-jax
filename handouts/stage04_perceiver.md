@@ -124,3 +124,10 @@ It runs on CPU (16² is cheap there).
 `train_perceiver.py --run main --steps 24000 --out f2_main_24k`, gives each resolution the
 controls' 6000 steps. Predictions, fixed now: every error within 1.3× of the single-resolution
 control at the same C (S5 values), and S4 (< 0.05 at 512²) met.
+
+**F1 note (30 Sep 2026, found at launch; no prediction changed):** the F1 text says the cosine
+schedule is stretched over the run, but `train_perceiver.py` has no schedule: it trains at the
+constant lr 3e-4 of §4. F1 is therefore the same control trained 8× longer at the same rate, and its
+first 6000 steps repeat the original run: the error at step 6000 is 0.0430154 on the lab machine's
+CPU, against 0.0430152 for the original run on its GPU. The command and both predictions stand as
+registered.
