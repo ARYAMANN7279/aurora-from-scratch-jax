@@ -74,3 +74,29 @@ trajectories, 1000 steps, lr 1e-3, seed 0) at ranks r ∈ {1, 16, 64}, which tra
 | F1-P2 | even r = 64 stays below half of full fine-tuning's gain: gain(64) < 1.5%. If so, the limit is *which* layers LoRA adapts (attention only), not its rank |
 
 The Stage 10 verdict (A2 MISS) stands whatever F1 finds. F1 only explains it.
+
+**F1-A1 (30 Sep 2026, before any F1 run): the base model is a retrain.** The Stage 7 parameter file
+existed only on the machine that ran Stages 7–10 (parameters stay out of git), and that machine is
+gone, so "the same Stage 7 model" is not available. F1 runs on a retrain instead:
+* **Base:** the Stage 7 command unchanged (`train_onestep.py --loss mse`, 3000 steps), on the lab
+  machine's CPU with the lab machine's copy of `acc_v1`. That copy was generated separately (Re 100
+  and 300 on the lab machine's CPU, Re 1000 on its GPU; same generator, regimes and seeds). Whether
+  it is bitwise identical to the original copy cannot be checked, because the original checksums
+  were not kept. The retrain's one-step errors at Re 100 / 300 are reported next to Stage 7's
+  (0.070 / 0.146) as a check.
+* **Baselines re-run:** the base model and the Re 1000 data both differ from Stage 10's, so Stage
+  10's numbers (zero-shot 0.2098; gain 0.5% for LoRA r = 4 and 3.0% for full fine-tuning) are not a
+  valid baseline for F1. F1 re-runs zero-shot, LoRA r = 4 and full fine-tuning on the retrain, with
+  the Stage 10 settings unchanged.
+* **Scoring, fixed now:** gain(arm) = 1 − e(arm) / e(zero-shot), all on the retrain. F1-P1 uses
+  the re-run gain(4). F1-P2 keeps its registered bar, gain(64) < 1.5%. The ratio
+  gain(64) / gain(full), which that bar was meant to keep below one half, is reported beside it and
+  does not change the verdict.
+* **Commands** (all on CPU; the base's result goes to `experiments/stage7/results/onestep_mse_retrain.json`,
+  F1's to `experiments/stage10/results/f1_*.json`, so no committed result is overwritten):
+  ```
+  train_onestep.py --loss mse --out onestep_mse_retrain
+  finetune.py --arm zeroshot --out f1_zeroshot
+  finetune.py --arm lora --rank r --out f1_lora_r<r>      # r = 4, 1, 16, 64
+  finetune.py --arm full --out f1_full
+  ```

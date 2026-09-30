@@ -1,6 +1,6 @@
 """N1-N4 (handouts/stage07_model.md, section 3): train the full model on one-step prediction.
 
-usage: train_onestep.py [--steps 3000] [--loss mse|mae] [--pushforward] [--time-only]
+usage: train_onestep.py [--steps 3000] [--loss mse|mae] [--pushforward] [--time-only] [--out name]
 --pushforward trains with the pushforward trick (handouts/stage09_pushforward.md): loss on the
 one-step prediction plus the second step from stop_gradient(first prediction).
 Also writes the trained parameters to data/stage7/<name>_params.npz (used by Stages 8-9).
@@ -30,6 +30,7 @@ ap.add_argument("--steps", type=int, default=3000)
 ap.add_argument("--time-only", action="store_true")
 ap.add_argument("--loss", choices=["mse", "mae"], default="mse")
 ap.add_argument("--pushforward", action="store_true")
+ap.add_argument("--out", help="results file name (default: the run name); follow-ups must not overwrite Stage 7-9 files")
 args = ap.parse_args()
 B, DT, TAGS = 8, 0.2, ("re100_kf4", "re300_kf4")
 MC = model.ModelConfig()
@@ -133,7 +134,7 @@ res = dict(config=str(MC), loss=args.loss, pushforward=args.pushforward, steps=a
            norm_mean=mu.tolist(), norm_std=sd.tolist(),
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
 os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
-with open(os.path.join(HERE, "results", f"{name}.json"), "w") as f:
+with open(os.path.join(HERE, "results", f"{args.out or name}.json"), "w") as f:
     json.dump(res, f, indent=1)
 flat, _ = jax.flatten_util.ravel_pytree(params)
 np.savez(os.path.join(ROOT, "data", "stage7", f"{name}_params.npz"), flat=np.asarray(flat), mean=mu, std=sd)
