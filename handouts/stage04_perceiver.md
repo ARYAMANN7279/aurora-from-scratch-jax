@@ -131,3 +131,10 @@ constant lr 3e-4 of §4. F1 is therefore the same control trained 8× longer at 
 first 6000 steps repeat the original run: the error at step 6000 is 0.0430154 on the lab machine's
 CPU, against 0.0430152 for the original run on its GPU. The command and both predictions stand as
 registered.
+
+**F2 note (1 Oct 2026, before the run; no prediction changed):** F2 runs on the lab machine's CPU
+(4 cores) instead of a GPU card. Its first GPU attempt took an idle card from below 85 °C to 92 °C
+within 21 s, and while paused it held the card at full power, so it was stopped. On this shared box
+no heavy GPU job stays within our limits (start below 85 °C, pause at 87 °C). On the CPU a 512² step
+takes 6.9 s, so the run takes about 13 h. F1 showed that the CPU reproduces the GPU numbers (0.0430154
+vs 0.0430152 after 6000 steps). The command and the predictions stand as registered.
