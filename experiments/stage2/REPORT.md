@@ -78,8 +78,12 @@ Figures: `figs/spectra_by_seed.png` (the 8 seeds per regime overlap), `figs/ener
     statistical, not bitwise, across machines, which is expected for chaotic flows (GPU vs CPU
     likewise);
   * for the experiment datasets: store the post-spin-up generation-grid state (`state_t0.npy`,
-    4 MB at 512²) with each trajectory, so any trajectory can be re-derived exactly from its own
-    stored state; and record the XLA ISA and host CPU in `meta.json`.
+    4 MB at 512²) with each trajectory, and record the XLA ISA and host CPU in `meta.json`.
+    Correction (30 Sep 2026): this lets a trajectory be re-derived bitwise without redoing the
+    spin-up, but only on a machine with the same XLA ISA. The recording phase (100 time units at
+    λ ≈ 0.57) amplifies a last-bit difference just as the spin-up does, so bitwise regeneration
+    across machines is not achievable for these chaotic flows. Across machines, trajectories agree
+    statistically (Q4–Q8).
 
 ## Deviations
 * Generation ran on the 4-core CPU container in parallel lanes and survived two container
