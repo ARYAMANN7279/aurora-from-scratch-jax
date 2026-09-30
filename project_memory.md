@@ -530,7 +530,20 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * Where they run: Stage 4 F1 and Stage 10 F1 on the VM's CPU, as their specs say; Stage 4 F2 on the
   first idle GPU card.
 
-## 6. Status (30 Sep 2026)
+### 2026-10-01 — Follow-ups: Stage 4 F1 and Stage 10 F1 done
+* **Stage 4 F1:** the 16² control (C = 3) at 48,000 steps reaches 0.016 (F1-P1 HIT, F1-P2 MISS), so
+  S1's 0.02 bar is reachable with more training. Every check after step 36,000 is below 0.02, but a
+  single end-point is noisy at a constant learning rate (0.012–0.020 over the last 12,000 steps).
+  The spec's "stretched cosine schedule" was wrong (the script uses a constant lr); a note went into
+  the spec at launch, before the result. 6.8 min on one CPU core.
+* **Stage 10 F1** (on the retrain, F1-A1): the retrain reproduces Stage 7 within 2.5% (0.0720 /
+  0.1450 vs 0.0702 / 0.1457). LoRA gains 0.21 / 0.37 / 0.61 / 0.98% at r = 1 / 4 / 16 / 64, full
+  fine-tuning 2.69%: F1-P1 and F1-P2 HIT. Rank is not the limit; r = 64 gets 37% of full's gain.
+  About 1 h in all on 4 CPU cores.
+* **Stage 4 F2** waits in its `glane3.sh` lane (`f4g`) for an idle card. None has been free since
+  30 Sep 23:38: three cards at 92–94 °C with other users' jobs, the fourth busy too.
+
+## 6. Status (1 Oct 2026)
 
 **Done:**
 * Stages 1–11: built, gates pass, results reported.
@@ -553,19 +566,18 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
-**Running (lab VM):** the three follow-ups below, from 30 Sep evening. The E-runs all finished on
-30 Sep, 09:17 VM time.
+**Running (lab VM):** Stage 4 F2, waiting in lane `f4g` for an idle card. Nothing else of ours; the
+E-runs finished on 30 Sep, 09:17 VM time.
 
-**Remaining:** the three follow-ups below. The stage and experiment reports are the record.
+**Remaining:** Stage 4 F2. The stage and experiment reports are the record.
 
 **Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**
-* **Stage 10 F1**, a LoRA rank sweep (CPU). The original Stage 7 parameters are gone, so it runs on
-  a retrain and re-runs its baselines (amendment F1-A1 lists the commands). About 15–20 min per
-  fine-tune on 4 CPU cores.
-* **Stage 4 F1**, the C = 3 control at 8× steps (CPU):
+* **Stage 10 F1**, a LoRA rank sweep: **done** (1 Oct), both predictions HIT. It ran on a retrain of
+  the Stage 7 model, because the original parameters are gone (amendment F1-A1 lists the commands).
+* **Stage 4 F1**, the C = 3 control at 8× steps: **done** (30 Sep), F1-P1 HIT, F1-P2 MISS (0.016):
   `experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k`.
 * **Stage 4 F2** (GPU, first idle card): `train_perceiver.py --run main --steps 24000 --out f2_main_24k`.
-  It needs the `make_512.py` frames, which are on the VM.
+  It needs the `make_512.py` frames, which are on the VM. **Waiting** for an idle card.
 * Score each against its table in `handouts/stage10_lora.md` or `handouts/stage04_perceiver.md`,
   add the result to the stage report (the original verdicts stand), and update the README row.
 
@@ -573,7 +585,8 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * Stages 8 and 9 are resolved by E4 (3 seeds).
 * Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
-* Stages 4 and 10 wait on the follow-ups above.
+* Stage 10 is explained by F1 (rank is not the limit) and stays not met. Stage 4: F1 shows that
+  S1's bar is reachable at C = 3; F2 is pending.
 
 **Possible follow-ups** (each needs a new spec and the owner's go-ahead):
 * E1: a distance-matched 32-regime control; pretraining steps scaled with T.
