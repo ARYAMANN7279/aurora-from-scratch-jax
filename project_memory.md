@@ -115,6 +115,10 @@ behave as the literature expects.
   variable outside the command is not enough (incident, 29 Sep). `glane3.sh` starts jobs in a bash
   that skips `~/.bashrc`, sets the card inside the command, checks where the job really runs, and
   pauses it on heat or when anyone else's process appears on its card.
+* ⛔ **Heavy GPU jobs do not fit these limits; run them on the CPU.** Stage 4 at 512² took an idle
+  card from below 85 °C to 92 °C in 21 s (1 Oct). Pausing does not help: a paused process keeps its
+  CUDA context, so the card stays at full power (133 W at 0% use, 84 °C) and never reaches the
+  80 °C resume bar. Killed, the card dropped to 49 W at once.
 * ⛔ Never scratch to `/tmp` or the VM root partition. Work under the project directory.
 * Timings are worthless on a contended card — check utilisation, and use best-of-N.
 
@@ -543,6 +547,15 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * **Stage 4 F2** waits in its `glane3.sh` lane (`f4g`) for an idle card. None has been free since
   30 Sep 23:38: three cards at 92–94 °C with other users' jobs, the fourth busy too.
 
+### 2026-10-01 — Stage 4 F2 moved to the CPU
+* The F2 lane claimed idle card 2 at 01:26 (below 85 °C). 21 s later the card was at 92 °C and the
+  job was paused. Paused, it held the card at full power (133 W, 0% use, 84 °C) and 20 GB for 1.5 h
+  without reaching the 80 °C resume bar. Stopped by PID at 02:58; the card fell to 49 W at once, and
+  another user took it soon after.
+* F2 now runs on 4 cores of the VM's CPU (lane `f4c2`, cores 4–7, 14 GB), started 03:02: 6.9 s per
+  512² step, about 13 h. The device change went into the spec before the run (F2 note).
+* At step 500 it matches the original GPU run to 1.8e-6 at every resolution.
+
 ## 6. Status (1 Oct 2026)
 
 **Done:**
@@ -566,8 +579,8 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
-**Running (lab VM):** Stage 4 F2, waiting in lane `f4g` for an idle card. Nothing else of ours; the
-E-runs finished on 30 Sep, 09:17 VM time.
+**Running (lab VM):** Stage 4 F2 on the CPU (lane `f4c2`, cores 4–7), started 1 Oct 03:02, due
+around 16:30. Nothing of ours is on any GPU.
 
 **Remaining:** Stage 4 F2. The stage and experiment reports are the record.
 
@@ -576,8 +589,9 @@ E-runs finished on 30 Sep, 09:17 VM time.
   the Stage 7 model, because the original parameters are gone (amendment F1-A1 lists the commands).
 * **Stage 4 F1**, the C = 3 control at 8× steps: **done** (30 Sep), F1-P1 HIT, F1-P2 MISS (0.016):
   `experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k`.
-* **Stage 4 F2** (GPU, first idle card): `train_perceiver.py --run main --steps 24000 --out f2_main_24k`.
-  It needs the `make_512.py` frames, which are on the VM. **Waiting** for an idle card.
+* **Stage 4 F2**: `train_perceiver.py --run main --steps 24000 --out f2_main_24k`, **running on the
+  CPU** (F2 note in the spec: a GPU run overheats the cards). It needs the `make_512.py` frames,
+  which are on the VM.
 * Score each against its table in `handouts/stage10_lora.md` or `handouts/stage04_perceiver.md`,
   add the result to the stage report (the original verdicts stand), and update the README row.
 
@@ -586,7 +600,7 @@ E-runs finished on 30 Sep, 09:17 VM time.
 * Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
 * Stage 10 is explained by F1 (rank is not the limit) and stays not met. Stage 4: F1 shows that
-  S1's bar is reachable at C = 3; F2 is pending.
+  S1's bar is reachable at C = 3; F2 is running.
 
 **Possible follow-ups** (each needs a new spec and the owner's go-ahead):
 * E1: a distance-matched 32-regime control; pretraining steps scaled with T.

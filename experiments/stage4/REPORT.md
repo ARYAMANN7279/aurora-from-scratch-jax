@@ -20,7 +20,7 @@ budget (amendment A1 in the spec); their original verdicts are kept.
 **Follow-ups (pre-registered 30 Sep 2026; the verdicts above stand).** F1 trained the 16² control
 (C = 3) for 48,000 steps and reached **0.016**, below S1's bar of 0.02: the bar is within reach of
 this autoencoder given more training (F1-P1 HIT, F1-P2 MISS). F2, the shared model at a matched
-per-resolution budget, waits for an idle GPU card. See "Follow-ups" below.
+per-resolution budget, is running on the lab machine's CPU. See "Follow-ups" below.
 
 ## Gates
 
@@ -111,8 +111,10 @@ S1–S6. Result: `results/f1_nocompress_16_48k.json`.
 * Ran on one CPU core of the lab machine (single-threaded XLA): 8.0 ms per step, 6.8 min in all.
 
 **F2: the shared model at a matched per-resolution budget** (24,000 steps, the controls' 6000 per
-resolution). Not yet run: it needs an idle GPU card, and none has been free since the launch on 30
-Sep. Its lane waits for one.
+resolution). Running on 4 cores of the lab machine's CPU since 1 Oct 03:02 (6.9 s per 512² step,
+about 13 h). Its first attempt, on an idle GPU card, took the card from below 85 °C to 92 °C within
+21 s and was stopped (F2 note in §5 of the spec). At step 500 the CPU run matches the original GPU
+run's errors to 1.8e-6 at every resolution, so its first 6000 steps replay the S1–S4 run.
 
 ## GPU runs: environment, data and commands
 
@@ -136,7 +138,7 @@ Sep. Its lane waits for one.
 .venv/bin/python experiments/stage4/train_perceiver.py --run main
 for n in 16 64 128 512; do .venv/bin/python experiments/stage4/train_perceiver.py --run nocompress --res $n; done
 .venv/bin/python experiments/stage4/train_perceiver.py --run nolevelenc --res 64
-# follow-ups: F1 on one CPU core, F2 on an idle GPU card
+# follow-ups, both on the CPU: F1 on one core, F2 on four
 .venv/bin/python experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k
 .venv/bin/python experiments/stage4/train_perceiver.py --run main --steps 24000 --out f2_main_24k
 python experiments/stage4/score_followups.py
