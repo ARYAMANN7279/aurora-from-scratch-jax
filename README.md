@@ -1,4 +1,4 @@
-# Aurora-from-Scratch in JAX
+# Aurora from Scratch in JAX
 
 **What does pretraining data actually buy a neural PDE surrogate?**
 
