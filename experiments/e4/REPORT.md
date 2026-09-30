@@ -9,8 +9,9 @@ Figures: `figs/` (`figs/plot_e4.py` draws them from `analysis.json`).
 **One of five predictions hit (E4-P3); four missed.** Two of the misses overturn leads from
 earlier single-seed stages:
 
-* **Pushforward cuts 50-step rollout drift by 31–50%, even at matched compute.** At matched
-  compute (half the steps) drift falls by 44.6 ± 4.6% (Re 100) and 47.1 ± 6.9% (Re 300), about 10 SE.
+* **Pushforward cuts 50-step rollout drift by 31–50% at matched steps, and by 45–47% even at
+  matched compute.** At matched compute (half the steps) drift falls by 44.6 ± 4.6% (Re 100) and
+  47.1 ± 6.9% (Re 300), about 10 SE.
   E4-P2 was anchored on Stage 9, which found no gain at matched compute. The price at matched
   compute is one-step accuracy: +21.5 ± 3.8% one-step error.
 * **The MAE loss does not make rollouts blow up.** Re 300 drift changes by −11.1 ± 6.5% against

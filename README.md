@@ -12,7 +12,7 @@ produce the pretraining advantage.
 ## The question
 
 Aurora reports that its pretrained model **beats training from scratch by 25%**. The paper cannot
-say which of its eight pretraining datasets earned that gain. Those datasets differ in variables,
+say which of its pretraining datasets earned that gain. Those datasets differ in variables,
 resolution, physics and volume all at once, and rerunning the ablation would cost 32 × A100 for
 150k steps.
 
@@ -47,8 +47,8 @@ The Reynolds number (via ν) and the forcing wavenumber k_f define the flow regi
 * **Backbone:** Swin Transformer U-Net with shifted-window attention.
 * **Decoder:** mirrors the encoder.
 * **Training:** a one-step simulator, rolled out autoregressively. The experiments train with an
-  MSE loss. Aurora uses MAE, but the MAE-trained model blew up in rollout (Stage 8), so MAE is
-  tested as an E4 ablation.
+  MSE loss. Aurora uses MAE; a single-seed MAE model blew up in rollout (Stage 8), so MAE was
+  tested as an E4 ablation, where it stayed stable over 3 seeds.
 
 **Protocol**, applied to every experiment:
 * Every run has a prediction written down **before** it is launched.
@@ -84,7 +84,7 @@ before any run. All five ran on the lab GPU box and are reported against those p
 | E1 volume vs diversity | [`handouts/e1_volume_diversity.md`](handouts/e1_volume_diversity.md) | 57 | new `e1_v1`, 326 trajectories (generated on CPU) | ✅ **done** ([report](experiments/e1/REPORT.md)): 2/6 predictions HIT; pretraining halves one-step error in every cell (advantage 42–50%), but neither diversity nor volume changes it; zero-shot follows the nearest regime at the target's k_f; fine-tuned models drift more than scratch |
 | E2 heterogeneous fusion | [`handouts/e2_heterogeneous_fusion.md`](handouts/e2_heterogeneous_fusion.md) | 30 | `acc_v1` | ✅ **done** ([report](experiments/e2/REPORT.md)): 1/3 predictions HIT; pad-and-mask beats the Perceiver by 23% on the upsampled source; fusion costs the Perceiver 13–39% even on sources whose format did not change |
 | E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | ✅ **done** ([report](experiments/e3/REPORT.md)): 3/4 predictions HIT; zero-shot degrades slowly (0.30× → 0.41× persistence out to 2.8× the band's top Re); the fine-tuned advantage stays at 36–41% at every distance |
-| E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% even at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
+| E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% at matched steps and by 45–47% at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
 | E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | ✅ **done** ([report](experiments/e5/REPORT.md)): 2/4 predictions HIT; the pretraining advantage over scratch falls from 41% (1 trajectory) to 5% (6); fine-tuning gains ≤ 5.3% (full) and ≤ 1.7% (LoRA) |
 
 ## Stage 1 results: the data generator
@@ -137,6 +137,7 @@ python3.11 -m venv .venv
 | `src/aurora/` | The model in pure JAX: spectral-band levels, embedding, Perceiver, Swin3D blocks, U-Net backbone, full model, rollout, LoRA; the ablation harness (`harness.py`) and E2's multi-source trainer (`fusion.py`) |
 | `tests/` | Correctness gates (`pytest tests`) |
 | `experiments/stageN/` | Per-stage run scripts, result JSONs, figures and reports |
+| `experiments/eN/` | Per-experiment configs, result rows, `analysis.json`, figures and `REPORT.md` |
 | `experiments/e1/` | E1 design, N_gen measurement (all 33 regimes), configs and analysis |
 | `experiments/designs.py`, `make_configs.py`, `analyse_e345.py` | E2–E5 designs, the config writer (`experiments/e{2,3,4,5}/configs/`), and the analysis (verdicts per prediction) |
 | `experiments/run.py` | Runs configs (lists, sweeps, `--skip-done`, sharding); one row per run, by default in `experiments/results.jsonl` |
@@ -154,6 +155,9 @@ of 4, each reported in `experiments/eN/REPORT.md`. Every stage is built
 and passes its correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in
 `project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
 report in `experiments/stageN/REPORT.md`.
+
+**In progress:** three follow-ups to the Stage 4 and Stage 10 misses, with predictions committed
+before any run (see those rows of the roadmap).
 
 ## Advisors
 
