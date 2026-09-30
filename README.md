@@ -65,7 +65,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
 | 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds on a fixed machine but not across machines. This is a limit of chaotic flows plus floating point, not a bug: last-bit differences between CPU instruction sets grow by ~e²⁸. Mitigated by storing each trajectory's post-spin-up state and host ISA; `e1_v1` was generated on pinned CPU lanes |
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
-| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05. **Follow-up F1:** the C = 3 control trained 8× longer reaches 0.016, below S1's bar, so the bar is reachable with more training; **F2** (the shared model at a matched budget) waits for an idle GPU |
+| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05. **Follow-up F1:** the C = 3 control trained 8× longer reaches 0.016, below S1's bar, so the bar is reachable with more training; **F2** (the shared model at a matched budget) is running on the lab machine's CPU |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
 | 6 | U-Net backbone with skips | overfits a single trajectory | ✅ **done**: matches Aurora's backbone to 3 × 10⁻¹⁶; overfits to 0.07× persistence (16k steps) |
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
@@ -157,7 +157,8 @@ and passes its correctness gates (92 tests on CPU, including the experiment tool
 report in `experiments/stageN/REPORT.md`.
 
 **Follow-ups** to the Stage 4 and Stage 10 misses, with predictions committed before any run: Stage 4
-F1 and Stage 10 F1 are done (see those rows of the roadmap); Stage 4 F2 waits for an idle GPU card.
+F1 and Stage 10 F1 are done (see those rows of the roadmap); Stage 4 F2 is running, on the CPU because a
+GPU run overheats the shared machine's cards.
 
 ## Advisors
 
