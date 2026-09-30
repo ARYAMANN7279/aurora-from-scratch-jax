@@ -143,8 +143,8 @@ python3.11 -m venv .venv
 
 ## Status
 
-**All stages and experiments have their results; the write-up is next.** All eleven stages have their results. Stages 1, 3, 5, 6, 7, 8 and 11 met their
-acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
+**Complete.** All eleven stages and all five experiments have their results. Stages 1, 3, 5, 6, 7,
+8 and 11 met their acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
 little adaptation from two trajectories). E4, with 3.3× Stage 9's budget and 3 seeds, finds the
 opposite for pushforward. Stage 2's data are statistically sound, but bitwise
 regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet its acceptance

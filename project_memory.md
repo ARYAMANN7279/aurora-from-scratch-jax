@@ -535,15 +535,25 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 **Running (lab VM):** nothing. All GPU runs finished on 30 Sep, 09:17 VM time. No process of ours
 is left on the cards.
 
-**Remaining:**
-1. The write-up: RQ1–RQ5 from the five experiment reports.
-2. Open points carried by the reports:
-   * E1: a distance-matched 32-regime control; pretraining steps scaled with T.
-   * E3: a downward-in-Re arm and a k_f-distance arm (E1 suggests k_f distance matters most).
-   * E2: a wider resolution gap, and an unseen format.
-   * E4: longer budgets (the pushforward and depth effects may change at convergence).
-   * E5: a LoRA rank sweep.
-3. Optional: a deterministic `shell_spectrum` (a fixed-layout sum per shell), so D9 also holds on the
-   GPU. It only affects `diag.npz`.
-4. Before any further GPU run: use `glane3.sh` (idle cards only, card-placement interlock). Card 0
-   stays excluded unless the lab agrees otherwise.
+**Remaining:** nothing required. The owner decided against a separate write-up (29 Sep); the stage
+and experiment reports are the record.
+
+**Possible follow-ups** (each needs a new spec and the owner's go-ahead):
+* E1: a distance-matched 32-regime control; pretraining steps scaled with T.
+* E3: a downward-in-Re arm and a k_f-distance arm (E1 suggests k_f distance matters most).
+* E2: a wider resolution gap, and an unseen format.
+* E4: longer budgets (the pushforward and depth effects may change at convergence).
+* E5: a LoRA rank sweep.
+
+**Closed, not done:** a deterministic `shell_spectrum`, which would make D9 hold on the GPU. It
+would change the CPU `diag.npz` checksums, so the existing datasets would no longer regenerate
+bitwise with the current code, and it only buys a diagnostic.
+
+**Verified independently (30 Sep, cloud container):**
+* every experiment has exactly one row per config (186 of 186), with no strays, duplicates or
+  non-finite metrics;
+* all five `analysis.json` files recompute identically from the committed rows;
+* the verdicts and headline numbers in every report match.
+
+**Before any further GPU run:** use `glane3.sh` (idle cards only, card-placement interlock). Card 0
+stays excluded unless the lab agrees otherwise.
