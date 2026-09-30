@@ -63,15 +63,15 @@ Each stage has an acceptance test and is not passed until that test is met.
 | # | Deliverable | Acceptance test | Status |
 |---|---|---|---|
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
-| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds at Re 100 / 300 but not for the Re 1000 trajectory tested (machine-dependent) |
+| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds on a fixed machine but not across machines. This is a limit of chaotic flows plus floating point, not a bug: last-bit differences between CPU instruction sets grow by ~e²⁸. Mitigated by storing each trajectory's post-spin-up state and host ISA; `e1_v1` was generated on pinned CPU lanes |
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
-| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05 |
+| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05. **Follow-ups F1 (8× training at C = 3) and F2 (matched-budget shared run) are pre-registered** in the spec |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
 | 6 | U-Net backbone with skips | overfits a single trajectory | ✅ **done**: matches Aurora's backbone to 3 × 10⁻¹⁶; overfits to 0.07× persistence (16k steps) |
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
-| 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts; ⚠️ the MAE-trained model blows up at Re 300 (a lead for E4) |
-| 9 | Pushforward trick | lower rollout drift at matched compute | ⚠️ **not met**: no gain at matched compute; at matched steps (2× compute) it cuts drift by 11–14% (exploratory) |
-| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot already 0.58× persistence |
+| 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts. The single-seed MAE blow-up at Re 300 did **not** reproduce in E4 (3 seeds, 10k steps): MAE drift −11 ± 6.5% vs MSE |
+| 9 | Pushforward trick | lower rollout drift at matched compute | ⚠️→✅ not met at Stage 9's 3000-step budget (verdict kept), but **met in E4** (3 seeds, 10k steps): at matched compute pushforward cuts 50-step drift by 45 ± 5% / 47 ± 7% (Re 100 / 300) |
+| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot already 0.58× persistence. E5 confirms there is little headroom: even full fine-tuning gains ≤ 5.3% with 6 trajectories. **Follow-up F1 (LoRA rank sweep) is pre-registered** in the spec |
 | 11 | Ablation harness | one config → one run → one row of results | ✅ **done**: reproduces Stage 7 exactly from a config file |
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.

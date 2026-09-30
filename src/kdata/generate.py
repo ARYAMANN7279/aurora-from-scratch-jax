@@ -133,8 +133,8 @@ def generate_trajectory(root, Re, kf, seed, N_gen, T_spin=50.0, T_rec=100.0, sav
         if verbose:
             print(f"  {tag} seed {seed}: spin-up {spin_done}/{n_spin} steps", flush=True)
 
-    # the post-spin-up state lets this trajectory be re-derived exactly, independent of the machine
-    # that did the spin-up (bitwise results depend on the CPU ISA XLA compiles for; Stage 2 report)
+    # the post-spin-up state lets this trajectory be re-derived without redoing the spin-up; bitwise
+    # only on a machine with the same XLA ISA (results depend on the ISA; Stage 2 report)
     np.save(os.path.join(d, "state_t0.npy"), np.asarray(wh))
     resume = ck is not None and int(ck["i"]) > 0
     mm = {n: np.lib.format.open_memmap(paths[n] + ".part", mode="r+" if resume else "w+", dtype=np.float32,

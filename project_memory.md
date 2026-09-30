@@ -538,6 +538,24 @@ is left on the cards.
 **Remaining:** nothing required. The owner decided against a separate write-up (29 Sep); the stage
 and experiment reports are the record.
 
+**Pre-registered follow-ups (30 Sep; predictions committed in PR #27, not yet run):**
+* **Stage 10 F1**, a LoRA rank sweep:
+  `experiments/stage10/finetune.py --arm lora --rank {1,16,64}`. It needs
+  `data/stage7/onestep_mse_params.npz` (the Stage 7 model) and `acc_v1`, and takes ~15–20 min per
+  run on a 4-core CPU (much less on the GPU).
+* **Stage 4 F1**, the C = 3 control at 8× steps:
+  `experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k`.
+* **Stage 4 F2** (GPU): `train_perceiver.py --run main --steps 24000 --out f2_main_24k`. It needs
+  `make_512.py` data.
+* Score each against its table in `handouts/stage10_lora.md` or `handouts/stage04_perceiver.md`,
+  add the result to the stage report (the original verdicts stand), and update the README row.
+
+**README ⚠️ rows (30 Sep):**
+* Stages 8 and 9 are resolved by E4 (3 seeds).
+* Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
+  chaotic flows; the post-spin-up state helps only on the same XLA ISA).
+* Stages 4 and 10 wait on the follow-ups above.
+
 **Possible follow-ups** (each needs a new spec and the owner's go-ahead):
 * E1: a distance-matched 32-regime control; pretraining steps scaled with T.
 * E3: a downward-in-Re arm and a k_f-distance arm (E1 suggests k_f distance matters most).
