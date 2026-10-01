@@ -14,6 +14,10 @@ Training samples a trajectory uniformly, then a frame, as harness.py does, but 1
 call (lax.scan, sampling on the device). Simulated pretraining drops p from the inputs in a random
 half of those 100-step chunks (amendment A1), so that the model also runs on (u, v) alone; its loss
 always covers u, v and p.
+
+On a GPU, training sleeps between chunks to hold the card near 82 C (Throttle): the lab machine's
+cards heat past the lane's 87 C pause within seconds under a sustained job. Wall time only; the
+numbers are unchanged.
 """
 import argparse
 import importlib.util
@@ -101,6 +105,33 @@ def make_chunk(variables, out_vars, dt, lr_sched):
     return chunk, opt
 
 
+class Throttle:
+    """After each chunk, sleep long enough to hold the card near TARGET C. Off on the CPU."""
+    TARGET = 82
+
+    def __init__(self):
+        self.card = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+        self.on = jax.default_backend() == "gpu" and self.card.isdigit()
+        self.gap, self.slept = (0.5 if self.on else 0.0), 0.0  # start cautious
+
+    def temp(self):
+        q = ["nvidia-smi", "-i", self.card, "--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"]
+        try:
+            return int(subprocess.run(q, capture_output=True, text=True).stdout.strip())
+        except ValueError:  # no reading: keep the current gap
+            return self.TARGET
+
+    def __call__(self, ready):
+        if not self.on:
+            return
+        jax.block_until_ready(ready)  # so the sleep is real idle time on the card
+        t = self.temp()
+        self.gap = min(max(self.gap + 0.05 * (t - self.TARGET), 0.0), 10.0)
+        nap = self.gap + (5.0 if t >= 85 else 0.0)  # an extra 5 s when near the lane's 87 C pause
+        time.sleep(nap)
+        self.slept += nap
+
+
 def train(q, Xd, offs, lens, steps, lr, dt, seed, drop_p):
     sched = optax.cosine_decay_schedule(lr, max(steps, 1), alpha=1e-2)
     full = ("u", "v", "p") if drop_p is not None else ("u", "v")
@@ -109,15 +140,16 @@ def train(q, Xd, offs, lens, steps, lr, dt, seed, drop_p):
     st = opt.init(q)
     key = jax.random.PRNGKey(1000 + seed)
     rng = np.random.default_rng(seed)
-    curve = []
+    curve, thr = [], Throttle()
     for i in range(steps // CHUNK):
         key, sub = jax.random.split(key)
         fn = c_uv if (drop_p is not None and rng.random() < drop_p) else c_full
         q, st, losses = fn(q, st, sub, Xd, offs, lens)
+        thr(losses)
         if (i + 1) % 20 == 0:
             curve.append(dict(step=(i + 1) * CHUNK, loss=float(losses[-1])))
             print(curve[-1], flush=True)
-    return q, curve
+    return q, curve, thr.slept
 
 
 def evaluate(q, X, meta, mu, sd, dt, n_windows=None):
@@ -179,7 +211,7 @@ def main():
     name = ("smoke_" if a.smoke else "") + f"e6_{a.arm}" + (f"_{a.stage}" if a.stage else "") + f"_s{a.seed}"
     _, unravel = jax.flatten_util.ravel_pytree(model.init(jax.random.PRNGKey(0), MC, dtype=jnp.float32))
     load = lambda n: unravel(jnp.asarray(np.load(os.path.join(DATA, "runs", n, "params.npz"))["flat"]))
-    curve, row = [], dict(name=name, arm=a.arm, stage=a.stage, seed=a.seed)
+    curve, slept, row = [], 0.0, dict(name=name, arm=a.arm, stage=a.stage, seed=a.seed)
     if a.arm in ("PD", "PA") and a.stage == "pretrain":
         Xs, ms, res = load_source("sim")
         traj = [i for i in range(len(ms["names"])) if a.arm == "PA" or res[i] not in HOLD]
@@ -188,7 +220,7 @@ def main():
         q = model.init(jax.random.PRNGKey(a.seed), MC, dtype=jnp.float32)
         Xd, offs, lens = device_frames(Xs, ms, traj, mu_s, sd_s)
         dt = float(np.mean(ms["dt"]))
-        q, curve = train(q, Xd, offs, lens, steps, lr, dt, a.seed, drop_p=0.5)
+        q, curve, slept = train(q, Xd, offs, lens, steps, lr, dt, a.seed, drop_p=0.5)
         row.update(train_trajectories=len(traj), source="sim", norm_mean=mu_s.tolist(), norm_std=sd_s.tolist())
         del Xd
     else:
@@ -198,12 +230,13 @@ def main():
              else load(("smoke_" if a.smoke else "") + f"e6_{pretrain_of[a.arm]}_pretrain_s{a.seed}"))
         if steps:
             Xd, offs, lens = device_frames(Xr, mr, train_real, mu_r, sd_r)
-            q, curve = train(q, Xd, offs, lens, steps, lr, 0.02, a.seed, drop_p=None)
+            q, curve, slept = train(q, Xd, offs, lens, steps, lr, 0.02, a.seed, drop_p=None)
             del Xd
         row.update(train_trajectories=len(train_real) if steps else 0, source="real")
     row.update(steps=steps, lr=lr, curve=curve, eval=evaluate(q, Xr, mr, mu_r, sd_r, 0.02, 100 if a.smoke else None),
                real_norm_mean=mu_r.tolist(),
-               real_norm_std=sd_r.tolist(), wall_s=time.time() - t0, device=jax.devices()[0].device_kind,
+               real_norm_std=sd_r.tolist(), wall_s=time.time() - t0, throttle_sleep_s=slept,
+               device=jax.devices()[0].device_kind,
                git_commit=subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"], capture_output=True,
                                          text=True).stdout.strip(),
                command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))
