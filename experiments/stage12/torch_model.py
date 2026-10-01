@@ -21,29 +21,29 @@ def n_levels(N):
     return int(round(math.log2(N))) - 1
 
 
-def band_masks(N):
+def band_masks(N, dtype=np.float32):
     """As src/aurora/levels.py: (C, N, N//2+1) square-shell octave bands, Nyquist removed."""
     ky = np.abs(np.fft.fftfreq(N, 1.0 / N))
     kx = np.fft.rfftfreq(N, 1.0 / N)
     n = np.maximum(ky[:, None], kx[None, :]).astype(np.int64)
     idx = np.where(n < 2, 0, np.floor(np.log2(np.maximum(n, 1))).astype(np.int64))
     idx = np.where(n <= N // 2 - 1, idx, -1)
-    return np.stack([idx == j for j in range(n_levels(N))]).astype(np.float32)
+    return np.stack([idx == j for j in range(n_levels(N))]).astype(dtype)
 
 
-def fourier(s, D, lmin, lmax):
-    lam = np.geomspace(lmin, lmax, D // 2).astype(np.float32)
-    ang = (2 * math.pi * np.asarray(s, np.float32)[..., None] / lam).astype(np.float32)
-    return np.concatenate([np.sin(ang), np.cos(ang)], axis=-1).astype(np.float32)
+def fourier(s, D, lmin, lmax, dtype=np.float32):
+    lam = np.geomspace(lmin, lmax, D // 2).astype(dtype)
+    ang = (2 * math.pi * np.asarray(s, dtype)[..., None] / lam).astype(dtype)
+    return np.concatenate([np.sin(ang), np.cos(ang)], axis=-1).astype(dtype)
 
 
-def position(N, P, D):
-    c = (2 * math.pi * (np.arange(N // P) + 0.5) * P / N).astype(np.float32)
+def position(N, P, D, dtype=np.float32):
+    c = (2 * math.pi * (np.arange(N // P) + 0.5) * P / N).astype(dtype)
     yc, xc = np.meshgrid(c, c, indexing="ij")
     cen = np.stack([xc.ravel(), yc.ravel()], axis=-1)
-    m = np.arange(1, D // 4 + 1, dtype=np.float32)
+    m = np.arange(1, D // 4 + 1).astype(dtype)
     x, y = cen[:, :1] * m, cen[:, 1:] * m
-    return np.concatenate([np.sin(x), np.cos(x), np.sin(y), np.cos(y)], axis=-1).astype(np.float32)
+    return np.concatenate([np.sin(x), np.cos(x), np.sin(y), np.cos(y)], axis=-1).astype(dtype)
 
 
 def layernorm(x, g=None, b=None, eps=1e-5):
@@ -99,20 +99,20 @@ def shift_mask(res, ws, ss, periodic=(False, True, True)):
 
 class AuroraTorch(nn.Module):
     def __init__(self, flat, D=64, P=4, L=3, heads=4, N=64, enc_depths=(2, 2, 2), enc_heads=(2, 4, 8),
-                 dec_depths=(2, 2, 2), dec_heads=(8, 4, 2), window=(3, 4, 4), dt=0.2, sdpa=False):
+                 dec_depths=(2, 2, 2), dec_heads=(8, 4, 2), window=(3, 4, 4), dt=0.2, sdpa=False, dtype=np.float32):
         super().__init__()
-        self.p = nn.ParameterDict({k.replace("/", "__"): nn.Parameter(torch.tensor(np.asarray(v, np.float32)))
+        self.p = nn.ParameterDict({k.replace("/", "__"): nn.Parameter(torch.tensor(np.asarray(v, dtype)))
                                    for k, v in flat.items()})
         self.D, self.P, self.L, self.H, self.N, self.sdpa = D, P, L, heads, N, sdpa
         self.enc_depths, self.enc_heads, self.dec_depths, self.dec_heads = enc_depths, enc_heads, dec_depths, dec_heads
         self.window = window
         self.C = n_levels(N)
         T = (N // P) ** 2
-        self.register_buffer("bands", torch.tensor(band_masks(N)))
-        self.register_buffer("pos_in", torch.tensor(position(N, P, D)))
-        self.register_buffer("area_in", torch.tensor(fourier(np.log((2 * math.pi * P / N) ** 2), D, *AREA_RANGE)))
-        self.register_buffer("level_in", torch.tensor(fourier(np.arange(self.C, dtype=np.float32), D, *LEVEL_RANGE)))
-        self.register_buffer("time_in", torch.tensor(fourier(np.float32(dt), D, *TIME_RANGE)))
+        self.register_buffer("bands", torch.tensor(band_masks(N, dtype)))
+        self.register_buffer("pos_in", torch.tensor(position(N, P, D, dtype)))
+        self.register_buffer("area_in", torch.tensor(fourier(np.log((2 * math.pi * P / N) ** 2), D, *AREA_RANGE, dtype)))
+        self.register_buffer("level_in", torch.tensor(fourier(np.arange(self.C), D, *LEVEL_RANGE, dtype)))
+        self.register_buffer("time_in", torch.tensor(fourier(dt, D, *TIME_RANGE, dtype)))
         res = [(L, N // P, N // P)]
         for _ in range(len(enc_depths) - 1):
             res.append((L, res[-1][1] // 2, res[-1][2] // 2))

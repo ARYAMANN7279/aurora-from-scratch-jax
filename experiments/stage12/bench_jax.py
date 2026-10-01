@@ -26,6 +26,7 @@ ap.add_argument("--arm", default="J0", choices=["J0", "J1", "J2", "J3", "J4", "J
 ap.add_argument("--batch", type=int, default=16)
 ap.add_argument("--accuracy", action="store_true")
 ap.add_argument("--export", action="store_true", help="trained E1 weights, a real batch, output and gradients")
+ap.add_argument("--f64", action="store_true", help="export in float64 (exactness check of the PyTorch port)")
 ap.add_argument("--steps", type=int, default=500)
 ap.add_argument("--warmup", type=int, default=100)
 ap.add_argument("--repeats", type=int, default=3)
@@ -33,6 +34,8 @@ ap.add_argument("--scan", type=int, default=50, help="J3: steps per jitted call"
 args = ap.parse_args()
 PREC = {"J6": "bfloat16", "J6t": "tensorfloat32"}.get(args.arm, "highest")
 os.environ["JAX_DEFAULT_MATMUL_PRECISION"] = PREC  # before jax is imported
+if args.f64:
+    os.environ["JAX_ENABLE_X64"] = "1"
 
 import jax  # noqa: E402
 import jax.flatten_util  # noqa: E402
@@ -132,6 +135,8 @@ def export():
     run, p, vs = trained_e1()
     k = np.array([10, 60, 110, 160])
     xm, x0, xp = vs[0][k - 1], vs[0][k], vs[0][k + 1]
+    if args.f64:
+        p, xm, x0, xp = jax.tree_util.tree_map(lambda a: a.astype(jnp.float64), (p, xm, x0, xp))
     loss_f = lambda prm: jnp.mean((fwd(prm, xm, x0) - xp) ** 2)
     y = jax.jit(fwd)(p, xm, x0)
     loss, g = jax.jit(jax.value_and_grad(loss_f))(p)
@@ -141,9 +146,9 @@ def export():
     for path, leaf in jax.tree_util.tree_flatten_with_path(g)[0]:
         out["grad:" + path_key(path)] = leaf
     os.makedirs(os.path.join(ROOT, "data", "stage12"), exist_ok=True)
-    dest = os.path.join(ROOT, "data", "stage12", f"ref_e1_{jax.default_backend()}.npz")
+    dest = os.path.join(ROOT, "data", "stage12", f"ref_e1_{jax.default_backend()}{'_f64' if args.f64 else ''}.npz")
     np.savez(dest, **{k: np.asarray(v) for k, v in out.items()})
-    return dict(run=run, file=os.path.relpath(dest, ROOT), backend=jax.default_backend(), loss=float(loss),
+    return dict(run=run, file=os.path.relpath(dest, ROOT), backend=jax.default_backend(), dtype=str(y.dtype), loss=float(loss),
                 n_params=len([k for k in out if k.startswith("param:")]))
 
 
