@@ -87,7 +87,25 @@ check of S12-P6 passed.
 * The accuracy of a model trained end to end in bfloat16 is not tested here; S12-P6 checks only the
   forward pass of a model trained in float32.
 
-## 7. Files
+## 7. Amendments
+
+**A1 (1 Oct 2026, before any timing): the float32 bars of the same-computation gate are ill-posed,
+so the gate is applied in float64.** Measured with `check_torch.py` on the CPU
+(`results/torch_equivalence_cpu*.json`):
+* **float64, both sides:** forward 2.8e-13, loss 4.6e-14, every gradient within 8.4e-10. The
+  PyTorch port computes the same function as the JAX model, to machine precision.
+* **float32:** forward 4.9e-5 and worst gradient 148% (`bb/enc/2/blocks/1/qkv/b`), a FAIL as
+  written. But JAX's own float32 result is just as far from its float64 result: forward 1.1e-4,
+  and gradients up to 72% off on leaves whose gradient is tiny. In that bias, the key part has an
+  exactly zero gradient (6e-21 in float64), because softmax ignores a shift shared by all keys. Its
+  float32 value is rounding noise on both sides. The bars were set below the float32 rounding floor
+  of this 12-block network.
+* **Gate from now on:** float64 forward within 1e-10 and gradients within 1e-6 relative (met). The
+  float32 verdict stays FAIL as recorded, and timing proceeds in float32 as planned.
+* The first float32 check also flagged `emb/enc/time` as having no PyTorch gradient. The model never
+  uses that parameter, so its JAX gradient is exactly zero; the check now skips such parameters.
+
+## 8. Files
 
 * `experiments/stage12/bench_jax.py`: J0–J7.
 * `experiments/stage12/torch_model.py`: the PyTorch port.
