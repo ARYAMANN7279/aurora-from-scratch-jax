@@ -134,6 +134,10 @@ behave as the literature expects.
   * `LD_LIBRARY_PATH` unset for our jobs (the account's OpenFOAM / PETSc / anaconda libraries sit
     on it);
   * `CUDA_DEVICE_ORDER=PCI_BUS_ID`.
+  * a separate PyTorch environment for comparisons (1 Oct), `ugp2_scratch/torchenv`: torch
+    2.11.0+cu128 (the newest build for the driver's CUDA 12.8), torchvision 0.26.0+cu128,
+    microsoft-aurora 2.0.1, timm 1.0.30. Point `TRITON_CACHE_DIR` and `TORCHINDUCTOR_CACHE_DIR` at
+    the scratch area.
 * **Cards:** all 4 are shared with other users' jobs, at 74–93 °C. Our lanes take a card only when
   nobody else is computing on it and it is below 85 °C. They SIGSTOP our own process group at
   ≥ 87 °C or on thermal slowdown, and resume at ≤ 80 °C. Failed jobs get 3 retries.
@@ -559,6 +563,32 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   up to 27% apart at 512² at the same step (5% at 16²). So one shared-model end-point carries roughly
   ±10–25% noise at 512², S1–S4 included. F1's single-resolution control did not drift.
 
+### 2026-10-01 — Advisor's notes: speed (Stage 12) and RealPDE (E6) opened
+* **Advisor's notes (1 Oct):**
+  * test the model on RealPDE data;
+  * JAX speedups, with PyTorch as the reference, including the same run under `torch.compile`;
+  * decorators and parallelism;
+  * ideas for the multi-head attention;
+  * understand the architecture deeply.
+* **Owner's decisions:** the RealPDE test is sim → real pretraining (pretrain on the simulated foil
+  data, fine-tune on the real PIV data, compare with scratch and with the organisers' FNO); all
+  implementation in-house.
+* **Stage 12 spec** (`handouts/stage12_speed.md`): ten predictions, committed before any timing.
+  Tooling is in `experiments/stage12/`:
+  * the JAX arms J0–J6;
+  * an exact PyTorch port of the model;
+  * the PyTorch arms T0–T3;
+  * Aurora's own backbone as a reference point.
+* **The port is exact:** in float64 it matches the JAX model to 2.8e-13 (forward) and 8.4e-10
+  (gradients). The spec's float32 bars were below the rounding floor: JAX's own float32 is 1.1e-4
+  from float64. Amendment A1, made before any timing, moves the gate to float64.
+* **`docs/architecture.md`:** a walkthrough of the model, with shapes, the comparison with Aurora,
+  parameters and FLOPs.
+* **RealPDE foil data** (the UGP-I competition copy):
+  * **real:** 82 trajectories, u and v, 607 frames, 64 × 128 grid;
+  * **simulated:** 100 trajectories, u, v and p, 1000 frames;
+  * not periodic, so E6 needs rectangular bands and masked shifts.
+
 ## 6. Status (1 Oct 2026)
 
 **Done:**
@@ -582,10 +612,12 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
-**Running (lab VM):** Stage 4 F2 on the CPU (lane `f4c2`, cores 4–7), started 1 Oct 03:02, due
-around 16:30. Nothing of ours is on any GPU.
+**Running (lab VM):**
+* Stage 4 F2 on the CPU (lane `f4c2`, cores 4–7), started 1 Oct 03:02, due around 16:30.
+* The Stage 12 timing lanes `s12j` (JAX) and `s12t` (PyTorch), waiting for an idle card.
 
-**Remaining:** Stage 4 F2. The stage and experiment reports are the record.
+**Remaining:** Stage 4 F2; the Stage 12 timings and report; the E6 (RealPDE) spec and runs. The
+stage and experiment reports are the record.
 
 **Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**
 * **Stage 10 F1**, a LoRA rank sweep: **done** (1 Oct), both predictions HIT. It ran on a retrain of
