@@ -113,8 +113,16 @@ S1–S6. Result: `results/f1_nocompress_16_48k.json`.
 **F2: the shared model at a matched per-resolution budget** (24,000 steps, the controls' 6000 per
 resolution). Running on 4 cores of the lab machine's CPU since 1 Oct 03:02 (6.9 s per 512² step,
 about 13 h). Its first attempt, on an idle GPU card, took the card from below 85 °C to 92 °C within
-21 s and was stopped (F2 note in §5 of the spec). At step 500 the CPU run matches the original GPU
-run's errors to 1.8e-6 at every resolution, so its first 6000 steps replay the S1–S4 run.
+21 s and was stopped (F2 note in §5 of the spec). Its first 6000 steps rerun the S1–S4 run on
+another device, and they show how noisy a single run of the shared model is:
+* The two runs agree to 2e-6 at step 500, but the last-bit differences grow fast (1e-4 at step 1000,
+  2e-3 at 1500). From step 3000 on, the runs are effectively independent: at the same step they
+  differ by up to 5% / 15% / 19% / 27% at 16² / 64² / 128² / 512².
+* At step 6000 the CPU run reads 0.167 / 0.087 / 0.065 / 0.066, against S1–S4's 0.167 / 0.085 /
+  0.063 / 0.060.
+* A single end-point of the shared model therefore carries roughly ±10–25% noise at 512², and less
+  at lower resolution. That applies to S1–S4 as well. (F1's single-resolution control did not
+  drift: 0.0430154 vs 0.0430152 at step 6000.)
 
 ## GPU runs: environment, data and commands
 
