@@ -138,3 +138,7 @@ within 21 s, and while paused it held the card at full power, so it was stopped.
 no heavy GPU job stays within our limits (start below 85 °C, pause at 87 °C). On the CPU a 512² step
 takes 6.9 s, so the run takes about 13 h. F1 showed that the CPU reproduces the GPU numbers (0.0430154
 vs 0.0430152 after 6000 steps). The command and the predictions stand as registered.
+
+*Correction (1 Oct 2026, during the run):* the shared model does not reproduce across devices the
+way F1's control did. The CPU and GPU runs agree to 2e-6 at step 500, but from step 3000 they differ
+by up to 27% at 512² at the same step. See the report.

@@ -554,7 +554,10 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   another user took it soon after.
 * F2 now runs on 4 cores of the VM's CPU (lane `f4c2`, cores 4–7, 14 GB), started 03:02: 6.9 s per
   512² step, about 13 h. The device change went into the spec before the run (F2 note).
-* At step 500 it matches the original GPU run to 1.8e-6 at every resolution.
+* At step 500 it matches the original GPU run to 2e-6 at every resolution, but the difference grows
+  (1e-4 at step 1000, 2e-3 at 1500), and from step 3000 the two runs are effectively independent:
+  up to 27% apart at 512² at the same step (5% at 16²). So one shared-model end-point carries roughly
+  ±10–25% noise at 512², S1–S4 included. F1's single-resolution control did not drift.
 
 ## 6. Status (1 Oct 2026)
 
