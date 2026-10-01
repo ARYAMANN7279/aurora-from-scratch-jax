@@ -10,13 +10,15 @@ S12-P5  |J5 / J0 - 1| < 0.10                        S12-P10 |forward: torch.comp
 Acceptance: some JAX arm trains the E1 model >= 1.5x faster than J0. J4 counts per model (3 models
 per step). J3 counts as the same numerics (the same step, with batches drawn by a different random
 stream). J6 counts only if the S12-P6 accuracy check passes.
-usage: score.py   (writes results/analysis.json)
+usage: score.py [results_dir]   (default results/; writes <results_dir>/analysis.json)
+Amendment A2: S12-P1, P2 and P4 are scored on results/first_pass, the rest on results/.
 """
 import json
 import os
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-RES = os.path.join(HERE, "results")
+RES = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.join(HERE, "results")
 
 
 def t(name):

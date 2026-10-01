@@ -105,6 +105,31 @@ so the gate is applied in float64.** Measured with `check_torch.py` on the CPU
 * The first float32 check also flagged `emb/enc/time` as having no PyTorch gradient. The model never
   uses that parameter, so its JAX gradient is exactly zero; the check now skips such parameters.
 
+**A2 (1 Oct 2026, after J0–J3 were timed and before any other arm): host load. Every arm is timed
+again in one sequential lane.**
+* **Why.**
+  * J0 ran at 19.2 ms per step with the card 26% busy, so its step is bound by the host, not the
+    card. The same loop trained the E-runs at under 10.5 ms per step: a 20,000-step pretrain took a
+    median 3.5 min, compile and evaluation included.
+  * The shared host was near saturation during the first timings and still is: load average 11–14
+    on 16 cores, CPU pressure (PSI "some", 60 s) 27–40%. The load comes from other users' jobs and
+    from our CPU runs (Stage 4 F2 on 4 cores, the E6 smoke test on 4 more).
+  * A host-bound step slows with host load. Arms timed hours apart, or by two lanes running at once,
+    are therefore not comparable, and the JAX-against-PyTorch predictions (S12-P7, P8, P10) compare
+    exactly such arms.
+* **Change.**
+  * One lane times every arm, one job at a time: J0; J1 at 32 and 64; J2–J6 and J6t; the JAX
+    forward pass; T0–T3; the PyTorch forward passes; A0 and B0; then J0 again. The bfloat16
+    accuracy check runs last.
+  * The host's load average and CPU pressure are logged every 30 s to `logs/hostload.log`.
+  * J0's drift between the start and the end of the lane is reported.
+* **Scoring.**
+  * S12-P1, P2 and P4 are scored as registered, on the first timings (`results/first_pass/`): all
+    their arms were timed before this amendment. Their re-timed values are reported alongside.
+  * Every other prediction, and the acceptance, is scored on the sequential lane, against the J0
+    that opens it.
+  * `score.py` takes the results directory as an argument; its rules are unchanged.
+
 ## 8. Files
 
 * `experiments/stage12/bench_jax.py`: J0–J7.
