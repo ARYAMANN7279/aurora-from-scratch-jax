@@ -111,7 +111,7 @@ class Throttle:
 
     def __init__(self):
         self.card = os.environ.get("CUDA_VISIBLE_DEVICES", "")
-        self.on = jax.default_backend() == "gpu" and self.card.isdigit()
+        self.on = jax.devices()[0].platform != "cpu" and self.card.isdigit()
         self.gap, self.slept = (0.5 if self.on else 0.0), 0.0  # start cautious
 
     def temp(self):
