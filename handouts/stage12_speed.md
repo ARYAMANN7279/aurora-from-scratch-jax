@@ -130,6 +130,22 @@ again in one sequential lane.**
     that opens it.
   * `score.py` takes the results directory as an argument; its rules are unchanged.
 
+**A3 (1 Oct 2026, after the sequential lane's first J0 and before any other arm in it): card 3
+only.**
+* **Why.**
+  * The sequential lane's first card was card 2, freed by another user at 21:06. J0 ran there at
+    10.3 ms per step, with the host load at 4.7 and the card reaching 86 °C.
+  * J1 (batch 32) then took card 2 from below 85 °C to 88 °C within 10 s, and the lane killed it
+    twice.
+  * Card 2 cannot hold a sustained job below the lane's 87 °C limit. Card 1 runs nearly as hot
+    (88–90 °C under its current user). Card 3 stays at 52–68 °C under load.
+  * A timing run cannot be throttled to keep a card cool.
+* **Change.**
+  * The lane restarts on card 3 only, from J0.
+  * The J0 that opens the restarted lane is the reference for scoring (A2's rule, now on the same
+    card as every other arm).
+  * The card-2 J0 is reported alongside (`results/card2/`).
+
 ## 8. Files
 
 * `experiments/stage12/bench_jax.py`: J0–J7.
