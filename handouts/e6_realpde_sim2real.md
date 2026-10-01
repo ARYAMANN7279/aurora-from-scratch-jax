@@ -119,7 +119,20 @@ On the 900 test windows, at 32 × 64, on u and v:
   3. the FNO baselines (CPU is enough);
   4. the runs, on idle cards only.
 
-## 8. Files
+## 8. Amendments
+
+**A1 (1 Oct 2026, before any E6 run): pressure in simulated pretraining, and where the zero-shot
+numbers come from.**
+* **p is dropped in half the pretraining.** Real data has no p, so a model pretrained only with p
+  in its inputs would face an input it never trained on at zero-shot time. The competition kit
+  handled this by zeroing p at random during simulated training (`mask_prob` 0.5). We drop p from
+  the inputs of a random half of the 100-step training chunks (seeded). Our embedding takes any
+  subset of variables, so p is absent rather than zero. The loss always covers u, v and p, whose
+  targets the simulations have.
+* **The zero-shot arms ZD and ZA are not separate runs.** Every pretraining run is evaluated on the
+  real test windows when it finishes, and that evaluation is the zero-shot result.
+
+## 9. Files
 
 * `src/aurora`: rectangular, non-periodic support (square path unchanged).
 * `experiments/e6/prep_sim.py`: strided simulation frames.
