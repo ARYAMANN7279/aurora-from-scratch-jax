@@ -6,7 +6,8 @@ usage:
   run_e6.py --arm PD|PA --stage finetune --seed s  from that pretrain, real data: 2,000 steps, lr 1e-4
   run_e6.py --arm ZD|ZA --seed s                   zero-shot: the PD | PA pretrain on real data. Every
                                                    pretrain row already carries this evaluation.
-Options: --steps N overrides the budget (smoke tests only); --results rows file.
+Options: --steps N overrides the budget; --smoke runs 200 steps and scores 100 windows, writing
+no row and saving under data/e6/runs/smoke_<name>; --results rows file.
 Each run appends one row to the rows file and saves its parameters to data/e6/runs/<name>/.
 
 Training samples a trajectory uniformly, then a frame, as harness.py does, but 100 steps per jitted
@@ -35,8 +36,10 @@ import optax  # noqa: E402
 
 from aurora import backbone as bb, model  # noqa: E402
 
+sys.path.insert(0, HERE)
+from splits import HOLD, val_starts  # noqa: E402
+
 KIT = "/SML_DISK_24TB/rajeshr/Aryamann/UGP/starting_kit_v9/realpde_t1_starting_kit_v9/scoring.py"
-HOLD = (3750, 5025, 25425, 26700)  # UGP-I's re_lohi split: the 2 lowest and 2 highest Re
 DATA = os.path.join(ROOT, "data", "e6")
 MC = model.ModelConfig(64, 2, 3, 4, bb.Config(64, (2, 2, 2), (2, 4, 8), (2, 2, 2), (8, 4, 2), (3, 4, 4),
                                               periodic=(False, False, False)))
@@ -49,16 +52,6 @@ def load_source(kind):
     X = np.load(os.path.join(DATA, f"{kind}_frames.npy"), mmap_mode="r")
     re_ = meta["re"] if kind == "sim" else [int(n.split("_")[0]) for n in meta["names"]]
     return X, meta, np.array(re_)
-
-
-def val_starts(meta, n=900):
-    """UGP-I's r12_eval.val_starts(900, "re_lohi"), reproduced line for line (seed 0)."""
-    off, lens, names = meta["off"], meta["lens"], meta["names"]
-    RE = np.array([int(x.split("_")[0]) for x in names])
-    VT = set(np.where(np.isin(RE, list(HOLD)))[0].tolist())
-    st = [t0 for i in range(len(lens)) if i in VT for t0 in range(off[i], off[i] + lens[i] - 39)]
-    rng = np.random.default_rng(0)
-    return rng.choice(np.array(st), size=min(n, len(st)), replace=False)
 
 
 def stats(X, meta, traj):
@@ -127,13 +120,13 @@ def train(q, Xd, offs, lens, steps, lr, dt, seed, drop_p):
     return q, curve
 
 
-def evaluate(q, X, meta, mu, sd, dt):
+def evaluate(q, X, meta, mu, sd, dt, n_windows=None):
     """The 900 re_lohi windows: 20-step rollout from the last 2 of 20 input frames, scored with the
     competition kit's own functions; plus the one-step error and persistence."""
     spec = importlib.util.spec_from_file_location("kit_scoring", KIT)
     S = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(S)
-    starts = val_starts(meta)
+    starts = val_starts(meta)[:n_windows]
     fwd = partial(model.apply, variables=("u", "v"), dt=dt, mc=MC)
 
     @jax.jit
@@ -172,7 +165,10 @@ def main():
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--steps", type=int)
     ap.add_argument("--results", default=os.path.join(HERE, "results", "rows.jsonl"))
+    ap.add_argument("--smoke", action="store_true")
     a = ap.parse_args()
+    if a.smoke:
+        a.steps = a.steps or 200
     t0 = time.time()
     Xr, mr, rer = load_source("real")
     train_real = [i for i in range(len(mr["names"])) if rer[i] not in HOLD]
@@ -180,7 +176,7 @@ def main():
     pretrain_of = {"PD": "PD", "PA": "PA", "ZD": "PD", "ZA": "PA"}  # whose pretrained weights an arm starts from
     if a.arm in ("PD", "PA") and a.stage is None:
         raise SystemExit("--stage pretrain|finetune is required for PD and PA")
-    name = f"e6_{a.arm}" + (f"_{a.stage}" if a.stage else "") + f"_s{a.seed}"
+    name = ("smoke_" if a.smoke else "") + f"e6_{a.arm}" + (f"_{a.stage}" if a.stage else "") + f"_s{a.seed}"
     _, unravel = jax.flatten_util.ravel_pytree(model.init(jax.random.PRNGKey(0), MC, dtype=jnp.float32))
     load = lambda n: unravel(jnp.asarray(np.load(os.path.join(DATA, "runs", n, "params.npz"))["flat"]))
     curve, row = [], dict(name=name, arm=a.arm, stage=a.stage, seed=a.seed)
@@ -199,13 +195,14 @@ def main():
         steps, lr = (a.steps or BUDGET["S"][0], BUDGET["S"][1]) if a.arm == "S" else (
             (a.steps or BUDGET["finetune"][0], BUDGET["finetune"][1]) if a.stage == "finetune" else (0, 0.0))
         q = (model.init(jax.random.PRNGKey(a.seed), MC, dtype=jnp.float32) if a.arm == "S"
-             else load(f"e6_{pretrain_of[a.arm]}_pretrain_s{a.seed}"))
+             else load(("smoke_" if a.smoke else "") + f"e6_{pretrain_of[a.arm]}_pretrain_s{a.seed}"))
         if steps:
             Xd, offs, lens = device_frames(Xr, mr, train_real, mu_r, sd_r)
             q, curve = train(q, Xd, offs, lens, steps, lr, 0.02, a.seed, drop_p=None)
             del Xd
         row.update(train_trajectories=len(train_real) if steps else 0, source="real")
-    row.update(steps=steps, lr=lr, curve=curve, eval=evaluate(q, Xr, mr, mu_r, sd_r, 0.02), real_norm_mean=mu_r.tolist(),
+    row.update(steps=steps, lr=lr, curve=curve, eval=evaluate(q, Xr, mr, mu_r, sd_r, 0.02, 100 if a.smoke else None),
+               real_norm_mean=mu_r.tolist(),
                real_norm_std=sd_r.tolist(), wall_s=time.time() - t0, device=jax.devices()[0].device_kind,
                git_commit=subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"], capture_output=True,
                                          text=True).stdout.strip(),
@@ -213,9 +210,10 @@ def main():
     os.makedirs(os.path.join(DATA, "runs", name), exist_ok=True)
     flat, _ = jax.flatten_util.ravel_pytree(q)
     np.savez(os.path.join(DATA, "runs", name, "params.npz"), flat=np.asarray(flat))
-    os.makedirs(os.path.dirname(os.path.abspath(a.results)), exist_ok=True)
-    with open(a.results, "a") as f:
-        f.write(json.dumps(row) + "\n")
+    if not a.smoke:
+        os.makedirs(os.path.dirname(os.path.abspath(a.results)), exist_ok=True)
+        with open(a.results, "a") as f:
+            f.write(json.dumps(row) + "\n")
     print(json.dumps({k: row[k] for k in ("name", "eval", "wall_s")}))
 
 
