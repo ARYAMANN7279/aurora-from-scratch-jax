@@ -37,20 +37,25 @@ def init(key, mc=ModelConfig(), dtype=None):
 
 
 def apply(p, x_prev, x_cur, variables, dt, mc=ModelConfig()):
-    """x_prev, x_cur: (V, N, N) with channels in the order of `variables` -> (4, N, N) in VARS order."""
+    """x_prev, x_cur: (V, H, W) with channels in the order of `variables` -> (4, H, W) in VARS order.
+
+    Square periodic fields are the experiments' case. A rectangular grid and a non-periodic
+    backbone (E6) are also handled; position encodings follow the backbone's periodicity in x, y."""
     if not variables:
         raise ValueError("at least one input variable is required")
-    N = x_cur.shape[-1]
-    C, T = n_levels(N), (N // mc.P) ** 2
-    tok = (embed(p["emb"], x_prev, variables, mc.P) + p["frame"][0]
-           + embed(p["emb"], x_cur, variables, mc.P) + p["frame"][1])
+    H, W = x_cur.shape[-2:]
+    Wr = None if W == H else W
+    per = tuple(mc.backbone.periodic[1:]) == (True, True)
+    C, T = n_levels(min(H, W)), (H // mc.P) * (W // mc.P)
+    tok = (embed(p["emb"], x_prev, variables, mc.P, periodic=per) + p["frame"][0]
+           + embed(p["emb"], x_cur, variables, mc.P, periodic=per) + p["frame"][1])
     z = perceiver.aggregate(p["per"], tok, mc.heads)                                   # (L, T, D)
     t_emb = enc.lead_time(jnp.asarray(dt, x_cur.dtype), mc.D).astype(x_cur.dtype)
     y = bb.apply(p["bb"], z.reshape(1, mc.L * T, mc.D), t_emb[None],
-                 (mc.L, N // mc.P, N // mc.P), mc.backbone)                            # (1, L*T, 2D)
+                 (mc.L, H // mc.P, W // mc.P), mc.backbone)                            # (1, L*T, 2D)
     y = y[0].reshape(mc.L, T, 2 * mc.D) @ p["mid"]["W"] + p["mid"]["b"]
-    delta = unembed(p["emb"], perceiver.decode(p["per"], y, C, mc.heads), VARS, mc.P, N)
-    base = jnp.zeros((len(VARS), N, N), x_cur.dtype)
+    delta = unembed(p["emb"], perceiver.decode(p["per"], y, C, mc.heads), VARS, mc.P, H, Wr)
+    base = jnp.zeros((len(VARS), H, W), x_cur.dtype)
     for i, v in enumerate(variables):
         if v in VARS:  # extra embedded inputs (e.g. E2's presence masks) have no residual
             base = base.at[VARS.index(v)].set(x_cur[i])

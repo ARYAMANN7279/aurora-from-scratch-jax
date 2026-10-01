@@ -9,9 +9,10 @@ def patchify(x, P):
     return x.reshape(*b, (H // P) * (W // P), P * P)
 
 
-def unpatchify(t, P, N):
-    """(..., T, P*P) -> (..., N, N); exact inverse of patchify."""
+def unpatchify(t, P, N, W=None):
+    """(..., T, P*P) -> (..., N, W); exact inverse of patchify. W defaults to N (square)."""
+    W = N if W is None else W
     *b, _, _ = t.shape
-    x = t.reshape(*b, N // P, N // P, P, P)
+    x = t.reshape(*b, N // P, W // P, P, P)
     x = x.swapaxes(-3, -2)
-    return x.reshape(*b, N, N)
+    return x.reshape(*b, N, W)
