@@ -65,7 +65,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
 | 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds on a fixed machine but not across machines. This is a limit of chaotic flows plus floating point, not a bug: last-bit differences between CPU instruction sets grow by ~e²⁸. Mitigated by storing each trajectory's post-spin-up state and host ISA; `e1_v1` was generated on pinned CPU lanes |
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
-| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05. **Follow-up F1:** the C = 3 control trained 8× longer reaches 0.016, below S1's bar, so the bar is reachable with more training; **F2** (the shared model at a matched budget) is running on the lab machine's CPU |
+| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05. **Follow-up F1:** the C = 3 control trained 8× longer reaches 0.016, below S1's bar, so the bar is reachable with more training. **F2:** the shared model at 4× the steps (the controls' 6000 per resolution) reaches 0.058 / 0.026 / 0.018 / 0.021, beating the dedicated controls at 64² and above but 1.35× worse at 16² (F2-P1 MISS on 16² alone; S4's bar met, F2-P2 HIT) |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
 | 6 | U-Net backbone with skips | overfits a single trajectory | ✅ **done**: matches Aurora's backbone to 3 × 10⁻¹⁶; overfits to 0.07× persistence (16k steps) |
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
@@ -73,7 +73,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 9 | Pushforward trick | lower rollout drift at matched compute | ⚠️→✅ not met at Stage 9's 3000-step budget (verdict kept), but **met in E4** (3 seeds, 10k steps): at matched compute pushforward cuts 50-step drift by 45 ± 5% / 47 ± 7% (Re 100 / 300) |
 | 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot already 0.58× persistence. E5 confirms there is little headroom: even full fine-tuning gains ≤ 5.3% with 6 trajectories. **Follow-up F1** (rank sweep, on a retrained base): the gain rises with rank, but only from 0.2% (r = 1) to 1.0% (r = 64), against 2.7% for full fine-tuning, so rank is not the limit |
 | 11 | Ablation harness | one config → one run → one row of results | ✅ **done**: reproduces Stage 7 exactly from a config file |
-| 12 | Speed: what makes training faster, in JAX and against PyTorch | a JAX configuration at least 1.5× faster than the E-run loop, with numerics unchanged | ⏳ spec (10 predictions) and tooling ready: an exact PyTorch port of the model, `torch.compile` arms, Aurora's own backbone as a reference. Timings wait for an idle GPU |
+| 12 | Speed: what makes training faster, in JAX and against PyTorch | a JAX configuration at least 1.5× faster than the E-run loop, with numerics unchanged | ⏳ spec (10 predictions) and tooling ready: an exact PyTorch port of the model, `torch.compile` arms, Aurora's own backbone as a reference. First timings (J0–J3): the step is launch-bound and a 50-step `lax.scan` runs it 3.9× faster (S12-P1, P2 HIT; P4 MISS: donation gave 1.58×). The host was near saturation, so every arm is being re-timed in one sequential lane (amendment A2); it waits for an idle GPU |
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
@@ -88,7 +88,7 @@ predictions:
 | E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | ✅ **done** ([report](experiments/e3/REPORT.md)): 3/4 predictions HIT; zero-shot degrades slowly (0.30× → 0.41× persistence out to 2.8× the band's top Re); the fine-tuned advantage stays at 36–41% at every distance |
 | E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% at matched steps and by 45–47% at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
 | E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | ✅ **done** ([report](experiments/e5/REPORT.md)): 2/4 predictions HIT; the pretraining advantage over scratch falls from 41% (1 trajectory) to 5% (6); fine-tuning gains ≤ 5.3% (full) and ≤ 1.7% (LoRA) |
-| E6 sim-to-real on real data | [`handouts/e6_realpde_sim2real.md`](handouts/e6_realpde_sim2real.md) | 15, plus the kit's FNOs | RealPDE foil (UGP-I's competition copy), 32 × 64 | ⏳ spec, data, model support for rectangular non-periodic fields, runner and FNO baselines ready. Runs wait for an idle GPU |
+| E6 sim-to-real on real data | [`handouts/e6_realpde_sim2real.md`](handouts/e6_realpde_sim2real.md) | 15, plus the kit's FNOs | RealPDE foil (UGP-I's competition copy), 32 × 64 | ⏳ spec, data, model support for rectangular non-periodic fields, runner, FNO baselines and scoring script ready; the CPU smoke test passed. The 15 runs are queued for an idle GPU |
 
 ## Stage 1 results: the data generator
 
@@ -161,7 +161,7 @@ and passes its correctness gates (98 tests on CPU, including the experiment tool
 report in `experiments/stageN/REPORT.md`.
 
 **Follow-ups** to the Stage 4 and Stage 10 misses, with predictions committed before any run: Stage 4
-F1 and Stage 10 F1 are done (see those rows of the roadmap); Stage 4 F2 is running, on the CPU because a
+F1, Stage 4 F2 and Stage 10 F1 are all done (see those rows of the roadmap). F2 ran on the CPU because a
 GPU run overheats the shared machine's cards.
 
 ## Advisors

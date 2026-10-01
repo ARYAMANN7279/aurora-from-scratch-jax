@@ -618,6 +618,32 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
     * So UGP-I's "the FNO never saw a real frame" was wrong (corrected in §1), and E6-P3's anchor
       with it (amendment A2, before any run).
 
+### 2026-10-01 — Stage 4 F2 done; Stage 12 re-timed in one lane; E6 queued
+* **Stage 4 F2** (CPU, 03:02–15:50): 0.058 / 0.026 / 0.018 / 0.021 at 16² / 64² / 128² / 512² after
+  24,000 steps. It beats the dedicated 6000-step controls at 64² and above (0.42–0.64×) but is
+  1.35× worse at 16², so F2-P1 MISSES on 16² alone (4% over the bar, inside the ±10–25% end-point
+  noise). F2-P2 (S4's bar) HITS. Every error was still falling. Report updated; the original
+  verdicts stand.
+* **Stage 12 first timings** (card 3, 12:34–12:43): J0 19.2 ms, J1 19.7 ms (batch 32) and 22.3 ms (batch
+  64), J2 12.2 ms, J3 4.9 ms. The card sat at 26% utilisation under J0. S12-P1 and P2 HIT; P4 MISSES
+  (donation 1.58×).
+* **Host load:** J0's 19.2 ms against the E-runs' ≤ 10.5 ms for the same loop. The host was at load
+  11–14 on 16 cores (CPU pressure 27–40%), and a host-bound step slows with it.
+  * **Amendment A2**, before any further timing: every arm re-timed in one sequential lane (`s12`),
+    with J0 first and last and the host load logged (`logs/hostload.log`).
+  * P1, P2 and P4 stay scored on the first pass (`results/first_pass/`).
+* **J4 was paused** when another user started a job on card 3. The owner had it killed and requeued.
+* **`glane4.sh`** (VM scratch) = `glane3.sh` plus preemption:
+  * a paused job is killed (its own process group) and requeued on the next idle card;
+  * at once in the timing lane (`PREEMPT_S=0`, which enforces the spec's discard rule), after
+    10 min in the E6 lane;
+  * tested with a fake `nvidia-smi` before use.
+* **E6:**
+  * the CPU smoke test passed: S, PD pretrain and PD fine-tune all train, save, reload and score;
+  * `score.py` was committed before any run;
+  * the lane `e6g` (15 runs, seed 0 of every arm first, pinned to cores 8–11) waits for an idle card.
+* **The VM clone** is at the latest `vm-results` commit, updated by bundle.
+
 ## 6. Status (1 Oct 2026)
 
 **Done:**
@@ -642,22 +668,20 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* Stage 4 F2 on the CPU (lane `f4c2`, cores 4–7), started 1 Oct 03:02, due around 16:30.
-* The Stage 12 timing lanes `s12j` (JAX) and `s12t` (PyTorch), waiting for an idle card.
-* E6: the FNO baselines on the CPU. Next is a CPU smoke test of `run_e6.py`, then a GPU lane. The
-  owner chose to wait for cards 1–3; card 0 stays excluded.
+* Stage 12: lane `s12` (`glane4.sh`, every arm in sequence, amendment A2), waiting for an idle card.
+* E6: lane `e6g` (`glane4.sh`, 15 runs), waiting for an idle card. The owner chose to wait for
+  cards 1–3; card 0 stays excluded.
 
-**Remaining:** Stage 4 F2; the Stage 12 timings and report; the E6 (RealPDE) spec and runs. The
-stage and experiment reports are the record.
+**Remaining:** the Stage 12 timings and report; the E6 runs and report. The stage and experiment
+reports are the record.
 
 **Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**
 * **Stage 10 F1**, a LoRA rank sweep: **done** (1 Oct), both predictions HIT. It ran on a retrain of
   the Stage 7 model, because the original parameters are gone (amendment F1-A1 lists the commands).
 * **Stage 4 F1**, the C = 3 control at 8× steps: **done** (30 Sep), F1-P1 HIT, F1-P2 MISS (0.016):
   `experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k`.
-* **Stage 4 F2**: `train_perceiver.py --run main --steps 24000 --out f2_main_24k`, **running on the
-  CPU** (F2 note in the spec: a GPU run overheats the cards). It needs the `make_512.py` frames,
-  which are on the VM.
+* **Stage 4 F2**: `train_perceiver.py --run main --steps 24000 --out f2_main_24k`, **done** (1 Oct, on
+  the CPU): F2-P1 MISS (1.35× at 16²; 0.42–0.64× at 64² and above), F2-P2 HIT (0.021 at 512²).
 * Score each against its table in `handouts/stage10_lora.md` or `handouts/stage04_perceiver.md`,
   add the result to the stage report (the original verdicts stand), and update the README row.
 
@@ -666,7 +690,8 @@ stage and experiment reports are the record.
 * Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
 * Stage 10 is explained by F1 (rank is not the limit) and stays not met. Stage 4: F1 shows that
-  S1's bar is reachable at C = 3; F2 is running.
+  S1's bar is reachable at C = 3; F2 shows that the shared model beats dedicated controls at 64² and
+  above when given the same steps per resolution.
 
 **Possible follow-ups** (each needs a new spec and the owner's go-ahead):
 * E1: a distance-matched 32-regime control; pretraining steps scaled with T.
