@@ -588,6 +588,24 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * **real:** 82 trajectories, u and v, 607 frames, 64 × 128 grid;
   * **simulated:** 100 trajectories, u, v and p, 1000 frames;
   * not periodic, so E6 needs rectangular bands and masked shifts.
+* **E6 set up** (spec `handouts/e6_realpde_sim2real.md`, five predictions, committed before any run):
+  * **Data** (`data/e6/`):
+    * simulated frames strided to 32 × 64 as UGP-I strided the real ones, 100,000 frames;
+    * UGP-I's real frames copied, with their sha256;
+    * the simulated fluctuations are about 4× the real ones, so each source is normalised by its
+      own statistics.
+  * **Model:** handles rectangular, non-periodic fields.
+    * Bands are octave shells of max(|k_y|, |k_x|·H/W).
+    * Positions use half a period.
+    * Shifted windows are masked.
+    * The square path is bitwise unchanged; gates R1–R6 cover the new case and 98 tests pass.
+  * **Code:**
+    * `run_e6.py`, training and evaluation, scored with the kit's own `scoring.py`;
+    * `fno_baseline.py`, which runs the kit's FNOs through UGP-I's `r12_eval`;
+    * one shared split module, whose windows must match UGP-I's 900.
+  * **Amendment A1, before any run:** p is dropped in a random half of the simulated pretraining
+    chunks, as the kit's `mask_prob` did. The zero-shot arms are the pretraining runs' own
+    evaluations.
 
 ## 6. Status (1 Oct 2026)
 
@@ -609,12 +627,14 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * E3: done, 3 of 4 HIT (zero-shot degrades slowly with distance; the fine-tuned advantage stays at
   36–41%).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
-* 92 tests pass on CPU. On the GPU (the 91 tests before W10): 87 pass at default precision and 90
+* 98 tests pass on CPU (1 Oct: the 92 earlier ones plus E6's gates R1–R6). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
 * Stage 4 F2 on the CPU (lane `f4c2`, cores 4–7), started 1 Oct 03:02, due around 16:30.
 * The Stage 12 timing lanes `s12j` (JAX) and `s12t` (PyTorch), waiting for an idle card.
+* E6: the FNO baselines on the CPU. Next is a CPU smoke test of `run_e6.py`, then a GPU lane. The
+  owner chose to wait for cards 1–3; card 0 stays excluded.
 
 **Remaining:** Stage 4 F2; the Stage 12 timings and report; the E6 (RealPDE) spec and runs. The
 stage and experiment reports are the record.

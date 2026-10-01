@@ -73,11 +73,13 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 9 | Pushforward trick | lower rollout drift at matched compute | ⚠️→✅ not met at Stage 9's 3000-step budget (verdict kept), but **met in E4** (3 seeds, 10k steps): at matched compute pushforward cuts 50-step drift by 45 ± 5% / 47 ± 7% (Re 100 / 300) |
 | 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot already 0.58× persistence. E5 confirms there is little headroom: even full fine-tuning gains ≤ 5.3% with 6 trajectories. **Follow-up F1** (rank sweep, on a retrained base): the gain rises with rank, but only from 0.2% (r = 1) to 1.0% (r = 64), against 2.7% for full fine-tuning, so rank is not the limit |
 | 11 | Ablation harness | one config → one run → one row of results | ✅ **done**: reproduces Stage 7 exactly from a config file |
+| 12 | Speed: what makes training faster, in JAX and against PyTorch | a JAX configuration at least 1.5× faster than the E-run loop, with numerics unchanged | ⏳ spec (10 predictions) and tooling ready: an exact PyTorch port of the model, `torch.compile` arms, Aurora's own backbone as a reference. Timings wait for an idle GPU |
 
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
-**Experiments.** Every experiment has a spec with pre-registered predictions, frozen in git on 28 Sep 2026
-before any run. All five ran on the lab GPU box and are reported against those predictions:
+**Experiments.** Every experiment has a spec with pre-registered predictions, committed in git before any
+run (E1–E5 on 28 Sep 2026, E6 on 1 Oct). E1–E5 ran on the lab GPU box and are reported against those
+predictions:
 
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
@@ -86,6 +88,7 @@ before any run. All five ran on the lab GPU box and are reported against those p
 | E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | ✅ **done** ([report](experiments/e3/REPORT.md)): 3/4 predictions HIT; zero-shot degrades slowly (0.30× → 0.41× persistence out to 2.8× the band's top Re); the fine-tuned advantage stays at 36–41% at every distance |
 | E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% at matched steps and by 45–47% at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
 | E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | ✅ **done** ([report](experiments/e5/REPORT.md)): 2/4 predictions HIT; the pretraining advantage over scratch falls from 41% (1 trajectory) to 5% (6); fine-tuning gains ≤ 5.3% (full) and ≤ 1.7% (LoRA) |
+| E6 sim-to-real on real data | [`handouts/e6_realpde_sim2real.md`](handouts/e6_realpde_sim2real.md) | 15, plus the kit's FNOs | RealPDE foil (UGP-I's competition copy), 32 × 64 | ⏳ spec, data, model support for rectangular non-periodic fields, runner and FNO baselines ready. Runs wait for an idle GPU |
 
 ## Stage 1 results: the data generator
 
@@ -114,7 +117,7 @@ Full report: [`experiments/stage1/REPORT.md`](experiments/stage1/REPORT.md).
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
 
-# correctness gates (92 tests, ~10 min on a 4-core CPU)
+# correctness gates (98 tests, about 7-10 min on 4 CPU cores)
 .venv/bin/python -m pytest tests -q
 
 # one config -> one run -> one row: reproduces the Stage 7 result (needs the acc_v1 dataset)
@@ -153,7 +156,7 @@ regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet 
 test either: the shared Perceiver was still improving when its 6000-step budget ran out.
 All five experiments are done: E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5 and E5 2
 of 4, each reported in `experiments/eN/REPORT.md`. Every stage is built
-and passes its correctness gates (92 tests on CPU, including the experiment tooling; GPU notes in
+and passes its correctness gates (98 tests on CPU, including the experiment tooling; GPU notes in
 `project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
 report in `experiments/stageN/REPORT.md`.
 
