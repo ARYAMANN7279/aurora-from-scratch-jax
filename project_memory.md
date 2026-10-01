@@ -37,10 +37,13 @@ batch size · model-load path · CUDA graphs · asset decompression.
 ## 1. Why UGP-II exists — the question UGP-I could not answer
 
 UGP-I ended on a specific, evidenced claim: **the remaining gap is a better PRETRAINED backbone.**
-Evidence: the supplied FNO, which never saw a real frame, beat every architecture trainable from
-scratch on 81 trajectories (U-Net −16%, MWT −60%); six weeks of fine-tuning moved the residual only
-3.7%; and the RealPDEBench paper's own best performer on the Foil dataset is DPOT-L-FT, a large
-pretrained foundation model.
+Evidence: the supplied FNO, pretrained on simulations and then fine-tuned by the organisers on real
+data, beat every architecture trainable from scratch on 81 trajectories (U-Net −16%, MWT −60%); six
+weeks of fine-tuning moved the residual only 3.7%; and the RealPDEBench paper's own best performer on
+the Foil dataset is DPOT-L-FT, a large pretrained foundation model.
+*(Corrected 1 Oct 2026: UGP-I took that FNO for one that never saw a real frame. The
+simulation-only checkpoint `sim_fno.pth` scores rel_l2 1.23 on the same windows (E6 baselines), so
+the strong one was `sim_real_fno.pth`, fine-tuned on real data.)*
 
 That claim was **untestable inside the competition**: outside pretrained weights were banned
 (disqualification), only 81 real trajectories existed, and — decisively — the offline validation had
@@ -606,6 +609,14 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * **Amendment A1, before any run:** p is dropped in a random half of the simulated pretraining
     chunks, as the kit's `mask_prob` did. The zero-shot arms are the pretraining runs' own
     evaluations.
+  * **FNO baselines** on the 900 `re_lohi` windows (CPU, through UGP-I's `r12_eval`; the windows are
+    identical to UGP-I's):
+    * `sim_real_fno.pth`: rel_l2 error 0.0948 (subscore 95.47), TKE 75.90, MVPE 96.09. UGP-I's
+      selftest reproduces to 1e-3.
+    * `sim_fno.pth`, simulations only: rel_l2 error 1.23 (subscore 61.95). It does not transfer
+      zero-shot.
+    * So UGP-I's "the FNO never saw a real frame" was wrong (corrected in §1), and E6-P3's anchor
+      with it (amendment A2, before any run).
 
 ## 6. Status (1 Oct 2026)
 

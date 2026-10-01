@@ -132,6 +132,19 @@ numbers come from.**
 * **The zero-shot arms ZD and ZA are not separate runs.** Every pretraining run is evaluated on the
   real test windows when it finishes, and that evaluation is the zero-shot result.
 
+**A2 (1 Oct 2026, before any E6 run): E6-P3's anchor misread UGP-I. The prediction stands as
+registered.** The anchor says the organisers' simulation-only FNO beat every model trained from
+scratch on the real data. It does not hold, as the baselines measured on the 900 windows
+(`results/fno_baseline.json`) show:
+* `sim_fno.pth`, simulations only, scores rel_l2 error 1.23 (subscore 61.95): it does not
+  transfer to real data zero-shot. Its own training log shows real-data validation errors of 4–6,
+  and UGP-I measured subscore 73.7 for it on another holdout.
+* The FNO that beat UGP-I's from-scratch U-Net and MWT was `sim_real_fno.pth`: 0.0948 here
+  (subscore 95.47, reproducing UGP-I's selftest). The organisers fine-tuned it on real data.
+* UGP-I's evidence therefore supports simulation pretraining followed by real fine-tuning. From
+  `sim_fno.pth`, fine-tuning on 55 real trajectories reached subscore 95.16 (UGP-I, M55). That is
+  E6-P1's claim, not E6-P3's.
+
 ## 9. Files
 
 * `src/aurora`: rectangular, non-periodic support (square path unchanged).
