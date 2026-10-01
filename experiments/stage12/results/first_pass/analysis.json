@@ -1,0 +1,52 @@
+{
+ "ms_per_step": {
+  "jax": {
+   "J0": 19.22671516612172,
+   "J2": 12.184691143687814,
+   "J3": 4.919595790095627,
+   "J4": null,
+   "J5": null,
+   "J6": null,
+   "J6t": null,
+   "fwd": null,
+   "J1_b32": 19.693627665750682,
+   "J1_b64": 22.25265960022807
+  },
+  "torch": {
+   "T0": null,
+   "T1": null,
+   "T2": null,
+   "T3": null,
+   "fwd_eager": null,
+   "fwd_compile": null,
+   "A0_eager": null,
+   "A0_compile": null,
+   "B0_eager": null
+  }
+ },
+ "bf16_accuracy": null,
+ "predictions": {
+  "S12-P1": true,
+  "S12-P2": true,
+  "S12-P3": null,
+  "S12-P4": false,
+  "S12-P5": null,
+  "S12-P6": null,
+  "S12-P7": null,
+  "S12-P8": null,
+  "S12-P9": null,
+  "S12-P10": null
+ },
+ "speedup_vs_J0": {
+  "J2": 1.5779402973280923,
+  "J3": 3.908190019356853
+ },
+ "acceptance": {
+  "bar": "a JAX arm >= 1.5x faster than J0",
+  "best": [
+   "J3",
+   3.908190019356853
+  ],
+  "met": true
+ }
+}

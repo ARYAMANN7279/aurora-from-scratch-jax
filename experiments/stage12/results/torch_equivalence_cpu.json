@@ -1,0 +1,41 @@
+{
+ "ref": "data/stage12/ref_e1_cpu.npz",
+ "device": "cpu",
+ "sdpa": false,
+ "torch": "2.11.0+cu128",
+ "forward_max_rel": 4.859357068198733e-05,
+ "loss_jax": 0.004418482072651386,
+ "loss_torch": 0.004418563563376665,
+ "dtype": "torch.float32",
+ "grad_max_rel": 1.4801568984985352,
+ "grad_worst_leaf": "bb/enc/2/blocks/1/qkv/b",
+ "grad_top5": [
+  [
+   "bb/enc/2/blocks/1/qkv/b",
+   1.4801568984985352
+  ],
+  [
+   "bb/enc/2/blocks/1/qkv/W",
+   1.470607876777649
+  ],
+  [
+   "bb/enc/1/blocks/1/proj/W",
+   0.9797012209892273
+  ],
+  [
+   "bb/enc/1/blocks/0/proj/W",
+   0.9703916311264038
+  ],
+  [
+   "bb/enc/2/blocks/0/qkv/b",
+   0.9167540073394775
+  ]
+ ],
+ "n_leaves": 218,
+ "missing_grads": [],
+ "gate": {
+  "forward": false,
+  "grads": false,
+  "pass": false
+ }
+}

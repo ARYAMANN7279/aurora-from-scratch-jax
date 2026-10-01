@@ -49,6 +49,7 @@ def model_config(m):
     return model.ModelConfig(m["D"], m["P"], m["L"], m["heads"],
                              bb.Config(m["D"], tuple(b["enc_depths"]), tuple(b["enc_heads"]),
                                        tuple(b["dec_depths"]), tuple(b["dec_heads"]), tuple(b["window"]),
+                                       periodic=tuple(b.get("periodic", bb.swin.PERIODIC)),
                                        shift=b.get("shift", True)))
 
 

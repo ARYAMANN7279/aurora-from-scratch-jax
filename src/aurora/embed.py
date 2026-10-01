@@ -35,12 +35,13 @@ def init(key, D, P, variables=VARS, dtype=None):
     }
 
 
-def encoding_terms(params, N, P, C):
-    """Learned-linear-mapped encodings: position (T, D), area (D,), level (C, D)."""
+def encoding_terms(params, N, P, C, W=None, periodic=True):
+    """Learned-linear-mapped encodings: position (T, D), area (D,), level (C, D). N x W grid, W
+    defaulting to N."""
     lin = lambda name, x: x @ params["enc"][name]["W"] + params["enc"][name]["b"]
     D = params["enc"]["pos"]["W"].shape[0]
-    return (lin("pos", enc.position(enc.patch_centres(N, P), D)),
-            lin("area", enc.area(N, P, D)),
+    return (lin("pos", enc.position(enc.patch_centres(N, P, W, periodic), D)),
+            lin("area", enc.area(N, P, D, W)),
             lin("level", enc.level(C, D)))
 
 
@@ -49,31 +50,31 @@ def to_levels(x, bands=True):
     return decompose(x) if bands else x[:, None]
 
 
-def embed(params, x, variables, P, bands=True, encodings=True):
-    """x: (V, N, N) with channels in the order of `variables` -> tokens (C, T, D)."""
-    N = x.shape[-1]
-    C = n_levels(N) if bands else 1
+def embed(params, x, variables, P, bands=True, encodings=True, periodic=True):
+    """x: (V, H, W) with channels in the order of `variables` -> tokens (C, T, D)."""
+    H, W = x.shape[-2:]
+    C = n_levels(min(H, W)) if bands else 1
     D = params["enc"]["pos"]["W"].shape[0]
-    tok = jnp.zeros((C, (N // P) ** 2, D), dtype=params["enc"]["pos"]["W"].dtype)
+    tok = jnp.zeros((C, (H // P) * (W // P), D), dtype=params["enc"]["pos"]["W"].dtype)
     if variables:
         xl = to_levels(x, bands)
         for i, v in enumerate(variables):
             tok = tok + patchify(xl[i], P) @ params["embed"][v]["W"] + params["embed"][v]["b"]
     if encodings:
-        pos, ar, lev = encoding_terms(params, N, P, C)
+        pos, ar, lev = encoding_terms(params, H, P, C, None if W == H else W, periodic)
         tok = tok + pos[None] + ar[None, None] + lev[:, None]
     return tok
 
 
-def unembed_levels(params, tokens, variables, P, N):
-    """tokens (C, T, D) -> (V, C, N, N) per-level reconstructions."""
-    return jnp.stack([unpatchify(tokens @ params["head"][v]["W"] + params["head"][v]["b"], P, N)
+def unembed_levels(params, tokens, variables, P, N, W=None):
+    """tokens (C, T, D) -> (V, C, N, W) per-level reconstructions (W defaults to N)."""
+    return jnp.stack([unpatchify(tokens @ params["head"][v]["W"] + params["head"][v]["b"], P, N, W)
                       for v in variables])
 
 
-def unembed(params, tokens, variables, P, N):
-    """tokens (C, T, D) -> (V, N, N): per-variable heads, then the sum over levels."""
-    return unembed_levels(params, tokens, variables, P, N).sum(axis=1)
+def unembed(params, tokens, variables, P, N, W=None):
+    """tokens (C, T, D) -> (V, N, W): per-variable heads, then the sum over levels."""
+    return unembed_levels(params, tokens, variables, P, N, W).sum(axis=1)
 
 
 def n_params(params):

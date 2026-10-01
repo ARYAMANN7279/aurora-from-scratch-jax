@@ -19,8 +19,11 @@ budget (amendment A1 in the spec); their original verdicts are kept.
 
 **Follow-ups (pre-registered 30 Sep 2026; the verdicts above stand).** F1 trained the 16² control
 (C = 3) for 48,000 steps and reached **0.016**, below S1's bar of 0.02: the bar is within reach of
-this autoencoder given more training (F1-P1 HIT, F1-P2 MISS). F2, the shared model at a matched
-per-resolution budget, is running on the lab machine's CPU. See "Follow-ups" below.
+this autoencoder given more training (F1-P1 HIT, F1-P2 MISS). F2 trained the shared model for
+24,000 steps, the controls' 6000 per resolution. It reached **0.058 / 0.026 / 0.018 / 0.021** at
+16² / 64² / 128² / 512². That beats the single-resolution controls at 64² and above (0.42–0.64×
+their error) but not at 16² (1.35×, against a 1.3× bar). So F2-P1 MISSES, on 16² alone; S4's bar is
+met (F2-P2 HIT). See "Follow-ups" below.
 
 ## Gates
 
@@ -110,11 +113,45 @@ S1–S6. Result: `results/f1_nocompress_16_48k.json`.
   CPU, against 0.0430152 on its GPU.
 * Ran on one CPU core of the lab machine (single-threaded XLA): 8.0 ms per step, 6.8 min in all.
 
-**F2: the shared model at a matched per-resolution budget** (24,000 steps, the controls' 6000 per
-resolution). Running on 4 cores of the lab machine's CPU since 1 Oct 03:02 (6.9 s per 512² step,
-about 13 h). Its first attempt, on an idle GPU card, took the card from below 85 °C to 92 °C within
-21 s and was stopped (F2 note in §5 of the spec). Its first 6000 steps rerun the S1–S4 run on
-another device, and they show how noisy a single run of the shared model is:
+**F2: the shared model at a matched per-resolution budget.** The S1–S4 run was trained 4× longer:
+24,000 steps, so each resolution gets the controls' 6000 on average. The learning rate is the same
+constant rate, and there is one run (key 0).
+* **Where it ran:** on 4 cores of the lab machine's CPU, from 1 Oct 03:02 to 15:50 (12.8 h; 6.4 s per
+  512² step). Its first attempt, on an idle GPU card, took the card from below 85 °C to 92 °C
+  within 21 s and was stopped (F2 note in §5 of the spec).
+* **Result:** `results/f2_main_24k.json`.
+
+| # | Prediction (spec §5) | Measured | Verdict |
+|---|---|---|---|
+| F2-P1 | every error within 1.3× of the single-resolution control at the same C (S5) | 1.35× / 0.64× / 0.44× / 0.42× | **MISS** (16² only) |
+| F2-P2 | S4's bar met: error at 512² < 0.05 | 0.0208 | **HIT** |
+
+| | 16² (C = 3) | 64² (C = 5) | 128² (C = 6) | 512² (C = 8) |
+|---|---|---|---|---|
+| S1–S4 run, step 6000 | 0.167 | 0.085 | 0.063 | 0.060 |
+| F2, step 6000 | 0.167 | 0.087 | 0.065 | 0.066 |
+| F2, step 12,000 | 0.102 | 0.053 | 0.038 | 0.037 |
+| F2, step 18,000 | 0.072 | 0.034 | 0.022 | 0.022 |
+| **F2, step 24,000** | **0.058** | **0.026** | **0.018** | **0.021** |
+| single-resolution control, 6000 steps (S5) | 0.043 | 0.041 | 0.040 | 0.049 |
+| F2 / control | 1.35 | 0.64 | 0.44 | 0.42 |
+
+* **At the same steps per resolution, sharing wins everywhere except 16².** The one shared model
+  beats a dedicated model by 1.6–2.4× at 64² and above, and loses by 1.35× at 16². Every step
+  updates the same weights, whatever its resolution, so each resolution also learns from the other
+  three's steps. Why 16², the coarsest grid, gains least is not measured.
+* **The 16² miss is small against the noise.** 1.35 is 4% over the bar, while a single end-point of
+  the shared model carries roughly ±10–25% noise (below; 512² alone moves from 0.0237 to 0.0208 over
+  the last 500 steps). The verdict is MISS as registered.
+* **Still improving.** Every error was still falling at step 24,000. At 16² it went from 0.064 to
+  0.058, and at 512² from 0.028 to 0.021, over the last 2500 steps.
+* **Against the Stage 4 bars.** This is a reading, not a verdict: S1–S4 stand as scored at 6000
+  steps. With 4× the training, the shared model would meet S3 (< 0.03) and S4 (< 0.05). It comes
+  close to S2 (0.026 against < 0.02) and stays far from S1 (0.058 against < 0.02). The dedicated 16²
+  model reaches S1 with 8× the steps (F1).
+
+**Noise.** F2's first 6000 steps rerun the S1–S4 run on another device, and they show how noisy a
+single run of the shared model is:
 * The two runs agree to 2e-6 at step 500, but the last-bit differences grow fast (1e-4 at step 1000,
   2e-3 at 1500). From step 3000 on, the runs are effectively independent: at the same step they
   differ by up to 5% / 15% / 19% / 27% at 16² / 64² / 128² / 512².
