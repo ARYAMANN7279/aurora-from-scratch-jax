@@ -31,6 +31,7 @@ ap.add_argument("--steps", type=int, default=500)
 ap.add_argument("--warmup", type=int, default=100)
 ap.add_argument("--repeats", type=int, default=3)
 ap.add_argument("--scan", type=int, default=50, help="J3: steps per jitted call")
+ap.add_argument("--smoke", action="store_true", help="dry run with tiny counts; writes no result")
 args = ap.parse_args()
 PREC = {"J6": "bfloat16", "J6t": "tensorfloat32"}.get(args.arm, "highest")
 os.environ["JAX_DEFAULT_MATMUL_PRECISION"] = PREC  # before jax is imported
@@ -270,6 +271,9 @@ def main():
     res["git_commit"] = subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"],
                                        capture_output=True, text=True).stdout.strip()
     res["command"] = " ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:])
+    if args.smoke:
+        print("smoke ok", name, res.get("median_ms"))
+        return
     os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
     with open(os.path.join(HERE, "results", f"{name}.json"), "w") as f:
         json.dump(res, f, indent=1)

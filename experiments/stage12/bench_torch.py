@@ -33,11 +33,13 @@ ap.add_argument("--steps", type=int, default=500)
 ap.add_argument("--warmup", type=int, default=100)
 ap.add_argument("--repeats", type=int, default=3)
 ap.add_argument("--ref", default=os.path.join(ROOT, "data", "stage12", "ref_e1_cpu.npz"))
+ap.add_argument("--smoke", action="store_true", help="CPU dry run with tiny counts; writes no result")
 args = ap.parse_args()
 torch.backends.cuda.matmul.allow_tf32 = False
 torch.backends.cudnn.allow_tf32 = False
 torch.set_float32_matmul_precision("highest")
-dev = torch.device("cuda")
+dev = torch.device("cpu" if args.smoke else "cuda")
+sync = (lambda: None) if args.smoke else torch.cuda.synchronize
 F_, S, TAGS, V, N, B = 501, 16, 2, 4, 64, args.batch
 
 
@@ -60,14 +62,14 @@ class Sampler(threading.Thread):
 
 def timed(call):
     """call() runs one step and returns a tensor. Same structure as bench_jax.timed."""
-    torch.cuda.synchronize()
+    sync()
     t = time.perf_counter()
     call()
-    torch.cuda.synchronize()
+    sync()
     first = time.perf_counter() - t
     for _ in range(args.warmup):
         call()
-    torch.cuda.synchronize()
+    sync()
     smp = Sampler()
     smp.start()
     reps = []
@@ -75,7 +77,7 @@ def timed(call):
         t = time.perf_counter()
         for _ in range(args.steps):
             call()
-        torch.cuda.synchronize()
+        sync()
         reps.append(1e3 * (time.perf_counter() - t) / args.steps)
     smp.on = False
     return first, reps, smp.rows
@@ -149,12 +151,15 @@ def main():
     rows = np.array(rows) if rows else np.zeros((1, 3))
     res = dict(arm=args.arm, batch=B, precision="float32, TF32 off", ms_per_step=reps, median_ms=float(np.median(reps)),
                first_call_s=first, steps=args.steps, warmup=args.warmup, repeats=len(reps), n_samples=len(rows),
-               card=os.environ.get("CUDA_VISIBLE_DEVICES", ""), device=torch.cuda.get_device_name(0),
+               card=os.environ.get("CUDA_VISIBLE_DEVICES", ""), device=torch.cuda.get_device_name(0) if dev.type == "cuda" else "cpu",
                torch=torch.__version__, gpu_temp_max=float(rows[:, 0].max()), gpu_util_mean=float(rows[:, 1].mean()),
                sm_clock_mean=float(rows[:, 2].mean()), **extra)
     res["git_commit"] = subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"],
                                        capture_output=True, text=True).stdout.strip()
     res["command"] = " ".join(["torchenv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:])
+    if args.smoke:
+        print("smoke ok", args.arm, res["median_ms"])
+        return
     os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
     with open(os.path.join(HERE, "results", f"{args.arm}_b{B}.json"), "w") as f:
         json.dump(res, f, indent=1)
