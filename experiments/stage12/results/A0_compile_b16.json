@@ -1,0 +1,25 @@
+{
+ "arm": "A0_compile",
+ "batch": 16,
+ "precision": "float32, TF32 off",
+ "ms_per_step": [
+  7.1519499300047755,
+  7.069069404155016,
+  6.9371596379205585
+ ],
+ "median_ms": 7.069069404155016,
+ "first_call_s": 28.45458467397839,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 10,
+ "card": "3",
+ "device": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+ "torch": "2.11.0+cu128",
+ "gpu_temp_max": 58.0,
+ "gpu_util_mean": 67.5,
+ "sm_clock_mean": 2835.0,
+ "note": "Aurora's backbone masks shifted windows along H; ours is periodic (not the same computation)",
+ "git_commit": "56ba61c",
+ "command": "torchenv/bin/python experiments/stage12/bench_torch.py --arm A0_compile"
+}

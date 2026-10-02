@@ -130,6 +130,22 @@ again in one sequential lane.**
     that opens it.
   * `score.py` takes the results directory as an argument; its rules are unchanged.
 
+**A3 (1 Oct 2026, after the sequential lane's first J0 and before any other arm in it): card 3
+only.**
+* **Why.**
+  * The sequential lane's first card was card 2, freed by another user at 21:06. J0 ran there at
+    10.3 ms per step, with the host load at 4.7 and the card reaching 86 °C.
+  * J1 (batch 32) then took card 2 from below 85 °C to 88 °C within 10 s, and the lane killed it
+    twice.
+  * Card 2 cannot hold a sustained job below the lane's 87 °C limit. Card 1 runs nearly as hot
+    (88–90 °C under its current user). Card 3 stays at 52–68 °C under load.
+  * A timing run cannot be throttled to keep a card cool.
+* **Change.**
+  * The lane restarts on card 3 only, from J0.
+  * The J0 that opens the restarted lane is the reference for scoring (A2's rule, now on the same
+    card as every other arm).
+  * The card-2 J0 is reported alongside (`results/card2/`).
+
 ## 8. Files
 
 * `experiments/stage12/bench_jax.py`: J0–J7.
@@ -137,3 +153,41 @@ again in one sequential lane.**
 * `experiments/stage12/check_torch.py`: the same-computation gate.
 * `experiments/stage12/bench_torch.py`: T0–T3 and A0.
 * Results in `experiments/stage12/results/`; report in `experiments/stage12/REPORT.md`.
+
+## 9. Supplement: every arm on Kaggle's T4
+
+**Fixed 2 Oct 2026, before any T4 timing.** The lab machine's cards were busy. The owner asked to use
+their Kaggle account meanwhile, without skipping any GPU run. This supplement does not score S12-P1
+to P10 or the acceptance, which stay on the lab card (A2, A3). It asks how the answers change on a much
+smaller card.
+
+* **Card:** an NVIDIA T4 (Turing, 2018).
+  * About 8 TFLOP/s in float32, a fifteenth of the lab card's.
+  * Memory at 320 GB/s, about a sixth of the lab card's.
+  * No TF32 and no bfloat16 matrix units.
+  * Two cards per Kaggle session, on a 4-core host.
+* **How:** as §2. Each arm runs on one T4, except J7, which uses both. All arms run in one
+  sequential job (`kaggle_s12.py`), with J0 first and last and the host load logged.
+  * The software is pinned to the lab machine's: JAX 0.10.2; PyTorch 2.11.0; microsoft-aurora 2.0.1.
+  * JAX and PyTorch get separate environments, as on the lab machine.
+* **J7 runs here.** Data-parallel over the two T4s: batch 16 split 8 + 8, gradients reduced across
+  the cards (`bench_jax.py --arm J7`). The lab machine never had two idle cards at once.
+* **Expectation:** on a T4 the step is bound by arithmetic and memory traffic, not by launches.
+
+| # | Prediction (fixed before any T4 timing) |
+|---|---|
+| S12-K1 | The step is device-bound: J1 at batch 64 takes at least 2.5× J0 |
+| S12-K2 | Scan gains little: J0 / J3 < 1.25 |
+| S12-K3 | vmap over 3 seeds (J4): one 3-model step takes at least 2.5× a J0 step |
+| S12-K4 | Donation (J2) changes the time per step by less than 10% |
+| S12-K5 | `dot_product_attention` (J5) changes the time per step by less than 10% |
+| S12-K6 | bfloat16 (J6) is not faster: J0 / J6 < 1.1. Its forward-pass error changes by less than 1% |
+| S12-K7 | Two T4s (J7) are faster than one but not twice as fast: 1.2 ≤ J0 / J7 < 1.9 |
+| S12-K8 | PyTorch eager (T0) is at least 1.3× slower than J0: unfused elementwise work costs more on a memory-bound card |
+| S12-K9 | `torch.compile` (T1) is within ±25% of J0 |
+| S12-K10 | CUDA graphs (T2) gain little: T1 / T2 < 1.1 |
+| S12-K11 | SDPA (T3) changes T1's time by less than 10% |
+| S12-K12 | The forward pass takes within ±25% under JAX jit and under `torch.compile` |
+| S12-K13 | J0 drifts by less than 5% between the start and the end of the job |
+
+Scored by `score_t4.py` on `results/t4/`, written before any T4 timing.

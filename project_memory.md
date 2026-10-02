@@ -644,7 +644,52 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * the lane `e6g` (15 runs, seed 0 of every arm first, pinned to cores 8–11) waits for an idle card.
 * **The VM clone** is at the latest `vm-results` commit, updated by bundle.
 
-## 6. Status (1 Oct 2026)
+### 2026-10-02 — E6 done on Kaggle: 2 of 5 HIT
+* **Where:** the lab machine's cards stayed busy, so the owner chose their Kaggle account (E6
+  amendment A3, before the runs). All 15 runs ran on two T4s in about 2.5 h, with JAX pinned to the
+  lab machine's version. The lab's seed-0 S run reproduces to 0.5% (0.1099 against 0.1104).
+* **Results**, rollout rel_l2 on the 900 `re_lohi` windows:
+  * S (scratch, 65 real trajectories): 0.112, subscore 94.71;
+  * PD and PA (simulation pretraining, then a 2000-step fine-tune): 0.137 and 0.135;
+  * ZD and ZA (zero-shot): 0.27 and 0.29.
+  * The organisers' fine-tuned FNO: 0.0948 (95.47).
+* **Verdicts:**
+  * E6-P1 MISS: adv(PD) = −22.9% ± 1.5%;
+  * E6-P2 MISS: PA = PD;
+  * E6-P3 MISS: ZA ≫ S;
+  * E6-P4 HIT: fine-tuning cuts the zero-shot error by 49%;
+  * E6-P5 HIT: no arm reaches the FNO.
+* **Readings:**
+  * The simulations do not transfer to the PIV measurements. Zero-shot one-step forecasts are only
+    4% better than persistence, and the TKE subscore falls from 76 to 43–48.
+  * Not tested: a fine-tune given the same real-data budget as scratch (22,000 steps against 2000).
+    That needs its own spec.
+* **Stage 12 supplement on Kaggle's T4 (spec §9, S12-K1 to K13, J7 included):**
+  * version 1 ran JAX on the CPU, because a fresh venv's JAX fell back silently (J0 at 1.4 s per
+    step); its CPU timings are not results;
+  * the runner now installs JAX as the E6 job did, and refuses to run without a GPU (commit 215f5e1).
+
+### 2026-10-02 — Stage 12 done: acceptance met; 6 of 10 HIT, T4 supplement 12 of 13
+* **Lab card 3** (amendment A3), sequential lane at 13:53–14:19, approved by the owner. Host load
+  was 4–9, with one spike to 16 during J6.
+  * **Acceptance met:** `lax.scan` (J3) is 2.07× faster than J0 (4.94 against 10.19 ms).
+  * HIT: P1, P2, P5, P7, P8, P9. MISS: P3 (J4 1.80× a J0 step), P4 (donation 1.13×, 1.58× on the
+    first pass), P6 (bfloat16 1.12×, timed during the load spike), P10 (`torch.compile` forward
+    1.81× slower than JAX).
+  * The step is host-bound: the card is 49% busy, and J0 runs at 10.2 ms on a quiet host against
+    19.2 ms on a loaded one.
+  * PyTorch: eager 2.42× slower than J0, `torch.compile` +11%, CUDA graphs 1.36× faster than J0 but
+    1.52× slower than JAX scan.
+  * bfloat16 changes the forward error by 0.002%.
+* **T4 supplement** (Kaggle, version 2): 12 of 13 HIT; K11 (SDPA 35% slower on a T4) MISSES.
+  * On a T4 the step is bound by the card, so scan gives only 1.16× and vmap 0.90× per model.
+  * Two T4s (J7) give 1.24×.
+  * `torch.compile` is 9% faster than JAX there.
+  * bfloat16 is not applied on a T4 (the error matches float32 to 5e-9), so K6's HIT is trivial.
+* **Practical upshot:** train with scan chunks, as `run_e6.py` does. Donation and vmap over seeds
+  stack on top. bfloat16 waits until the step is no longer host-bound.
+
+## 6. Status (2 Oct 2026)
 
 **Done:**
 * Stages 1–11: built, gates pass, results reported.
@@ -668,12 +713,12 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* Stage 12: lane `s12` (`glane4.sh`, every arm in sequence, amendment A2), waiting for an idle card.
-* E6: lane `e6g` (`glane4.sh`, 15 runs), waiting for an idle card. The owner chose to wait for
-  cards 1–3; card 0 stays excluded.
+* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement) and E6 (Kaggle) are done and reported.
+* The VM's lanes are idle. The owner approves each launch on the lab machine. Card 0 stays excluded.
 
-**Remaining:** the Stage 12 timings and report; the E6 runs and report. The stage and experiment
-reports are the record.
+**Remaining:** none from the advisor's notes of 1 Oct. Possible follow-ups each need their own spec:
+* E6 with a fine-tune given the same real-data budget as scratch;
+* the E-runs retrained with scan chunks. The stage and experiment reports are the record.
 
 **Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**
 * **Stage 10 F1**, a LoRA rank sweep: **done** (1 Oct), both predictions HIT. It ran on a retrain of

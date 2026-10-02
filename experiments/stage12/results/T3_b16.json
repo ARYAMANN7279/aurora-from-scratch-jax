@@ -1,0 +1,24 @@
+{
+ "arm": "T3",
+ "batch": 16,
+ "precision": "float32, TF32 off",
+ "ms_per_step": [
+  11.281013628002256,
+  11.155319040175527,
+  11.153114310000092
+ ],
+ "median_ms": 11.155319040175527,
+ "first_call_s": 34.203256332082674,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 16,
+ "card": "3",
+ "device": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+ "torch": "2.11.0+cu128",
+ "gpu_temp_max": 61.0,
+ "gpu_util_mean": 76.875,
+ "sm_clock_mean": 2835.0,
+ "git_commit": "56ba61c",
+ "command": "torchenv/bin/python experiments/stage12/bench_torch.py --arm T3"
+}

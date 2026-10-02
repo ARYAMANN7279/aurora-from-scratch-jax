@@ -1,12 +1,14 @@
 """Stage 12 JAX arms (handouts/stage12_speed.md, section 3) on the E1 pretrain configuration.
 
-usage: bench_jax.py --arm J0|J1|J2|J3|J4|J5|J6|J6t|fwd [--batch 16]   (timing, on one idle card)
+usage: bench_jax.py --arm J0|J1|J2|J3|J4|J5|J6|J6t|J7|fwd [--batch 16] (timing; J7 uses every visible card)
        bench_jax.py --accuracy                                         (the forward-pass check of S12-P6)
        bench_jax.py --export                                           (reference for check_torch.py)
 Results: results/<arm>_b<batch>.json, results/accuracy_bf16.json; the export goes to data/stage12/.
 
 J6 sets matmul precision bfloat16 (each matmul's inputs rounded to bfloat16, float32 accumulation);
 elementwise ops and FFTs stay float32. J6t (TF32) is a diagnostic without a prediction.
+J7 is J0 data-parallel over every visible card: each batch split across the cards, the parameters and
+optimiser state replicated, the gradient mean reduced across cards by XLA.
 """
 import argparse
 import json
@@ -22,7 +24,7 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--arm", default="J0", choices=["J0", "J1", "J2", "J3", "J4", "J5", "J6", "J6t", "fwd"])
+ap.add_argument("--arm", default="J0", choices=["J0", "J1", "J2", "J3", "J4", "J5", "J6", "J6t", "J7", "fwd"])
 ap.add_argument("--batch", type=int, default=16)
 ap.add_argument("--accuracy", action="store_true")
 ap.add_argument("--export", action="store_true", help="trained E1 weights, a real batch, output and gradients")
@@ -78,6 +80,10 @@ def card():
     return os.environ.get("CUDA_VISIBLE_DEVICES", "")
 
 
+def first_card():  # the card the sampler reads (the first of several, for J7)
+    return card().split(",")[0]
+
+
 class Sampler(threading.Thread):
     """Samples the card's temperature, utilisation and SM clock once a second."""
 
@@ -88,7 +94,7 @@ class Sampler(threading.Thread):
     def run(self):
         while self.on:
             try:
-                q = subprocess.run(["nvidia-smi", "-i", card(), "--query-gpu=temperature.gpu,utilization.gpu,clocks.sm",
+                q = subprocess.run(["nvidia-smi", "-i", first_card(), "--query-gpu=temperature.gpu,utilization.gpu,clocks.sm",
                                     "--format=csv,noheader,nounits"], capture_output=True, text=True, timeout=10).stdout
                 self.rows.append([float(x) for x in q.strip().split(",")])
             except Exception:
@@ -250,6 +256,20 @@ def main():
                 return state[0]
             per_call = 1
             extra["models_per_step"] = 3
+        elif args.arm == "J7":
+            from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
+            mesh = Mesh(np.array(jax.devices()), ("data",))
+            rep, shard = NamedSharding(mesh, P()), NamedSharding(mesh, P("data"))
+            step = jax.jit(raw_step, in_shardings=(rep, rep, shard, shard, shard, shard), out_shardings=(rep, rep, rep))
+            state = list(jax.device_put((q, st), rep))
+
+            def run_n(n):
+                for _ in range(n):
+                    xs = [jax.device_put(x, shard) for x in sample()]
+                    state[0], state[1], loss = step(state[0], state[1], *xs)
+                return state[0]
+            per_call = 1
+            extra["devices"] = len(jax.devices())
         else:  # fwd: forward pass alone on a fixed batch
             f = jax.jit(fwd)
             xm, x0 = by_tag[0][:B, 0], by_tag[0][:B, 1]

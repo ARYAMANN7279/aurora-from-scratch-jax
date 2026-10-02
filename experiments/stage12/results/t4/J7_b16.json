@@ -1,0 +1,25 @@
+{
+ "arm": "J7",
+ "batch": 16,
+ "matmul_precision": "highest",
+ "ms_per_step": [
+  39.78324623200024,
+  40.21789780400013,
+  39.91953086600006
+ ],
+ "median_ms": 39.91953086600006,
+ "first_call_s": 22.631368763999944,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 58,
+ "card": "0,1",
+ "device": "Tesla T4",
+ "jax": "0.10.2",
+ "gpu_temp_max": 82.0,
+ "gpu_util_mean": 73.67241379310344,
+ "sm_clock_mean": 1423.7068965517242,
+ "devices": 2,
+ "git_commit": "",
+ "command": ".venv/bin/python experiments/stage12/bench_jax.py --arm J7"
+}

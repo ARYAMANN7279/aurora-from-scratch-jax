@@ -1,0 +1,16 @@
+{
+ "run": "2f09979ae05dea9b",
+ "committed_rel_err": 0.08398959236568616,
+ "rel_err": {
+  "highest": 0.08398959236568616,
+  "bfloat16": 0.08399127283499834
+ },
+ "rel_change": 2.0008066057286555e-05,
+ "S12_P6_accuracy": {
+  "bar": "|change| < 1%",
+  "hit": true
+ },
+ "device": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+ "git_commit": "56ba61c",
+ "command": ".venv/bin/python experiments/stage12/bench_jax.py --accuracy"
+}

@@ -1,0 +1,25 @@
+{
+ "arm": "A0_eager",
+ "batch": 16,
+ "precision": "float32, TF32 off",
+ "ms_per_step": [
+  40.51566499399996,
+  40.647262079999564,
+  40.00651774399921
+ ],
+ "median_ms": 40.51566499399996,
+ "first_call_s": 0.41446220699981495,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 58,
+ "card": "0",
+ "device": "Tesla T4",
+ "torch": "2.11.0+cu128",
+ "gpu_temp_max": 82.0,
+ "gpu_util_mean": 87.48275862068965,
+ "sm_clock_mean": 1316.3793103448277,
+ "note": "Aurora's backbone masks shifted windows along H; ours is periodic (not the same computation)",
+ "git_commit": "",
+ "command": "torchenv/bin/python experiments/stage12/bench_torch.py --arm A0_eager"
+}

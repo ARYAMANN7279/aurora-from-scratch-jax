@@ -1,0 +1,24 @@
+{
+ "arm": "J6t",
+ "batch": 16,
+ "matmul_precision": "tensorfloat32",
+ "ms_per_step": [
+  50.833290814000065,
+  51.0463705760003,
+  50.35129634199984
+ ],
+ "median_ms": 50.833290814000065,
+ "first_call_s": 19.93032127100014,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 73,
+ "card": "0",
+ "device": "Tesla T4",
+ "jax": "0.10.2",
+ "gpu_temp_max": 81.0,
+ "gpu_util_mean": 77.82191780821918,
+ "sm_clock_mean": 1171.6438356164383,
+ "git_commit": "",
+ "command": ".venv/bin/python experiments/stage12/bench_jax.py --arm J6t"
+}
