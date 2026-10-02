@@ -18,6 +18,7 @@ class Config(NamedTuple):
     window: tuple
     periodic: tuple = swin.PERIODIC
     shift: bool = True  # False: every block uses unshifted windows (E4 ablation)
+    rel_pos_bias: bool = False  # True: each block gets a zero-initialised relative-position bias (E7)
 
 
 def _tn(key, shape, dtype):
@@ -53,6 +54,14 @@ def split(p, x, res):
     return layernorm(p["norm"], x) @ p["W2"]
 
 
+def _add_rpb(layer, cfg, heads, dtype):
+    """E7: a zero relative-position table per block. It draws no random numbers, so the other weights
+    are those of the same seed without the bias, and at initialisation the model computes the same."""
+    if cfg.rel_pos_bias:
+        for b in layer["blocks"]:
+            b["rpb"] = jnp.zeros((swin.n_rel(cfg.window), heads), dtype)
+
+
 def init(key, cfg, dtype=None):
     dtype = dtype or jnp.asarray(0.0).dtype
     S = len(cfg.enc_depths)
@@ -68,6 +77,7 @@ def init(key, cfg, dtype=None):
         w = D * 2**i
         kb = jax.random.split(ki, dep + 1)
         layer = {"blocks": [swin.init_block(k, w, D, dtype=dtype) for k in kb[:dep]]}
+        _add_rpb(layer, cfg, cfg.enc_heads[i], dtype)
         if i < S - 1:
             layer["merge"] = init_merge(kb[dep], w, dtype)
         p["enc"].append(layer)
@@ -75,6 +85,7 @@ def init(key, cfg, dtype=None):
         w = D * 2 ** (S - 1 - i)
         kb = jax.random.split(ki, dep + 1)
         layer = {"blocks": [swin.init_block(k, w, D, dtype=dtype) for k in kb[:dep]]}
+        _add_rpb(layer, cfg, cfg.dec_heads[i], dtype)
         if i < S - 1:
             layer["split"] = init_split(kb[dep], w, dtype)
         p["dec"].append(layer)

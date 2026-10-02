@@ -3,6 +3,10 @@
 Matches Aurora's Swin3DTransformerBlock (res-post-norm with adaptive LayerNorm), with the
 shifted-window mask generalised by a `periodic` flag per axis (C, H, W). This project uses
 periodic = (False, True, True): levels are not periodic, x and y are.
+
+Optional (E7): a learned relative-position bias inside each window, as in Swin. A block whose params
+hold an "rpb" table ((2Wc-1)(2Wh-1)(2Ww-1), heads) adds table[offset(i, j)] to the logits of query i
+and key j. Without the table the block is exactly the Aurora block above.
 """
 import itertools
 
@@ -56,6 +60,17 @@ def shift_mask(res, ws, ss, periodic=PERIODIC):
     return jnp.asarray(win[:, :, None] == win[:, None, :])
 
 
+def rel_index(ws, window):
+    """(N, N) numpy index of each (query, key) offset into a table laid out for `window`; ws <= window."""
+    c = np.stack(np.meshgrid(*[np.arange(w) for w in ws], indexing="ij")).reshape(3, -1)
+    rel = c[:, :, None] - c[:, None, :] + np.array([w - 1 for w in window])[:, None, None]
+    return (rel[0] * (2 * window[1] - 1) + rel[1]) * (2 * window[2] - 1) + rel[2]
+
+
+def n_rel(window):
+    return (2 * window[0] - 1) * (2 * window[1] - 1) * (2 * window[2] - 1)
+
+
 def layernorm_noaffine(x, eps=1e-5):
     mu = x.mean(-1, keepdims=True)
     return (x - mu) / jnp.sqrt(((x - mu) ** 2).mean(-1, keepdims=True) + eps)
@@ -68,13 +83,15 @@ def adaln(p, y, c, scale_bias=0.0):
     return layernorm_noaffine(y) * (scale_bias + scale[:, None]) + shift[:, None]
 
 
-def window_attention(p, xw, heads, mask=None):
-    """xw (B*nW, N, D); mask (nW, N, N) bool or None."""
+def window_attention(p, xw, heads, mask=None, bias=None):
+    """xw (B*nW, N, D); mask (nW, N, N) bool or None; bias (heads, N, N), added to the logits, or None."""
     Bw, N, D = xw.shape
     dh = D // heads
     qkv = (xw @ p["qkv"]["W"] + p["qkv"]["b"]).reshape(Bw, N, 3, heads, dh).transpose(2, 0, 3, 1, 4)
     q, k, v = qkv[0], qkv[1], qkv[2]
     logits = q @ k.transpose(0, 1, 3, 2) / jnp.sqrt(jnp.asarray(dh, xw.dtype))
+    if bias is not None:
+        logits = logits + bias[None]
     if mask is not None:
         m = jnp.tile(mask, (Bw // mask.shape[0], 1, 1))[:, None]
         logits = jnp.where(m, logits, -jnp.inf)
@@ -102,7 +119,12 @@ def block(p, x, c, res, heads, window, shift, periodic=PERIODIC, scale_bias=0.0)
         xv = jnp.roll(xv, shift=(-ss[0], -ss[1], -ss[2]), axis=(1, 2, 3))
     mask = shift_mask(res, ws, ss, periodic) if shifted else None
     N = ws[0] * ws[1] * ws[2]
-    aw = window_attention(p, window_partition(xv, ws).reshape(-1, N, D), heads, mask)
+    xw = window_partition(xv, ws).reshape(-1, N, D)
+    if "rpb" in p:  # E7: relative-position bias, the same for every window of the block
+        bias = p["rpb"][rel_index(ws, window).reshape(-1)].reshape(N, N, heads).transpose(2, 0, 1)
+        aw = window_attention(p, xw, heads, mask, bias)
+    else:
+        aw = window_attention(p, xw, heads, mask)
     xv = window_reverse(aw.reshape(-1, *ws, D), ws, B, C, H, W)
     if shifted:
         xv = jnp.roll(xv, shift=ss, axis=(1, 2, 3))
