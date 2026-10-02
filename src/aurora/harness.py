@@ -50,7 +50,7 @@ def model_config(m):
                              bb.Config(m["D"], tuple(b["enc_depths"]), tuple(b["enc_heads"]),
                                        tuple(b["dec_depths"]), tuple(b["dec_heads"]), tuple(b["window"]),
                                        periodic=tuple(b.get("periodic", bb.swin.PERIODIC)),
-                                       shift=b.get("shift", True)))
+                                       shift=b.get("shift", True), rel_pos_bias=b.get("rel_pos_bias", False)))
 
 
 def _set(d, dotted, value):
