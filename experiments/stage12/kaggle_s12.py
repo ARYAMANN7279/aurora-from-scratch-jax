@@ -6,7 +6,9 @@ Input: one private Kaggle dataset, ugp2-s12, with two archives (unpacked by Kagg
   ugp2_s12_data.tar:    data/stage12/ref_e1_cpu.npz, data/runs/2f09979ae05dea9b/params.npz and the four
                         re300_kf4 test trajectories (data/stage2/e1_v1/...) for the accuracy check
 The repository layout is rebuilt in /tmp/repo. As on the lab machine, JAX and PyTorch get separate
-environments, pinned to the lab machine's versions. The arms run one at a time on card 0 (J7 on both
+environments, pinned to the lab machine's versions: JAX in the image's own Python (a fresh venv's JAX fell
+back to the CPU on 2 Oct, version 1 of this job), PyTorch in a venv. Every JAX run sets JAX_PLATFORMS=cuda,
+so a missing GPU is an error, never a silent CPU run, and the job stops before any arm if JAX sees no GPU. The arms run one at a time on card 0 (J7 on both
 cards), J0 first and last; a failed arm is retried once and the job goes on. The host load is logged
 every 30 s.
 Output in /kaggle/working: results_t4/ (one JSON per arm, J0_b16_start and J0_b16_end), logs/,
@@ -84,8 +86,11 @@ def hostload():
 
 
 threading.Thread(target=hostload, daemon=True).start()
-py = {J: "/tmp/jaxenv/bin/python", T: "/tmp/torchenv/bin/python"}
-sh(venv("/tmp/jaxenv") + " && /tmp/jaxenv/bin/pip install -q " + " ".join(f"'{p}'" for p in JAX_PINS))
+py = {J: sys.executable, T: "/tmp/torchenv/bin/python"}
+sh(f"{sys.executable} -m pip install -q " + " ".join(f"'{p}'" for p in JAX_PINS))
+jax_dev = sh(f"JAX_PLATFORMS=cuda {py[J]} -c 'import jax; d = jax.devices()[0]; print(d.platform, d.device_kind)'").strip()
+if not jax_dev.startswith(("gpu", "cuda")):
+    raise SystemExit(f"JAX does not see a GPU: {jax_dev}")
 sh(venv("/tmp/torchenv") + " && /tmp/torchenv/bin/pip install -q " + " ".join(TORCH_PINS)
    + f" --index-url {CU128} --extra-index-url https://pypi.org/simple")
 sh("/tmp/torchenv/bin/pip install -q " + " ".join(AURORA_PINS) + f" --extra-index-url {CU128}")
@@ -93,10 +98,11 @@ sh(f"/tmp/torchenv/bin/pip install -q --no-deps --force-reinstall torchvision==0
 gpus = [g for g in sh("nvidia-smi -L").splitlines() if g.startswith("GPU")]
 torch_ok = sh(f"""{py[T]} -c "import torch, aurora; x = torch.randn(512, 512, device='cuda'); """
               f"""print(torch.__version__, torch.cuda.get_device_name(0), float((x @ x).sum()))" """)
-info = dict(commit=commit, gpus=gpus, python=sys.version, torch_check=torch_ok.strip(), started=time.strftime("%FT%T"),
+info = dict(commit=commit, gpus=gpus, python=sys.version, jax_device=jax_dev, torch_check=torch_ok.strip(),
+            started=time.strftime("%FT%T"),
             jax_versions=sh(f"{py[J]} -m pip freeze").splitlines(), torch_versions=sh(f"{py[T]} -m pip freeze").splitlines())
 json.dump(info, open(f"{OUT}/env.json", "w"), indent=1)
-print(json.dumps({k: info[k] for k in ("commit", "gpus", "torch_check")}, indent=1), flush=True)
+print(json.dumps({k: info[k] for k in ("commit", "gpus", "jax_device", "torch_check")}, indent=1), flush=True)
 
 env = dict(os.environ, XLA_PYTHON_CLIENT_PREALLOCATE="false", CUDA_DEVICE_ORDER="PCI_BUS_ID",
            TRITON_CACHE_DIR="/tmp/triton", TORCHINDUCTOR_CACHE_DIR="/tmp/inductor")
@@ -108,8 +114,9 @@ def run(kind, a, cards="0", tag=""):
     cmd = [py[kind], f"experiments/stage12/{script}"] + a
     for attempt in (1, 2):
         t0 = time.time()
+        e = dict(env, CUDA_VISIBLE_DEVICES=cards, **({"JAX_PLATFORMS": "cuda"} if kind == J else {}))
         with open(f"{OUT}/logs/{'_'.join(a).replace('--', '') or script}{tag}.log", "a") as f:
-            rc = subprocess.run(cmd, cwd=W, env=dict(env, CUDA_VISIBLE_DEVICES=cards), stdout=f,
+            rc = subprocess.run(cmd, cwd=W, env=e, stdout=f,
                                 stderr=subprocess.STDOUT).returncode
         print(f"{' '.join(a)}{tag}: rc={rc}, {time.time() - t0:.0f} s (try {attempt})", flush=True)
         if rc == 0:
