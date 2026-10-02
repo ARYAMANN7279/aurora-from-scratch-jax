@@ -644,6 +644,31 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * the lane `e6g` (15 runs, seed 0 of every arm first, pinned to cores 8–11) waits for an idle card.
 * **The VM clone** is at the latest `vm-results` commit, updated by bundle.
 
+### 2026-10-02 — E6 done on Kaggle: 2 of 5 HIT
+* **Where:** the lab machine's cards stayed busy, so the owner chose their Kaggle account (E6
+  amendment A3, before the runs). All 15 runs ran on two T4s in about 2.5 h, with JAX pinned to the
+  lab machine's version. The lab's seed-0 S run reproduces to 0.5% (0.1099 against 0.1104).
+* **Results**, rollout rel_l2 on the 900 `re_lohi` windows:
+  * S (scratch, 65 real trajectories): 0.112, subscore 94.71;
+  * PD and PA (simulation pretraining, then a 2000-step fine-tune): 0.137 and 0.135;
+  * ZD and ZA (zero-shot): 0.27 and 0.29.
+  * The organisers' fine-tuned FNO: 0.0948 (95.47).
+* **Verdicts:**
+  * E6-P1 MISS: adv(PD) = −22.9% ± 1.5%;
+  * E6-P2 MISS: PA = PD;
+  * E6-P3 MISS: ZA ≫ S;
+  * E6-P4 HIT: fine-tuning cuts the zero-shot error by 49%;
+  * E6-P5 HIT: no arm reaches the FNO.
+* **Readings:**
+  * The simulations do not transfer to the PIV measurements. Zero-shot one-step forecasts are only
+    4% better than persistence, and the TKE subscore falls from 76 to 43–48.
+  * Not tested: a fine-tune given the same real-data budget as scratch (22,000 steps against 2000).
+    That needs its own spec.
+* **Stage 12 supplement on Kaggle's T4 (spec §9, S12-K1 to K13, J7 included):**
+  * version 1 ran JAX on the CPU, because a fresh venv's JAX fell back silently (J0 at 1.4 s per
+    step); its CPU timings are not results;
+  * the runner now installs JAX as the E6 job did, and refuses to run without a GPU (commit 215f5e1).
+
 ## 6. Status (1 Oct 2026)
 
 **Done:**
