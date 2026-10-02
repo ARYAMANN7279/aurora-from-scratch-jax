@@ -2,7 +2,9 @@
 
 Input: one private Kaggle dataset, ugp2-e7, with two archives (unpacked by Kaggle or, if not, here):
   ugp2_e7_code.tar.gz: src/, experiments/run.py, experiments/e7/, COMMIT
-  ugp2_e7_data.tar:    data/stage2/e1_v1/re300_kf4/seed_000{0..5}/frames_64.npy, E1's scratch task
+  ugp2_e7_data.tar:    data/stage2/e1_v1/re300_kf4/seed_000{0..5}/frames_64.npy (E1's scratch task) and
+                       the dataset's manifest.json and dataset.json (the harness checks splits against the
+                       manifest; version 1 of this job stopped at its smoke run without it)
 The repository layout is rebuilt in /tmp/repo, with data/ a writable folder (the harness saves parameters to
 data/runs/) whose stage2/ links to the dataset. JAX and optax are pinned to the lab machine's versions, float32
 with matmul precision `highest`. Every run sets JAX_PLATFORMS=cuda, and the job stops before any run if JAX
