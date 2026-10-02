@@ -43,7 +43,8 @@ from aurora import backbone as bb, model  # noqa: E402
 sys.path.insert(0, HERE)
 from splits import HOLD, val_starts  # noqa: E402
 
-KIT = "/SML_DISK_24TB/rajeshr/Aryamann/UGP/starting_kit_v9/realpde_t1_starting_kit_v9/scoring.py"
+KIT = os.environ.get("E6_KIT",  # the competition kit's scoring.py: lab path unless E6_KIT is set (Kaggle)
+                     "/SML_DISK_24TB/rajeshr/Aryamann/UGP/starting_kit_v9/realpde_t1_starting_kit_v9/scoring.py")
 DATA = os.path.join(ROOT, "data", "e6")
 MC = model.ModelConfig(64, 2, 3, 4, bb.Config(64, (2, 2, 2), (2, 4, 8), (2, 2, 2), (8, 4, 2), (3, 4, 4),
                                               periodic=(False, False, False)))

@@ -145,6 +145,22 @@ scratch on the real data. It does not hold, as the baselines measured on the 900
   `sim_fno.pth`, fine-tuning on 55 real trajectories reached subscore 95.16 (UGP-I, M55). That is
   E6-P1's claim, not E6-P3's.
 
+**A3 (2 Oct 2026, after the seed-0 S run and before any other E6 run): the runs move to Kaggle.**
+* **Why.** Other users' jobs have held the lab machine's cards 1–3 since 1 Oct, except for about an
+  hour on card 2. Under our runs that card passed 93 °C within seconds. The owner chose to run E6 on
+  their own Kaggle account.
+* **Change.**
+  * **All 15 runs on Kaggle,** the seed-0 S run included, so that every arm shares one device.
+    Kaggle's NVIDIA T4 cards run two at a time, one queue per card (`kaggle_run.py`).
+  * **Same software and settings:** the same code, with JAX 0.10.2 and optax 0.2.8 pinned to the
+    lab machine's versions; float32 with matmul precision `highest` (a T4 has no TF32).
+  * **Which rows count:** `results/rows.jsonl`, from Kaggle, is scored. The lab's seed-0 S row
+    (`results/rows_lab.jsonl`) is reported as a cross-device check.
+  * **The scoring file:** `run_e6.py` reads the competition kit's `scoring.py` from `E6_KIT` when it
+    is set (Kaggle), and from the lab path otherwise.
+  * Nothing else changes: the data, splits, arms, budgets, metrics and predictions stand as
+    registered.
+
 ## 9. Files
 
 * `src/aurora`: rectangular, non-periodic support (square path unchanged).
