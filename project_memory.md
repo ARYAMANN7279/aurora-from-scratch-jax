@@ -689,6 +689,18 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * **Practical upshot:** train with scan chunks, as `run_e6.py` does. Donation and vmap over seeds
   stack on top. bfloat16 waits until the step is no longer host-bound.
 
+### 2026-10-02 — E6 follow-up F1: the same real-data budget, 3 of 3 HIT
+* **Design** (spec §10, committed before any run): the six E6 pretrained models were trained on real
+  data with S's exact recipe (22,000 steps, lr 1e-3, cosine, S's batches by seed). Kaggle job
+  `ugp2-e6-f1`, two T4s.
+* **Results:**
+  * PDm 0.1112 and PAm 0.1094, against S's 0.1117;
+  * adv(PDm) = +0.4% ± 1.8% (P1 HIT);
+  * PAm not better than PDm beyond 2 SE (P2 HIT, though PAm beats S in all 3 seeds by 2.0% ± 0.9%);
+  * PDm is 19% better than the 2000-step fine-tune (P3 HIT).
+* **Reading:** E6's −23% was the short fine-tune. Simulation pretraining is a slower route to the
+  same accuracy on the real measurements, not a better one.
+
 ## 6. Status (2 Oct 2026)
 
 **Done:**
@@ -716,8 +728,10 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement) and E6 (Kaggle) are done and reported.
 * The VM's lanes are idle. The owner approves each launch on the lab machine. Card 0 stays excluded.
 
-**Remaining:** none from the advisor's notes of 1 Oct. Possible follow-ups each need their own spec:
-* E6 with a fine-tune given the same real-data budget as scratch;
+**Remaining:** none from the advisor's notes of 1 Oct. E6 follow-up F1 is done (3 of 3 HIT). Possible
+follow-ups each need their own spec and the owner's go-ahead:
+* an attention-improvement experiment (the Stage 12 report's top idea, relative position inside
+  windows);
 * the E-runs retrained with scan chunks. The stage and experiment reports are the record.
 
 **Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**

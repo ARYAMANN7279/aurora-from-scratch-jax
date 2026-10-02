@@ -1,7 +1,8 @@
 # E6 Report: Does pretraining on simulations buy accuracy on real flow measurements? (RealPDE foil)
 
-Spec: `handouts/e6_realpde_sim2real.md` (amendments A1, A2 and A3). Code: `experiments/e6/`. Scored
-by `score.py` → `results/analysis.json`, from the rows in `results/rows.jsonl`.
+Spec: `handouts/e6_realpde_sim2real.md` (amendments A1, A2 and A3; follow-up F1 in §10). Code:
+`experiments/e6/`. Scored by `score.py` → `results/analysis.json`, from `results/rows.jsonl`; F1 by
+`score_f1.py` → `results/analysis_f1.json`, from `results/rows_f1.jsonl`.
 
 ## Verdict
 
@@ -15,6 +16,15 @@ does not help on real flow measurements. It hurts.
   their one-step forecasts barely beat persistence.
 * **Close to the organisers' FNO.** The from-scratch model comes within 0.8 subscore points of the
   organisers' fine-tuned FNO (95.47), which may have seen the held-out conditions.
+
+**Follow-up F1, all 3 predictions HIT.** Given the same 22,000 real-data steps as scratch, the
+pretrained models end where scratch ends:
+* +0.4% ± 1.8% (disjoint simulations);
+* +2.0% ± 0.9% (all simulations).
+
+So the 21–23% deficit came from the short fine-tune, not from the pretraining. Simulation pretraining
+buys no accuracy on these measurements: at most a 2% edge when the simulations include the test
+conditions.
 
 ## Set-up
 
@@ -122,9 +132,9 @@ Rollout rel_l2 by seed (0 / 1 / 2):
 * **The real data alone go a long way.** Trained from scratch on 65 trajectories, the model scores
   94.71. The organisers' FNO scores 95.47, after fine-tuning on real data that may include these
   test conditions.
-* **What is not measured.** The fine-tuned arms see 2000 real-data steps, against S's 22,000.
-  Whether a pretrained start beats scratch when it gets the same real-data budget is not tested
-  here. A follow-up would need its own spec.
+* **The short fine-tune, not the pretraining, made the difference.** The fine-tuned arms see 2000
+  real-data steps, against S's 22,000. Follow-up F1 (below) gives the pretrained starts S's full
+  budget, and they match scratch.
 
 ## Cross-device check
 
@@ -134,4 +144,43 @@ The lab machine's seed-0 S run (RTX PRO 6000, `results/rows_lab.jsonl`) and Kagg
 
 Run on a different card, the same code and seed land within 0.5%. That is small next to every
 difference above.
+
+## Follow-up F1: the same real-data budget (spec §10)
+
+* **The question.** Does the pretrained start help, or still hurt, when it gets the same real-data
+  training as scratch?
+* **The arms.** The six E6 pretrained models (PD and PA, 3 seeds, the same weights E6 scored; sha256
+  in `results/kaggle_env_f1.json`) were trained on the 65 real trajectories with S's exact recipe:
+  22,000 steps, lr 1e-3, cosine, batch 16. Each run used S's seed, so it drew the same batches, and
+  only the starting weights differ.
+* **Where:** Kaggle job `ugp2-e6-f1` on two T4s, 2 Oct, commit 6633f0e, 29 min per run. The rows are
+  in `results/rows_f1.jsonl`.
+
+| Arm | Rollout rel_l2 | Subscores (rel_l2 / TKE / MVPE) | One-step / persistence | adv vs S, by seed (0 / 1 / 2) |
+|---|---|---|---|---|
+| S (E6) | 0.1117 ± 0.0008 | 94.71 / 75.58 / 94.24 | 0.753 | |
+| **PDm**, disjoint simulations, full budget | 0.1112 ± 0.0011 | 94.73 / 76.24 / 94.38 | 0.744 | −2.2% / −0.2% / +3.7% |
+| **PAm**, all simulations, full budget | **0.1094 ± 0.0006** | **94.81** / 76.10 / 94.42 | 0.744 | +1.7% / +0.7% / +3.6% |
+| PD (E6, 2000-step fine-tune) | 0.1373 ± 0.0025 | 93.58 / 73.26 / 93.05 | 0.789 | |
+
+| # | Prediction | Measured | Verdict |
+|---|---|---|---|
+| E6F-P1 | at the same budget, \|adv(PDm)\| < 5% | adv(PDm) = +0.4% ± 1.8% | **HIT** |
+| E6F-P2 | err(PAm) is not below err(PDm) by more than 2 SE | 0.0018 ± 0.0014 (1.3 SE) | **HIT** |
+| E6F-P3 | err(PDm) at least 10% below err(PD) | 19.0% ± 2.2% below | **HIT** |
+
+* **At the same budget, the starting point barely matters.**
+  * PDm lands on scratch: +0.4% ± 1.8%, with seeds either side.
+  * PAm is 2.0% ± 0.9% better, positive in all three seeds but well inside the 5% band of E6F-P1's
+    "neither helps nor hurts much".
+  * With 22,000 real-data steps at lr 1e-3, the real data dominate where the model ends up.
+* **E6's deficit was the fine-tuning budget.**
+  * The same pretrained weights reach 0.137 after 2000 steps at lr 1e-4, and 0.111 after S's
+    recipe: 19% better.
+  * Read with E6, simulation pretraining is a slower route to the same place, not a better one.
+* **The simulations of the test conditions are worth at most a few percent.** PA's edge over PD
+  (0.0018 ± 0.0014) is not significant on its own, but the advantage over scratch is positive in all
+  three PA seeds. More seeds would be needed to call it.
+* **The fluctuation subscore recovers fully.** TKE is 76.1–76.2 for both full-budget arms, against
+  75.6 for scratch and 73.3 after the short fine-tune.
 
