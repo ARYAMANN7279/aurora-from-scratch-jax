@@ -20,7 +20,7 @@ import threading
 import time
 
 MODE = "run"
-STEPS = 96000
+STEPS = 192000
 SEEDS = (0, 1)
 OUT = "/kaggle/working"
 W = "/tmp/repo"
@@ -68,8 +68,10 @@ jax_dev = sh(f"JAX_PLATFORMS=cuda {sys.executable} -c '{probe}'").strip()
 if not jax_dev.startswith(("gpu", "cuda")):
     raise SystemExit(f"JAX does not see a GPU: {jax_dev}")
 gpus = [g for g in sh("nvidia-smi -L").splitlines() if g.startswith("GPU")]
-env = dict(os.environ, JAX_DEFAULT_MATMUL_PRECISION="highest", XLA_PYTHON_CLIENT_PREALLOCATE="false",
-           CUDA_DEVICE_ORDER="PCI_BUS_ID", JAX_PLATFORMS="cuda")
+# A 512² step needs one 7.8 GB block of XLA scratch memory, which an on-demand allocator could not find on a 15 GB T4
+# (version 1 of the timing job). Each run has a card to itself, so it reserves 90% of the card up front.
+env = dict(os.environ, JAX_DEFAULT_MATMUL_PRECISION="highest", XLA_PYTHON_CLIENT_PREALLOCATE="true",
+           XLA_PYTHON_CLIENT_MEM_FRACTION="0.90", CUDA_DEVICE_ORDER="PCI_BUS_ID", JAX_PLATFORMS="cuda")
 info = dict(commit=commit, mode=MODE, steps=STEPS, seeds=SEEDS, gpus=gpus, jax_device=jax_dev, python=sys.version,
             pins=PINS, versions=sh(f"{sys.executable} -m pip freeze").splitlines(), started=time.strftime("%FT%T"))
 json.dump(info, open(f"{OUT}/env.json", "w"), indent=1)
