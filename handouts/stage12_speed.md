@@ -153,3 +153,41 @@ only.**
 * `experiments/stage12/check_torch.py`: the same-computation gate.
 * `experiments/stage12/bench_torch.py`: T0–T3 and A0.
 * Results in `experiments/stage12/results/`; report in `experiments/stage12/REPORT.md`.
+
+## 9. Supplement: every arm on Kaggle's T4
+
+**Fixed 2 Oct 2026, before any T4 timing.** The lab machine's cards were busy. The owner asked to use
+their Kaggle account meanwhile, without skipping any GPU run. This supplement does not score S12-P1
+to P10 or the acceptance, which stay on the lab card (A2, A3). It asks how the answers change on a much
+smaller card.
+
+* **Card:** an NVIDIA T4 (Turing, 2018).
+  * About 8 TFLOP/s in float32, a fifteenth of the lab card's.
+  * Memory at 320 GB/s, about a sixth of the lab card's.
+  * No TF32 and no bfloat16 matrix units.
+  * Two cards per Kaggle session, on a 4-core host.
+* **How:** as §2. Each arm runs on one T4, except J7, which uses both. All arms run in one
+  sequential job (`kaggle_s12.py`), with J0 first and last and the host load logged.
+  * The software is pinned to the lab machine's: JAX 0.10.2; PyTorch 2.11.0; microsoft-aurora 2.0.1.
+  * JAX and PyTorch get separate environments, as on the lab machine.
+* **J7 runs here.** Data-parallel over the two T4s: batch 16 split 8 + 8, gradients reduced across
+  the cards (`bench_jax.py --arm J7`). The lab machine never had two idle cards at once.
+* **Expectation:** on a T4 the step is bound by arithmetic and memory traffic, not by launches.
+
+| # | Prediction (fixed before any T4 timing) |
+|---|---|
+| S12-K1 | The step is device-bound: J1 at batch 64 takes at least 2.5× J0 |
+| S12-K2 | Scan gains little: J0 / J3 < 1.25 |
+| S12-K3 | vmap over 3 seeds (J4): one 3-model step takes at least 2.5× a J0 step |
+| S12-K4 | Donation (J2) changes the time per step by less than 10% |
+| S12-K5 | `dot_product_attention` (J5) changes the time per step by less than 10% |
+| S12-K6 | bfloat16 (J6) is not faster: J0 / J6 < 1.1. Its forward-pass error changes by less than 1% |
+| S12-K7 | Two T4s (J7) are faster than one but not twice as fast: 1.2 ≤ J0 / J7 < 1.9 |
+| S12-K8 | PyTorch eager (T0) is at least 1.3× slower than J0: unfused elementwise work costs more on a memory-bound card |
+| S12-K9 | `torch.compile` (T1) is within ±25% of J0 |
+| S12-K10 | CUDA graphs (T2) gain little: T1 / T2 < 1.1 |
+| S12-K11 | SDPA (T3) changes T1's time by less than 10% |
+| S12-K12 | The forward pass takes within ±25% under JAX jit and under `torch.compile` |
+| S12-K13 | J0 drifts by less than 5% between the start and the end of the job |
+
+Scored by `score_t4.py` on `results/t4/`, written before any T4 timing.
