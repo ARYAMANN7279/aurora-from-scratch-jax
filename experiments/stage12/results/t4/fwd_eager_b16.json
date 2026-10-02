@@ -1,0 +1,24 @@
+{
+ "arm": "fwd_eager",
+ "batch": 16,
+ "precision": "float32, TF32 off",
+ "ms_per_step": [
+  22.06478427000002,
+  22.232274566000342,
+  22.309973205999995
+ ],
+ "median_ms": 22.232274566000342,
+ "first_call_s": 0.25525173999994877,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 32,
+ "card": "0",
+ "device": "Tesla T4",
+ "torch": "2.11.0+cu128",
+ "gpu_temp_max": 80.0,
+ "gpu_util_mean": 100.0,
+ "sm_clock_mean": 1058.4375,
+ "git_commit": "",
+ "command": "torchenv/bin/python experiments/stage12/bench_torch.py --arm fwd_eager"
+}

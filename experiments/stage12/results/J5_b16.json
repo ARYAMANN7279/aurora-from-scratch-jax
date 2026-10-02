@@ -1,0 +1,25 @@
+{
+ "arm": "J5",
+ "batch": 16,
+ "matmul_precision": "highest",
+ "ms_per_step": [
+  11.2701731082052,
+  11.03439367795363,
+  10.866858245804906
+ ],
+ "median_ms": 11.03439367795363,
+ "first_call_s": 28.74177803308703,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 16,
+ "card": "3",
+ "device": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+ "jax": "0.10.2",
+ "gpu_temp_max": 58.0,
+ "gpu_util_mean": 44.125,
+ "sm_clock_mean": 2835.875,
+ "max_rel_diff_vs_J0_forward": 0.0,
+ "git_commit": "651344a",
+ "command": ".venv/bin/python experiments/stage12/bench_jax.py --arm J5"
+}

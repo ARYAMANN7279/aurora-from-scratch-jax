@@ -1,0 +1,24 @@
+{
+ "arm": "T0",
+ "batch": 16,
+ "precision": "float32, TF32 off",
+ "ms_per_step": [
+  70.25197203799964,
+  69.36374426400015,
+  69.35053156600043
+ ],
+ "median_ms": 69.36374426400015,
+ "first_call_s": 0.4625098510000498,
+ "steps": 500,
+ "warmup": 100,
+ "repeats": 3,
+ "n_samples": 101,
+ "card": "0",
+ "device": "Tesla T4",
+ "torch": "2.11.0+cu128",
+ "gpu_temp_max": 81.0,
+ "gpu_util_mean": 95.70297029702971,
+ "sm_clock_mean": 1150.8415841584158,
+ "git_commit": "",
+ "command": "torchenv/bin/python experiments/stage12/bench_torch.py --arm T0"
+}

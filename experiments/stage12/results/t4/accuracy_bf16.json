@@ -1,0 +1,16 @@
+{
+ "run": "2f09979ae05dea9b",
+ "committed_rel_err": 0.08398959236568616,
+ "rel_err": {
+  "highest": 0.08398959228464316,
+  "bfloat16": 0.0839895927289423
+ },
+ "rel_change": 5.289930937735221e-09,
+ "S12_P6_accuracy": {
+  "bar": "|change| < 1%",
+  "hit": true
+ },
+ "device": "Tesla T4",
+ "git_commit": "",
+ "command": ".venv/bin/python experiments/stage12/bench_jax.py --accuracy"
+}
