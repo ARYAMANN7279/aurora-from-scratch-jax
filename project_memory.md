@@ -701,6 +701,21 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * **Reading:** E6's −23% was the short fine-tune. Simulation pretraining is a slower route to the
   same accuracy on the real measurements, not a better one.
 
+### 2026-10-02 — E7 done on Kaggle: relative-position bias in attention, 2 of 3 HIT
+* **Design** (spec `handouts/e7_attention_rpb.md`, committed before any run): the Stage 12 report's
+  top attention idea. Each Swin block learns a bias per head for each of the 245 offsets inside its
+  3 × 4 × 4 window (`backbone.Config(rel_pos_bias=True)`, off by default, zero-initialised, no extra
+  random draws). Gates G1–G6 pass; 104 tests in all. Arms B (E1 scratch config) and R (with the
+  bias), seeds 0–2, same starting weights and batches. Kaggle job `ugp2-e7-runs` (version 2; version
+  1 stopped at its smoke run for a missing manifest), two T4s, about 65 min.
+* **Results:**
+  * one-step error 0.1499 → 0.1396: adv(R) = 6.9% ± 0.7%, every seed 5.6–8.1% (P1 HIT);
+  * 20-step drift −0.9% ± 1.6% (P2 MISS);
+  * wall time R / B = 1.012 (P3 HIT).
+* **Reading:** the bias buys about what doubling the depth bought in E4, for 0.27% more parameters,
+  but one-step and rollout gains part ways again, as in E1. Trained weights were not kept (they stay
+  in the job's scratch folder).
+
 ## 6. Status (2 Oct 2026)
 
 **Done:**
@@ -721,17 +736,19 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * E3: done, 3 of 4 HIT (zero-shot degrades slowly with distance; the fine-tuned advantage stays at
   36–41%).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
-* 98 tests pass on CPU (1 Oct: the 92 earlier ones plus E6's gates R1–R6). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
+* 104 tests pass on CPU (2 Oct: the 92 earlier ones, E6's gates R1–R6 and E7's G1–G6). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement) and E6 (Kaggle) are done and reported.
+* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6 and E7 (Kaggle) are done and
+  reported.
 * The VM's lanes are idle. The owner approves each launch on the lab machine. Card 0 stays excluded.
 
-**Remaining:** none from the advisor's notes of 1 Oct. E6 follow-up F1 is done (3 of 3 HIT). Possible
-follow-ups each need their own spec and the owner's go-ahead:
-* an attention-improvement experiment (the Stage 12 report's top idea, relative position inside
-  windows);
+**Remaining:** none from the advisor's notes of 1 Oct. E6 follow-up F1 is done (3 of 3 HIT), and the
+attention experiment E7 is done (2 of 3 HIT). Possible follow-ups each need their own spec and the
+owner's go-ahead:
+* E7: the bias combined with pushforward (E4's lever for drift), or a finer drift measure (more
+  rollout starts per trajectory); the next attention ideas in the Stage 12 report (§8);
 * the E-runs retrained with scan chunks. The stage and experiment reports are the record.
 
 **Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**

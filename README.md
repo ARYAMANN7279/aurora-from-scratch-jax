@@ -78,8 +78,8 @@ Each stage has an acceptance test and is not passed until that test is met.
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
 **Experiments.** Every experiment has a spec with pre-registered predictions, committed in git before any
-run (E1–E5 on 28 Sep 2026, E6 on 1 Oct). E1–E5 ran on the lab GPU box and are reported against those
-predictions:
+run (E1–E5 on 28 Sep 2026, E6 on 1 Oct, E7 on 2 Oct). E1–E5 ran on the lab GPU box, E6 and E7 on Kaggle's T4
+cards. All are reported against those predictions:
 
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
@@ -88,7 +88,8 @@ predictions:
 | E3 out-of-distribution transfer | [`handouts/e3_ood_transfer.md`](handouts/e3_ood_transfer.md) | 33 | `e1_v1` | ✅ **done** ([report](experiments/e3/REPORT.md)): 3/4 predictions HIT; zero-shot degrades slowly (0.30× → 0.41× persistence out to 2.8× the band's top Re); the fine-tuned advantage stays at 36–41% at every distance |
 | E4 component ablations | [`handouts/e4_ablations.md`](handouts/e4_ablations.md) | 27 | `acc_v1` | ✅ **done** ([report](experiments/e4/REPORT.md)): 1/5 predictions HIT; pushforward cuts 50-step drift by 31–50% at matched steps and by 45–47% at matched compute; MAE does not blow up; depth 24 helps (−6.7% one-step) |
 | E5 LoRA vs full fine-tuning | [`handouts/e5_lora_vs_full.md`](handouts/e5_lora_vs_full.md) | 39 | `acc_v1` | ✅ **done** ([report](experiments/e5/REPORT.md)): 2/4 predictions HIT; the pretraining advantage over scratch falls from 41% (1 trajectory) to 5% (6); fine-tuning gains ≤ 5.3% (full) and ≤ 1.7% (LoRA) |
-| E6 sim-to-real on real data | [`handouts/e6_realpde_sim2real.md`](handouts/e6_realpde_sim2real.md) | 15, plus the kit's FNOs | RealPDE foil (UGP-I's competition copy), 32 × 64 | ⏳ spec, data, model support for rectangular non-periodic fields, **done, 2 of 5 HIT** (15 runs on Kaggle T4s, amendment A3). From scratch on 65 real trajectories: rollout rel_l2 0.112 (subscore 94.71, within 0.8 of the organisers' fine-tuned FNO). Pretraining on the simulations and then fine-tuning for 2000 steps is **21–23% worse** (P1 MISS). Zero-shot transfer barely beats persistence (P3 MISS); simulating the test conditions does not help (P2 MISS). Fine-tuning recovers 49% over zero-shot (P4 HIT); no arm reaches the FNO (P5 HIT). **Follow-up F1** (3 of 3 HIT): given scratch's full 22,000 real-data steps, the pretrained starts match scratch (+0.4% ± 1.8% disjoint, +2.0% ± 0.9% all simulations), so the deficit was the short fine-tune and simulation pretraining buys no accuracy here |
+| E6 sim-to-real on real data | [`handouts/e6_realpde_sim2real.md`](handouts/e6_realpde_sim2real.md) | 15, plus the kit's FNOs | RealPDE foil (UGP-I's competition copy), 32 × 64 | ✅ **done** ([report](experiments/e6/REPORT.md)): 2/5 predictions HIT (15 runs on Kaggle T4s, amendment A3). From scratch on 65 real trajectories: rollout rel_l2 0.112 (subscore 94.71, within 0.8 of the organisers' fine-tuned FNO). Pretraining on the simulations and then fine-tuning for 2000 steps is **21–23% worse** (P1 MISS). Zero-shot transfer barely beats persistence (P3 MISS); simulating the test conditions does not help (P2 MISS). Fine-tuning recovers 49% over zero-shot (P4 HIT); no arm reaches the FNO (P5 HIT). **Follow-up F1** (3 of 3 HIT): given scratch's full 22,000 real-data steps, the pretrained starts match scratch (+0.4% ± 1.8% disjoint, +2.0% ± 0.9% all simulations), so the deficit was the short fine-tune and simulation pretraining buys no accuracy here |
+| E7 attention: relative-position bias | [`handouts/e7_attention_rpb.md`](handouts/e7_attention_rpb.md) | 6 | `e1_v1` (E1's scratch task) | ✅ **done** ([report](experiments/e7/REPORT.md)): 2/3 predictions HIT; a learned bias per head for each offset inside the attention windows lowers one-step error by **6.9% ± 0.7%** (every seed; 0.27% more parameters, 1.2% more time) but not the 20-step drift (−0.9% ± 1.6%, P2 MISS); off by default |
 
 ## Stage 1 results: the data generator
 

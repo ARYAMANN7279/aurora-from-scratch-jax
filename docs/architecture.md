@@ -67,6 +67,7 @@ Per sample; training adds a batch axis in front (16 in E1).
 | Backbone | Swin U-Net, width 512, depths 6, 10, 8 / 8, 10, 6 (48 blocks), windows 2 × 6 × 12 | Swin U-Net, width 64, depths 2, 2, 2 / 2, 2, 2 (12 blocks), windows 3 × 4 × 4 |
 | Shifted windows | wrap around in longitude only, masked in latitude | wrap around in x and y (the box is periodic) |
 | Attention kernel | PyTorch's fused `scaled_dot_product_attention` | explicit softmax; on the lab card a fused kernel makes no difference in PyTorch and is 8% slower in JAX (Stage 12, T3 and J5) |
+| Position inside windows | no relative-position term: positions enter only through the input encodings | the same by default; optionally a learned bias per head for each offset (`rel_pos_bias`; E7: −6.9% one-step error, no rollout gain) |
 | Loss | MAE | MSE (MAE tested in E4) |
 | Fine-tuning | full, and LoRA for long rollouts | full and LoRA (Stage 10, E5) |
 
