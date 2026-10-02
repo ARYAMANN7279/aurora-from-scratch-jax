@@ -1,7 +1,8 @@
 """E6 runs on Kaggle's GPUs (handouts/e6_realpde_sim2real.md, amendment A3): one queue per card.
 
 Inputs, two private Kaggle datasets mounted read-only under /kaggle/input:
-  ugp2-e6-code: src/aurora, experiments/e6, kit/scoring.py (the competition kit's, unchanged), COMMIT
+  ugp2-e6-code: one archive, ugp2_code.tar.gz, holding src/, experiments/e6/, kit/scoring.py (the
+                competition kit's, unchanged) and COMMIT; unpacked by Kaggle or, if not, here
   ugp2-e6-data: data/e6 as prep_sim.py wrote it
 The repository layout is rebuilt in /tmp/repo (data files linked, run parameters written there). The
 lab machine's JAX and optax versions are installed, with its settings: float32 with matmul precision
@@ -42,7 +43,17 @@ def find(name):
     return hits[0]
 
 
-code = os.path.dirname(os.path.dirname(os.path.dirname(find("run_e6.py"))))
+def code_root():
+    hits = glob.glob("/kaggle/input/**/experiments/e6/run_e6.py", recursive=True)
+    if not hits:
+        shutil.unpack_archive(find("ugp2_code.tar.gz"), "/tmp/code")
+        hits = glob.glob("/tmp/code/**/experiments/e6/run_e6.py", recursive=True)
+    if len(hits) != 1:
+        raise SystemExit(f"expected one experiments/e6/run_e6.py, found {hits}")
+    return hits[0][: -len("experiments/e6/run_e6.py")]
+
+
+code = code_root()
 data = os.path.dirname(find("sim_frames.npy"))
 for part in ("src", "experiments"):
     shutil.copytree(os.path.join(code, part), os.path.join(W, part), dirs_exist_ok=True)
