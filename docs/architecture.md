@@ -66,7 +66,7 @@ Per sample; training adds a batch axis in front (16 in E1).
 | Encoder | Perceiver: levels → 4 latent levels | Perceiver: levels → 3 latent levels |
 | Backbone | Swin U-Net, width 512, depths 6, 10, 8 / 8, 10, 6 (48 blocks), windows 2 × 6 × 12 | Swin U-Net, width 64, depths 2, 2, 2 / 2, 2, 2 (12 blocks), windows 3 × 4 × 4 |
 | Shifted windows | wrap around in longitude only, masked in latitude | wrap around in x and y (the box is periodic) |
-| Attention kernel | PyTorch's fused `scaled_dot_product_attention` | explicit softmax (Stage 12 measures the difference) |
+| Attention kernel | PyTorch's fused `scaled_dot_product_attention` | explicit softmax; on the lab card a fused kernel makes no difference in PyTorch and is 8% slower in JAX (Stage 12, T3 and J5) |
 | Loss | MAE | MSE (MAE tested in E4) |
 | Fine-tuning | full, and LoRA for long rollouts | full and LoRA (Stage 10, E5) |
 
@@ -105,9 +105,13 @@ kernels.
 * A training step (forward and backward, about 3× a forward pass) at batch 16 is therefore about
   60 GFLOP. At the measured ~10 ms per step that is ~6 TFLOP/s, far below the card's float32 peak
   (on the order of 100 TFLOP/s).
-* Turning TF32 off cost only 7% (`project_memory.md` §3). Both point to a step bounded by memory
-  traffic and kernel launches rather than by arithmetic. Stage 12 measures this
-  (`experiments/stage12/REPORT.md`).
+* Turning TF32 off cost only 7% (`project_memory.md` §3). Both point to a step bounded by kernel
+  launches and host work rather than by arithmetic.
+* Stage 12 confirmed it (`experiments/stage12/REPORT.md`):
+  * on the lab card, the training loop keeps the card about half busy;
+  * running 50 steps per jitted call (`lax.scan`) trains 2.07× faster;
+  * TF32 and bfloat16 gain 2% and 12%.
+  * On a T4, a card about 15× slower in float32, the same step is bound by the card instead.
 
 ## 6. Reading guide
 

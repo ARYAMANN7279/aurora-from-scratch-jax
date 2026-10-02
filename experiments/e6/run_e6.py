@@ -4,6 +4,10 @@ usage:
   run_e6.py --arm S --seed s                       real data from scratch: 22,000 steps, lr 1e-3
   run_e6.py --arm PD|PA --stage pretrain --seed s  simulations (disjoint | all): 20,000 steps, lr 1e-3
   run_e6.py --arm PD|PA --stage finetune --seed s  from that pretrain, real data: 2,000 steps, lr 1e-4
+  run_e6.py --arm PD|PA --stage finetune_matched --seed s
+                                                   follow-up F1: from that pretrain, S's exact recipe
+                                                   (22,000 steps, lr 1e-3, cosine; S's batches for
+                                                   the seed). Pass --results results/rows_f1.jsonl.
   run_e6.py --arm ZD|ZA --seed s                   zero-shot: the PD | PA pretrain on real data. Every
                                                    pretrain row already carries this evaluation.
 Options: --steps N overrides the budget; --smoke runs 200 steps and scores 100 windows, writing
@@ -194,7 +198,7 @@ def evaluate(q, X, meta, mu, sd, dt, n_windows=None):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", required=True, choices=["S", "PD", "PA", "ZD", "ZA"])
-    ap.add_argument("--stage", choices=["pretrain", "finetune"])
+    ap.add_argument("--stage", choices=["pretrain", "finetune", "finetune_matched"])
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--steps", type=int)
     ap.add_argument("--results", default=os.path.join(HERE, "results", "rows.jsonl"))
@@ -225,7 +229,7 @@ def main():
         row.update(train_trajectories=len(traj), source="sim", norm_mean=mu_s.tolist(), norm_std=sd_s.tolist())
         del Xd
     else:
-        steps, lr = (a.steps or BUDGET["S"][0], BUDGET["S"][1]) if a.arm == "S" else (
+        steps, lr = (a.steps or BUDGET["S"][0], BUDGET["S"][1]) if a.arm == "S" or a.stage == "finetune_matched" else (
             (a.steps or BUDGET["finetune"][0], BUDGET["finetune"][1]) if a.stage == "finetune" else (0, 0.0))
         q = (model.init(jax.random.PRNGKey(a.seed), MC, dtype=jnp.float32) if a.arm == "S"
              else load(("smoke_" if a.smoke else "") + f"e6_{pretrain_of[a.arm]}_pretrain_s{a.seed}"))

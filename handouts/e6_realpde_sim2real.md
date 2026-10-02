@@ -168,3 +168,28 @@ scratch on the real data. It does not hold, as the baselines measured on the 900
 * `experiments/e6/run_e6.py`: training and evaluation.
 * `experiments/e6/fno_baseline.py`: the kit's FNOs on the same windows.
 * `experiments/e6/REPORT.md`.
+
+## 10. Follow-up F1: the same real-data budget for the pretrained start
+
+**Fixed 2 Oct 2026, after the E6 results and before any F1 run. The owner chose this follow-up.**
+
+* **Question.** In E6, simulation pretraining followed by a 2000-step fine-tune at lr 1e-4 left the
+  error 21–23% above training from scratch. But scratch had 22,000 real-data steps. Does the
+  pretrained start help, or still hurt, when it gets the same real-data training as scratch?
+* **Arms** (3 seeds each, on the 65 real training trajectories):
+  * **PDm and PAm:** the E6 PD and PA pretrained models (Kaggle, `rows.jsonl`), trained on real data
+    with S's exact recipe: 22,000 steps, lr 1e-3 with the cosine schedule, batch 16, MSE.
+  * The only difference from S is the starting weights. The training seed, and so the batches
+    drawn, are S's for the same seed.
+  * S, PD and PA are the E6 rows, not rerun.
+* **Where:** Kaggle's T4s with the E6 software pins (`kaggle_f1.py`). Rows go to
+  `results/rows_f1.jsonl`.
+* **Metrics:** as in E6 (§5). adv(P) = 1 − err(P) / err(S), paired by seed.
+
+| # | Prediction (fixed before any F1 run) |
+|---|---|
+| E6F-P1 | At the same budget, the pretrained start neither helps nor hurts much: \|adv(PDm)\| < 5% on rollout rel_l2 |
+| E6F-P2 | Simulating the test conditions still does not help: err(PAm) is not below err(PDm) by more than 2 SE (paired by seed) |
+| E6F-P3 | The full fine-tune beats the short one: err(PDm) at least 10% below err(PD) (paired by seed) |
+
+Scored by `score_f1.py`, written before any F1 run.
