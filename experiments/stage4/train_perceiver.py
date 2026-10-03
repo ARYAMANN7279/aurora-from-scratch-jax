@@ -5,6 +5,7 @@ usage: train_perceiver.py --run main                  (L=3, all resolutions: S1-
        train_perceiver.py --run nolevelenc --res 64   (level encodings ablated: S6 control)
        add --steps K --time-only to time K steps without writing results
        add --seed S for another initialisation and batch order (default 0, the key of every run before F3)
+       add --schedule cosine for a learning rate decaying from 3e-4 to 3e-6 over the run (F4; default constant)
 """
 import argparse
 import json
@@ -37,6 +38,8 @@ ap.add_argument("--time-only", action="store_true")
 ap.add_argument("--out", help="results file name (default: the run name); follow-ups must not overwrite S1-S6 files")
 ap.add_argument("--tag", default="re300_kf4", help="regime for the 16/64/128 data (spec: re300_kf4)")
 ap.add_argument("--seed", type=int, default=0, help="PRNG key of the initialisation and seed of the batch order")
+ap.add_argument("--schedule", choices=["constant", "cosine"], default="constant",
+                help="constant lr (every run before F4) or cosine decay to 1% of it over --steps (F4)")
 args = ap.parse_args()
 D, H, L, P, B, LR = 128, 4, 3, 4, 4, 3e-4
 
@@ -95,7 +98,7 @@ def forward(prm, x):
 
 
 batched = jax.vmap(forward, in_axes=(None, 0))
-opt = optax.adam(LR)
+opt = optax.adam(optax.cosine_decay_schedule(LR, args.steps, alpha=1e-2) if args.schedule == "cosine" else LR)
 state = opt.init(params)
 
 
@@ -139,7 +142,8 @@ print("median s/step:", step_s, flush=True)
 if args.time_only:
     sys.exit()
 
-res = dict(run=args.run, res=args.res, seed=args.seed, D=D, H=H, L=L if args.run != "nocompress" else n_levels(args.res[0]),
+res = dict(run=args.run, res=args.res, seed=args.seed, schedule=args.schedule, D=D, H=H,
+           L=L if args.run != "nocompress" else n_levels(args.res[0]),
            P=P, batch=B, lr=LR, steps=args.steps, n_params=int(n_params(params)),
            eval_rel_err={str(n): eval_err(params, n) for n in args.res}, curve=curve, step_s=step_s,
            wall_s=time.time() - t0,

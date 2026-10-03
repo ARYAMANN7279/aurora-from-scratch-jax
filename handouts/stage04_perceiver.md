@@ -179,3 +179,31 @@ more training?**
 | F3-P4 | S1's bar needs more than 16×: at 96,000 steps, 16² is still ≥ 0.02 in both runs |
 
 Scored by `score_f3.py`, written before the run.
+
+**F4 (3 Oct 2026, pre-registered before any F4 run): does a decaying learning rate let the shared
+model hold S1's bar?**
+* **Why.** F3 trained the shared model for 192,000 steps at the constant rate. 16² fell below 0.02
+  from step 136,000 (key 0) and 151,500 (key 1), but sudden error spikes kept pushing it back up. A
+  spike at step 188,000 left key 0's final window at 0.038.
+* **Design.** F3 exactly, except that the learning rate decays.
+  * The schedule is cosine, from 3e-4 to 3e-6 (1%) over the 192,000 steps: `--schedule cosine`, new.
+    The default stays constant, and a 1000-step check on the lab machine's CPU reproduces the
+    previous code bitwise.
+  * Two runs, keys 0 and 1, one per T4 card at the same time (job `ugp2-s4f4-runs`, `kaggle_f4.py`),
+    with the same software, data and evaluation as F3.
+  * With a schedule, the curve no longer gives other budgets: a shorter run would decay sooner.
+* **Why Kaggle.** F3, the reference, ran there. This job's first attempt on a lab card took it from
+  below 85 °C to 92 °C within 21 s (F2 note).
+* **Measure:** as in F3, the mean of 10 consecutive evaluations, here the window of steps
+  187,500–192,000.
+* **The Stage 4 verdict stands either way.** F4 tells whether the bars can be met and held at a larger
+  budget.
+
+| # | Prediction |
+|---|---|
+| F4-P1 | At 192,000 steps, 16² meets S1's bar: < 0.02 in both runs |
+| F4-P2 | At 192,000 steps, the other bars hold: 64² < 0.02, 128² < 0.03 and 512² < 0.05, in both runs |
+| F4-P3 | The decay beats the constant rate at the same budget: at 192,000 steps, 16² is below F3's for the same key (0.0376, 0.0167), in both runs |
+| F4-P4 | No late spikes: after step 144,000 (where the rate is below 15% of its start), no evaluation at any resolution exceeds twice the median of the 10 before it, in either run |
+
+Scored by `score_f4.py`, written before the run.
