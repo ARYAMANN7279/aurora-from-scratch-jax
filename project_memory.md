@@ -744,6 +744,22 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * **Kaggle login:** the CLI's login lapsed around 01:20; the owner renewed it in the morning. The
   jobs themselves were unaffected.
 
+### 2026-10-03 — E9: the bias and q/k normalisation together, 4 of 6 HIT
+* **Design** (spec `handouts/e9_rpb_plus_qknorm.md`, commit 0a953e3, before any run): arm RQ (both
+  options) and a rerun of B, seeds 0–2, as in E8. Compared with E8's B, R and Q. Kaggle job
+  `ugp2-e9-runs`, 70 min; the trained weights are in `data/e9_params/` on the VM.
+* **Results:**
+  * one-step error 8.9% ± 0.4% below B: P1 MISS against its 9% bar, P2 HIT (below the
+    independent 13.7%);
+  * RQ beats E8's R and Q in every seed (P3 HIT);
+  * 20-step drift 4.2% ± 1.7% lower (P4 HIT); training time 1.11× (P5 HIT);
+  * B rerun is within 0.8% of E8's B, against a 0.5% bar (P6 MISS: run-to-run noise on the GPU).
+* **Reading:** the gains overlap. RQ goes a quarter of the way from the better single change to
+  independent gains, and is the best one-step model so far (0.136).
+* **Exploratory** (`attention.py`): without q/k normalisation, attention is near-uniform at the fine
+  stages and nearly one-hot at the coarsest (logit SD 8–11). q/k normalisation evens this out; the
+  bias does not. So the spec's overlap hypothesis does not fit.
+
 ## 6. Status (3 Oct 2026)
 
 **Done:**
@@ -764,19 +780,19 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * E3: done, 3 of 4 HIT (zero-shot degrades slowly with distance; the fine-tuned advantage stays at
   36–41%).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
-* 115 tests pass on CPU (3 Oct: the 92 earlier ones, E6's gates R1–R6, E7's G1–G6 and E8's Q1–Q6 and H1–H4). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
+* 118 tests pass on CPU (3 Oct: the 92 earlier ones, E6's gates R1–R6, E7's G1–G6, E8's Q1–Q6 and H1–H4, and E9's RQ1–RQ3). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6, E7, E8 and Stage 4 F3 (Kaggle)
-  are done and reported.
+* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6–E9 and Stage 4 F3 (Kaggle) are
+  done and reported.
 * The VM's lanes are idle. The owner approves each launch on the lab machine. Card 0 stays excluded.
 
 **Remaining:** none from the advisor's notes of 1 Oct. Done: E6 follow-up F1 (3 of 3 HIT), the
 attention experiment E7 (2 of 3 HIT), and the overnight follow-ups of 3 Oct: Stage 4 F3 (3 of 4 HIT)
-and E8 (bias with a finer drift and with pushforward, q/k normalisation, scan chunks; 5 of 10 HIT).
+and E8 (bias with a finer drift and with pushforward, q/k normalisation, scan chunks; 5 of 10 HIT);
+then E9, the two attention changes together (4 of 6 HIT: they mostly overlap).
 Possible follow-ups each need their own spec and the owner's go-ahead:
-* the bias and q/k normalisation together (do the two 7% gains stack?);
 * Stage 4 with a decaying learning rate (F3's 16² spikes);
 * a rollout measure that separates tracking from amplitude (E8's exploratory check).
 The stage and experiment reports are the record.

@@ -78,8 +78,8 @@ Each stage has an acceptance test and is not passed until that test is met.
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
 **Experiments.** Every experiment has a spec with pre-registered predictions, committed in git before any
-run (E1–E5 on 28 Sep 2026, E6 on 1 Oct, E7 on 2 Oct, E8 on 3 Oct). E1–E5 ran on the lab GPU box, E6–E8 on
-Kaggle's T4 cards. All are reported against those predictions:
+run (E1–E5 on 28 Sep 2026, E6 on 1 Oct, E7 on 2 Oct, E8 and E9 on 3 Oct). E1–E5 ran on the lab GPU box, E6–E9
+on Kaggle's T4 cards. All are reported against those predictions:
 
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
@@ -91,6 +91,7 @@ Kaggle's T4 cards. All are reported against those predictions:
 | E6 sim-to-real on real data | [`handouts/e6_realpde_sim2real.md`](handouts/e6_realpde_sim2real.md) | 15, plus the kit's FNOs | RealPDE foil (UGP-I's competition copy), 32 × 64 | ✅ **done** ([report](experiments/e6/REPORT.md)): 2/5 predictions HIT (15 runs on Kaggle T4s, amendment A3). From scratch on 65 real trajectories: rollout rel_l2 0.112 (subscore 94.71, within 0.8 of the organisers' fine-tuned FNO). Pretraining on the simulations and then fine-tuning for 2000 steps is **21–23% worse** (P1 MISS). Zero-shot transfer barely beats persistence (P3 MISS); simulating the test conditions does not help (P2 MISS). Fine-tuning recovers 49% over zero-shot (P4 HIT); no arm reaches the FNO (P5 HIT). **Follow-up F1** (3 of 3 HIT): given scratch's full 22,000 real-data steps, the pretrained starts match scratch (+0.4% ± 1.8% disjoint, +2.0% ± 0.9% all simulations), so the deficit was the short fine-tune and simulation pretraining buys no accuracy here |
 | E7 attention: relative-position bias | [`handouts/e7_attention_rpb.md`](handouts/e7_attention_rpb.md) | 6 | `e1_v1` (E1's scratch task) | ✅ **done** ([report](experiments/e7/REPORT.md)): 2/3 predictions HIT; a learned bias per head for each offset inside the attention windows lowers one-step error by **6.9% ± 0.7%** (every seed; 0.27% more parameters, 1.2% more time) but not the 20-step drift (−0.9% ± 1.6%, P2 MISS); off by default |
 | E8 follow-ups: attention bias, q/k normalisation, scan chunks | [`handouts/e8_followups.md`](handouts/e8_followups.md) | 18 | `e1_v1` (E1's scratch task) | ✅ **done** ([report](experiments/e8/REPORT.md)): 5/10 predictions HIT. q/k normalisation lowers one-step error by **7.3% ± 0.7%**, as much as E7's bias (6.9% ± 0.7%, replicated). Measured from 84 rollouts, both gains fade from 8–10% at step 2–3 to about zero by step 30. Pushforward costs 12.9% one-step error on this task, and about two-thirds of its 50-step drift gain is damped amplitude (exploratory). Scan chunks give the same models 1.21× faster |
+| E9 bias and q/k normalisation together | [`handouts/e9_rpb_plus_qknorm.md`](handouts/e9_rpb_plus_qknorm.md) | 6 | `e1_v1` (E1's scratch task) | ✅ **done** ([report](experiments/e9/REPORT.md)): 4/6 predictions HIT. Together the two lower one-step error by **8.9% ± 0.4%**, beating either alone (6.9%, 7.3%) in every seed but far short of the 13.7% that independent gains would give: they overlap. The best one-step model so far (0.136 against 0.150). Exploratory: without q/k normalisation, attention is near-uniform at the fine stages and nearly one-hot at the coarsest; q/k normalisation evens this out, and the bias does not |
 
 ## Stage 1 results: the data generator
 
