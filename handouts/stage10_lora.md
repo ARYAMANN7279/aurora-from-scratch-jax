@@ -100,3 +100,55 @@ gone, so "the same Stage 7 model" is not available. F1 runs on a retrain instead
   finetune.py --arm lora --rank r --out f1_lora_r<r>      # r = 4, 1, 16, 64
   finetune.py --arm full --out f1_full
   ```
+
+**F2 (4 Oct 2026, pre-registered before any F2 fine-tuning run): adaptation to viscosities farther from
+the training data.**
+* **Why.** Stage 10's target, Re 1000 (ν 3.3× below the training band's lowest), left little to adapt:
+  zero-shot was already 0.58× persistence, and full fine-tuning gained only 2.7–3.0% (Stage 10, F1;
+  E5 agrees). So the acceptance bar (LoRA ≤ 0.8× zero-shot) was out of reach for any method.
+* **Targets:**
+  * **Re 3000 (primary):** ν 10× below the band's lowest (Re 300). In log ν that is three times as far
+    as Re 1000.
+  * **Re 30 (second):** ν 3.3× above the band's highest (Re 100). That is as far as Re 1000, but on the
+    viscous side, and the flow there is different:
+    * A pilot run of the solver alone (`pilot_viscosity.py` → `results/f2_pilot.json`) found the flow
+      steady at Re 10, 15 and 20, weakly unsteady at Re 30 (the vorticity changes 2.9% per frame,
+      against 26% at Re 100), and chaotic at Re 100.
+    * Farther out on the viscous side there is nothing to forecast.
+  * **Re 1000:** Stage 10's target, rerun with the same protocol for comparison.
+* **Data:** a new dataset, `s10f2_v1` (`experiments/stage10/configs/s10f2_v1.json`).
+  * Re 30 on a 128² grid and Re 3000 on 1024², k_f 4, seeds 0, 1, 6 and 7.
+  * Otherwise `acc_v1`'s settings: spin-up 50, 100 time units recorded, a frame every 0.2, at 64² and
+    128².
+  * Grids are checked with Stage 2's rule (`resolution_f2.py`): F_64(1024 vs 2048) ≤ 1e-3 at t = 1
+    for Re 3000, and 128 vs 256 for Re 30. If a check fails, the trajectories are regenerated on the
+    finer grid before any fine-tuning.
+  * Re 3000 is generated on idle lab GPUs (measured: 0.44 h per trajectory at 1024²), Re 30 on the
+    CPU.
+* **Protocol:** Stage 10's exactly.
+  * The F1 base model (the Stage 7 retrain) and its normalisation; fine-tuning on the target's seeds
+    0–1, evaluation on 6–7.
+  * Batch 8, MSE, cosine decay, 1000 steps. LoRA r = 4 (0.84% trainable) at lr 1e-3; full fine-tuning
+    at lr 1e-4.
+  * Three seeds (0–2) per fine-tuning arm. `--seed` sets the LoRA initialisation and the batch order,
+    and seed 0 is Stage 10's. Zero-shot needs no seed.
+  * Every run is on an idle lab GPU, with matmul precision `highest`. F1's CPU numbers at Re 1000 are
+    reported beside the rerun.
+  * `finetune.py` gains `--dataset`, `--target` and `--seed`. With the defaults it reproduces F1's
+    zero-shot result bitwise (checked on the lab machine's CPU).
+* **Measure:** gain(arm) = 1 − e(arm) / e(zero-shot), the one-step error on the target's evaluation
+  seeds, as mean ± SE over the seeds.
+* **Acceptance, fixed now.** Stage 10's test (A1 and A2) is evaluated at Re 3000, the farther
+  viscosity. It is met if LoRA r = 4's mean error there is ≤ 0.8× zero-shot. Re 30 and Re 1000 are
+  reported beside it but do not decide it. The Stage 10 verdict at Re 1000 stands either way.
+
+| # | Prediction |
+|---|---|
+| F2-P1 | At Re 3000 the base transfers worse than at Re 1000: zero-shot / persistence is higher at Re 3000 |
+| F2-P2 | There is more to gain at Re 3000: full fine-tuning's mean gain is larger at Re 3000 than at Re 1000 |
+| F2-P3 | Even so, LoRA does not reach the acceptance bar at Re 3000: its mean gain is below 20% |
+| F2-P4 | On the viscous side the base fails: at Re 30, zero-shot is no better than persistence (ratio ≥ 1) |
+| F2-P5 | There, LoRA adapts at the acceptance level: mean gain ≥ 20% at Re 30 |
+| F2-P6 | And adapting attention alone is not the limit there: LoRA's mean gain at Re 30 is at least half of full fine-tuning's |
+
+Scored by `score_f2.py`, written before any F2 fine-tuning run.
