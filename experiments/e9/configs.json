@@ -1,0 +1,500 @@
+[
+ {
+  "name": "e9_RQ_s0",
+  "prediction": "E9 arm RQ (relative-position bias and q/k normalisation), seed 0: E9-P1 to E9-P6; handouts/e9_rpb_plus_qknorm.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ],
+    "rel_pos_bias": true,
+    "qk_norm": true
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e9_RQ_s1",
+  "prediction": "E9 arm RQ (relative-position bias and q/k normalisation), seed 1: E9-P1 to E9-P6; handouts/e9_rpb_plus_qknorm.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ],
+    "rel_pos_bias": true,
+    "qk_norm": true
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e9_RQ_s2",
+  "prediction": "E9 arm RQ (relative-position bias and q/k normalisation), seed 2: E9-P1 to E9-P6; handouts/e9_rpb_plus_qknorm.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ],
+    "rel_pos_bias": true,
+    "qk_norm": true
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e9_B_s0",
+  "prediction": "E9 arm B (none (the control, rerun as the session check)), seed 0: E9-P1 to E9-P6; handouts/e9_rpb_plus_qknorm.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e9_B_s1",
+  "prediction": "E9 arm B (none (the control, rerun as the session check)), seed 1: E9-P1 to E9-P6; handouts/e9_rpb_plus_qknorm.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e9_B_s2",
+  "prediction": "E9 arm B (none (the control, rerun as the session check)), seed 2: E9-P1 to E9-P6; handouts/e9_rpb_plus_qknorm.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ }
+]
