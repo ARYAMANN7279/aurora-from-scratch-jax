@@ -68,7 +68,7 @@ Per sample; training adds a batch axis in front (16 in E1).
 | Shifted windows | wrap around in longitude only, masked in latitude | wrap around in x and y (the box is periodic) |
 | Attention kernel | PyTorch's fused `scaled_dot_product_attention` | explicit softmax; on the lab card a fused kernel makes no difference in PyTorch and is 8% slower in JAX (Stage 12, T3 and J5) |
 | Position inside windows | no relative-position term: positions enter only through the input encodings | the same by default; optionally a learned bias per head for each offset (`rel_pos_bias`; E7 and E8: −6.9% one-step error, a gain that fades over 20–30 rollout steps) |
-| Query and key scale | unnormalised | the same by default; optionally a LayerNorm on each head's queries and keys (`qk_norm`; E8: −7.3% one-step error, at 10% more time) |
+| Query and key scale | unnormalised | the same by default; optionally a LayerNorm on each head's queries and keys (`qk_norm`; E8: −7.3% one-step error, at 10% more time; E9: −8.9% together with the bias, so the two gains mostly overlap) |
 | Loss | MAE | MSE (MAE tested in E4) |
 | Fine-tuning | full, and LoRA for long rollouts | full and LoRA (Stage 10, E5) |
 
