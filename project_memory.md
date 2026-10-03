@@ -716,7 +716,35 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   but one-step and rollout gains part ways again, as in E1. Trained weights were not kept (they stay
   in the job's scratch folder).
 
-## 6. Status (2 Oct 2026)
+### 2026-10-03 — Overnight on Kaggle: Stage 4 F3 (3 of 4 HIT) and E8 (5 of 10 HIT)
+* **The owner's ask:** the Stage 4 longer run, then the smaller follow-ups, on Kaggle overnight. Both
+  specs were committed and pushed before their runs: F3 in e51540d, E8 in 4e507e4 (code d69d575).
+* **Stage 4 F3,** the shared Perceiver trained for 192,000 steps (32×), keys 0 and 1, one per T4.
+  * Job `ugp2-s4f3-runs` v2, 7.8 h. In v1 Kaggle gave one card, and the two-card guard stopped it
+    before any training. The 512² step needs one 7.8 GB XLA block, so the runs reserve 90% of the
+    card.
+  * 16² falls below S1's 0.02 from step 136,000 (run 0) and 151,500 (run 1), but at the constant
+    learning rate spikes push it back up. A spike at step 188,000 left run 0's final window at
+    0.038; run 1 ends at 0.017 (P1 MISS).
+  * 64² meets S2 (P2 HIT, run 0 at 0.01996), 128² and 512² keep theirs (P3 HIT), and 16² is still
+    0.026 at 96,000 steps (P4 HIT).
+  * The Stage 4 verdict stays "not met".
+* **E8,** six arms × 3 seeds on E1's scratch task (job `ugp2-e8-runs`, 4.1 h; the trained weights are
+  in `data/e8_params/` on the VM).
+  * The bias replicates (one-step 6.9% ± 0.7%, P1 HIT). Measured from 84 rollouts it does lower
+    the 20-step drift, by 3.3% ± 0.6% (P2 MISS: the prediction said under 3%). The gain fades from
+    7% at step 1 to 1.4% at step 20 (P3 HIT).
+  * Pushforward costs 12.9% one-step error at matched steps (P5 MISS) and lowers the 50-step drift
+    by only 6.2% (P4 MISS). The bias still helps under it (P6 HIT).
+  * q/k normalisation lowers one-step error by 7.3% ± 0.7%, as much as the bias (P7 MISS), at 10.1%
+    more time (P8 MISS).
+  * Scan chunks give the same models (P9 HIT), 1.21× faster on a T4 (P10 HIT).
+  * Exploratory (`amplitude.py`, CPU): every model decorrelates from the flow by step 30–50. About
+    two-thirds of pushforward's 50-step gain is damped amplitude (0.93 of the truth's).
+* **Kaggle login:** the CLI's login lapsed around 01:20; the owner renewed it in the morning. The
+  jobs themselves were unaffected.
+
+## 6. Status (3 Oct 2026)
 
 **Done:**
 * Stages 1–11: built, gates pass, results reported.
@@ -736,20 +764,22 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * E3: done, 3 of 4 HIT (zero-shot degrades slowly with distance; the fine-tuned advantage stays at
   36–41%).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
-* 104 tests pass on CPU (2 Oct: the 92 earlier ones, E6's gates R1–R6 and E7's G1–G6). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
+* 115 tests pass on CPU (3 Oct: the 92 earlier ones, E6's gates R1–R6, E7's G1–G6 and E8's Q1–Q6 and H1–H4). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6 and E7 (Kaggle) are done and
-  reported.
+* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6, E7, E8 and Stage 4 F3 (Kaggle)
+  are done and reported.
 * The VM's lanes are idle. The owner approves each launch on the lab machine. Card 0 stays excluded.
 
-**Remaining:** none from the advisor's notes of 1 Oct. E6 follow-up F1 is done (3 of 3 HIT), and the
-attention experiment E7 is done (2 of 3 HIT). Possible follow-ups each need their own spec and the
-owner's go-ahead:
-* E7: the bias combined with pushforward (E4's lever for drift), or a finer drift measure (more
-  rollout starts per trajectory); the next attention ideas in the Stage 12 report (§8);
-* the E-runs retrained with scan chunks. The stage and experiment reports are the record.
+**Remaining:** none from the advisor's notes of 1 Oct. Done: E6 follow-up F1 (3 of 3 HIT), the
+attention experiment E7 (2 of 3 HIT), and the overnight follow-ups of 3 Oct: Stage 4 F3 (3 of 4 HIT)
+and E8 (bias with a finer drift and with pushforward, q/k normalisation, scan chunks; 5 of 10 HIT).
+Possible follow-ups each need their own spec and the owner's go-ahead:
+* the bias and q/k normalisation together (do the two 7% gains stack?);
+* Stage 4 with a decaying learning rate (F3's 16² spikes);
+* a rollout measure that separates tracking from amplitude (E8's exploratory check).
+The stage and experiment reports are the record.
 
 **Pre-registered follow-ups (30 Sep; predictions committed in PR #27):**
 * **Stage 10 F1**, a LoRA rank sweep: **done** (1 Oct), both predictions HIT. It ran on a retrain of
@@ -767,7 +797,8 @@ owner's go-ahead:
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
 * Stage 10 is explained by F1 (rank is not the limit) and stays not met. Stage 4: F1 shows that
   S1's bar is reachable at C = 3; F2 shows that the shared model beats dedicated controls at 64² and
-  above when given the same steps per resolution.
+  above when given the same steps per resolution. F3 (32×) meets S2–S4. S1 is reached intermittently
+  but not held at the constant rate, so the row stays ⚠️.
 
 **Possible follow-ups** (each needs a new spec and the owner's go-ahead):
 * E1: a distance-matched 32-regime control; pretraining steps scaled with T.
