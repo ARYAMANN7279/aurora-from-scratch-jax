@@ -50,7 +50,8 @@ def model_config(m):
                              bb.Config(m["D"], tuple(b["enc_depths"]), tuple(b["enc_heads"]),
                                        tuple(b["dec_depths"]), tuple(b["dec_heads"]), tuple(b["window"]),
                                        periodic=tuple(b.get("periodic", bb.swin.PERIODIC)),
-                                       shift=b.get("shift", True), rel_pos_bias=b.get("rel_pos_bias", False)))
+                                       shift=b.get("shift", True), rel_pos_bias=b.get("rel_pos_bias", False),
+                                       qk_norm=b.get("qk_norm", False)))
 
 
 def _set(d, dotted, value):
@@ -135,29 +136,60 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
             return lossf(y1, xp)
         return lossf(y1, xp) + lossf(fwd(p, x0, jax.lax.stop_gradient(y1)), xp2)
 
-    @jax.jit
-    def step(q, st, xm, x0, xp, xp2):
+    def train_step(q, st, xm, x0, xp, xp2):
         loss, g = jax.value_and_grad(objective)(q, xm, x0, xp, xp2)
         upd, st = opt.update(g, st, q)
         return optax.apply_updates(q, upd), st, loss
 
+    step = jax.jit(train_step)
     rng = np.random.default_rng(t["seed"])
     B = t["batch"]
+
+    def draw():  # one step's regime, trajectories and frames, in the original loop's order of draws
+        tag = tags[rng.integers(len(tags))]
+        n_traj, F = by_tag[tag].shape[:2]
+        return tag, rng.integers(0, n_traj, B), rng.integers(1, F - 2 if pf else F - 1, B)
+
     t0 = time.time()
     loss = jnp.nan
-    for _ in range(steps):  # same sampling scheme as experiments/stage7/train_onestep.py
-        v = by_tag[tags[rng.integers(len(tags))]]
+    chunk, done = t.get("scan_chunk") or 0, 0
+    if chunk:  # E8: `chunk` steps per jitted call (lax.scan), on the batches the loop below would draw
+        if len({by_tag[tag].shape for tag in tags}) != 1:
+            raise ValueError("scan_chunk needs training regimes of one shape")
+        stack = jnp.stack([by_tag[tag] for tag in tags])
+        Fs = stack.shape[2]
+
+        @jax.jit
+        def run_chunk(q, st, data, ti, s, k):
+            def body(carry, idx):
+                a, b, c = idx
+                v = data[a]
+                q, st, l = train_step(*carry, v[b, c - 1], v[b, c], v[b, c + 1], v[b, jnp.minimum(c + 2, Fs - 1)])
+                return (q, st), l
+            (q, st), losses = jax.lax.scan(body, (q, st), (ti, s, k))
+            return q, st, losses[-1]
+
+        while done + chunk <= steps:
+            d = [draw() for _ in range(chunk)]
+            ti = np.array([tags.index(tag) for tag, _, _ in d])
+            trainable, state, loss = run_chunk(trainable, state, stack, ti, np.stack([x[1] for x in d]),
+                                               np.stack([x[2] for x in d]))
+            done += chunk
+    for _ in range(steps - done):  # same sampling scheme as experiments/stage7/train_onestep.py
+        tag, s, k = draw()
+        v = by_tag[tag]
         F = v.shape[1]
-        s = rng.integers(0, v.shape[0], B)
-        k = rng.integers(1, F - 2 if pf else F - 1, B)
         trainable, state, loss = step(trainable, state, v[s, k - 1], v[s, k], v[s, k + 1], v[s, np.minimum(k + 2, F - 1)])
-    p = full(trainable)
+    p = jax.block_until_ready(full(trainable))
+    train_s = time.time() - t0
 
     @jax.jit
     def sq(prm, xm, x0, xp):
         return jnp.sum((fwd(prm, xm, x0) - xp) ** 2), jnp.sum((x0 - xp) ** 2), jnp.sum(xp**2)
 
     roll = jax.jit(partial(rollout, n=e.get("rollout_steps", 0), dt=dt, mc=mc)) if e.get("rollout_steps") else None
+    every, n_long = e.get("drift_every"), e.get("drift_steps") or e.get("rollout_steps", 0)
+    many = jax.jit(jax.vmap(partial(rollout, n=n_long, dt=dt, mc=mc), in_axes=(None, 0, 0))) if every else None
     metrics = {}
     for split in e["splits"]:
         groups = {}
@@ -165,7 +197,7 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
             groups.setdefault(tag, []).append(norm(load(tag, s)))
         for tag, arrs in groups.items():
             a = b = c = 0.0
-            drift = []
+            drift, errs = [], []
             for v in arrs:
                 F = v.shape[0]
                 for j in range(1, F - 1, 16):
@@ -177,9 +209,19 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
                     pred = np.asarray(roll(p, v[49], v[50]))
                     tr = np.asarray(v[51:51 + n])
                     drift.append(float(np.mean(np.sqrt(((pred - tr) ** 2).sum(axis=(1, 2, 3)) / (tr**2).sum(axis=(1, 2, 3))))))
+                if many is not None:  # E8: an n_long-step rollout from every `every`-th frame from drift_from on
+                    st0 = np.arange(e.get("drift_from", 50), F - n_long, every)
+                    pred = np.asarray(many(p, v[st0 - 1], v[st0]))
+                    tr = np.asarray(v[st0[:, None] + np.arange(1, n_long + 1)])
+                    errs.append(np.sqrt(((pred - tr) ** 2).sum(axis=(2, 3, 4)) / (tr**2).sum(axis=(2, 3, 4))))
             row = dict(rel_err=float(np.sqrt(a / c)), persistence=float(np.sqrt(b / c)), ratio=float(np.sqrt(a / b)))
             if drift:
                 row["rollout_drift"] = float(np.mean(drift))
+            if errs:  # every rollout's relative error at each step, then means over all rollouts
+                E = np.concatenate(errs)
+                n = e.get("rollout_steps") or n_long
+                row.update(drift_rollouts=int(E.shape[0]), rollout_drift_many=float(E[:, :n].mean()),
+                           rollout_drift_many_long=float(E.mean()), rollout_err_by_step=[float(x) for x in E.mean(0)])
             metrics[f"{split}/{tag}"] = row
 
     run_dir = os.path.join(runs_root, h)
@@ -188,7 +230,7 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
     np.savez(os.path.join(run_dir, "params.npz"), flat=np.asarray(flat), mean=mu, std=sd)
     n_tr = sum(x.size for x in jax.tree_util.tree_leaves(trainable)) if steps else 0
     out = dict(config_hash=h, name=cfg.get("name"), prediction=cfg["prediction"], git_commit=_git_commit(),
-               started=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0)), wall_s=time.time() - t0,
+               started=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0)), wall_s=time.time() - t0, train_s=train_s,
                n_params=int(flat.size), n_trainable=int(n_tr), final_loss=float(loss), metrics=metrics, config=cfg)
     os.makedirs(os.path.dirname(os.path.abspath(results_path)), exist_ok=True)
     with open(results_path, "a") as f:

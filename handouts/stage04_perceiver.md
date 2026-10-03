@@ -142,3 +142,40 @@ vs 0.0430152 after 6000 steps). The command and the predictions stand as registe
 *Correction (1 Oct 2026, during the run):* the shared model does not reproduce across devices the
 way F1's control did. The CPU and GPU runs agree to 2e-6 at step 500, but from step 3000 they differ
 by up to 27% at 512² at the same step. See the report.
+
+**F3 (3 Oct 2026, pre-registered before any F3 training run): does the shared model reach S1's bar with
+more training?**
+* **Why.** At 4× the steps (F2) the shared model met S3 and S4, but not S1 (0.058 at 16²) or S2 (0.026
+  at 64²), and every error was still falling. F1 showed that a dedicated 16² model reaches S1's bar
+  with 48,000 steps at 16².
+* **Design.** The S1–S4 run (`--run main`) trained for 192,000 steps: 32× the registered 6000, so 48,000
+  per resolution, which is F1's budget at 16².
+  * Everything else is as registered: lr 3e-4 constant, batch 4, the resolutions in turn, an
+    evaluation every 500 steps.
+  * At a constant rate, a longer run passes through the same states as a shorter one, so the curve
+    also gives 96,000 steps (16×) and every other budget on the way.
+* **Two runs,** keys 0 and 1. `--seed` is new: key 0 reproduces the original initialisation and batch
+  order. One run per T4 card on Kaggle, at the same time (job `ugp2-s4f3-runs`, `kaggle_f3.py`). Software
+  is pinned as for E6 and E7 (JAX 0.10.2), float32 with matmul precision `highest`.
+* **Measured before this amendment** (job `ugp2-s4f3-time`, version 2, no F3 training run):
+  * T4 medians of 7.9 / 11 / 27 / 444 ms per step at 16² / 64² / 128² / 512², so 192,000 steps take
+    about 7 h per card. That is within Kaggle's 12 h session limit.
+  * Version 1 stopped at its first 512² step: an on-demand allocator could not find the 7.8 GB block
+    that step needs. Runs now reserve 90% of the card.
+  * A 500-step smoke run (key 1) went through the evaluation and the results file.
+* **Measure:** for each run and resolution, the mean of 10 consecutive evaluations (5000 steps).
+  * Why: a single end-point of the shared model moves by 10–25% (F2's noise note), and F1's control
+    moved between 0.012 and 0.020 over its last 12,000 steps.
+  * "At 192,000 steps" means the window of steps 187,500–192,000. "At 96,000" means 91,500–96,000.
+  * The end-points are reported too.
+* **The Stage 4 verdict stands either way.** It was scored at 6000 steps. F3 tells whether the bars are
+  reachable at a larger budget.
+
+| # | Prediction |
+|---|---|
+| F3-P1 | At 192,000 steps, 16² meets S1's bar: < 0.02 in both runs |
+| F3-P2 | At 192,000 steps, 64² meets S2's bar: < 0.02 in both runs |
+| F3-P3 | At 192,000 steps, 128² and 512² keep S3's and S4's bars: < 0.03 and < 0.05 in both runs |
+| F3-P4 | S1's bar needs more than 16×: at 96,000 steps, 16² is still ≥ 0.02 in both runs |
+
+Scored by `score_f3.py`, written before the run.

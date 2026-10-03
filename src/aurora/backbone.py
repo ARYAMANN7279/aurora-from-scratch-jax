@@ -19,6 +19,7 @@ class Config(NamedTuple):
     periodic: tuple = swin.PERIODIC
     shift: bool = True  # False: every block uses unshifted windows (E4 ablation)
     rel_pos_bias: bool = False  # True: each block gets a zero-initialised relative-position bias (E7)
+    qk_norm: bool = False  # True: each block normalises its queries and keys per head (E8)
 
 
 def _tn(key, shape, dtype):
@@ -62,6 +63,15 @@ def _add_rpb(layer, cfg, heads, dtype):
             b["rpb"] = jnp.zeros((swin.n_rel(cfg.window), heads), dtype)
 
 
+def _add_qkn(layer, cfg, w, heads, dtype):
+    """E8: unit gains and zero biases for the q and k LayerNorms of each block. Like _add_rpb, it draws no random
+    numbers, so the other weights are those of the same seed without the normalisation."""
+    if cfg.qk_norm:
+        for b in layer["blocks"]:
+            for n in ("qn", "kn"):
+                b[n] = {"g": jnp.ones(w // heads, dtype), "b": jnp.zeros(w // heads, dtype)}
+
+
 def init(key, cfg, dtype=None):
     dtype = dtype or jnp.asarray(0.0).dtype
     S = len(cfg.enc_depths)
@@ -78,6 +88,7 @@ def init(key, cfg, dtype=None):
         kb = jax.random.split(ki, dep + 1)
         layer = {"blocks": [swin.init_block(k, w, D, dtype=dtype) for k in kb[:dep]]}
         _add_rpb(layer, cfg, cfg.enc_heads[i], dtype)
+        _add_qkn(layer, cfg, w, cfg.enc_heads[i], dtype)
         if i < S - 1:
             layer["merge"] = init_merge(kb[dep], w, dtype)
         p["enc"].append(layer)
@@ -86,6 +97,7 @@ def init(key, cfg, dtype=None):
         kb = jax.random.split(ki, dep + 1)
         layer = {"blocks": [swin.init_block(k, w, D, dtype=dtype) for k in kb[:dep]]}
         _add_rpb(layer, cfg, cfg.dec_heads[i], dtype)
+        _add_qkn(layer, cfg, w, cfg.dec_heads[i], dtype)
         if i < S - 1:
             layer["split"] = init_split(kb[dep], w, dtype)
         p["dec"].append(layer)

@@ -25,6 +25,18 @@ this autoencoder given more training (F1-P1 HIT, F1-P2 MISS). F2 trained the sha
 their error) but not at 16² (1.35×, against a 1.3× bar). So F2-P1 MISSES, on 16² alone; S4's bar is
 met (F2-P2 HIT). See "Follow-ups" below.
 
+**Follow-up F3 (pre-registered 3 Oct 2026): 3 of 4 HIT.** The shared model was trained for 192,000
+steps, 32× the registered budget, with two keys on Kaggle T4s.
+* **16² reaches S1's bar, but does not hold it.** The 16² window first falls below 0.02 at step
+  136,000 (run 0) and 151,500 (run 1). The best single evaluations are 0.013.
+* **The constant learning rate throws spikes.** One spike, at step 188,000, puts run 0's final
+  window back at 0.038 (F3-P1 MISS; run 1 ends at 0.017).
+* **The other bars are met.** 64² meets S2's bar (F3-P2 HIT), and 128² and 512² keep theirs (F3-P3
+  HIT).
+* **16× is not enough at 16²:** 0.026 at 96,000 steps in both runs (F3-P4 HIT).
+* **The registered verdict stands.** Stage 4 is not met at its registered budget, and at 32× the
+  budget S1 is reached only intermittently.
+
 ## Gates
 
 Command: `.venv/bin/python -m pytest tests/test_stage4_gates.py -q -s` → 9 passed.
@@ -161,6 +173,63 @@ single run of the shared model is:
   at lower resolution. That applies to S1–S4 as well. (F1's single-resolution control did not
   drift: 0.0430154 vs 0.0430152 at step 6000.)
 
+## Follow-up F3: the shared model trained 32× longer (spec §5, F3)
+
+Predictions committed before any F3 training run (commit e51540d). Scored by `score_f3.py` →
+`results/f3_analysis.json`, from `results/f3_main_192k_s{0,1}.json`.
+
+**Design.**
+* The S1–S4 run trained for 192,000 steps: 32× the registered 6000, so 48,000 per resolution, which
+  is F1's budget at 16².
+* The learning rate stays constant (3e-4), with an evaluation every 500 steps. So the curve also
+  gives 96,000 steps (16×) and every other budget on the way.
+* Two runs, keys 0 and 1 (`--seed`; key 0 is the original initialisation and batch order), one per
+  T4 card at the same time. Kaggle job `ugp2-s4f3-runs`, version 2, 7.8–7.9 h per run.
+* **Measure:** the mean of 10 consecutive evaluations (5000 steps), because single end-points of
+  the shared model are noisy (F2's noise note).
+
+| # | Prediction | Run 0 | Run 1 | Verdict |
+|---|---|---|---|---|
+| F3-P1 | at 192,000 steps, 16² < 0.02 in both runs | 0.0376 | 0.0167 | **MISS** |
+| F3-P2 | at 192,000 steps, 64² < 0.02 in both runs | 0.0200 (0.01996) | 0.0074 | **HIT** |
+| F3-P3 | at 192,000, 128² < 0.03 and 512² < 0.05 in both runs | 0.014, 0.015 | 0.005, 0.006 | **HIT** |
+| F3-P4 | at 96,000 steps, 16² still ≥ 0.02 in both runs | 0.0262 | 0.0260 | **HIT** |
+
+Mean of 10 evaluations ending at each step, 16² / 64² / 128² / 512²:
+
+| Steps (× registered) | Run 0 | Run 1 |
+|---|---|---|
+| 24,000 (4×) | 0.065 / 0.032 / 0.023 / 0.026 | 0.066 / 0.032 / 0.024 / 0.027 |
+| 48,000 (8×) | 0.040 / 0.018 / 0.013 / 0.014 | 0.040 / 0.021 / 0.016 / 0.017 |
+| 96,000 (16×) | 0.026 / 0.012 / 0.009 / 0.010 | 0.026 / 0.011 / 0.007 / 0.008 |
+| 144,000 (24×) | 0.026 / 0.012 / 0.009 / 0.010 | 0.024 / 0.012 / 0.008 / 0.009 |
+| 192,000 (32×) | **0.038** / 0.020 / 0.014 / 0.015 | **0.017** / 0.007 / 0.005 / 0.006 |
+| end-point at 192,000 | 0.0235 / 0.0114 / 0.0087 / 0.0098 | 0.0199 / 0.0119 / 0.0092 / 0.0095 |
+
+**Readings.**
+* **S1's bar is within reach of the shared model, but not stable at a constant learning rate.**
+  * The 16² window first falls below 0.02 at step 136,000 (run 0) and 151,500 (run 1).
+  * The best single evaluations are 0.0136 and 0.0133.
+  * After the first crossing, the window is below the bar 43% (run 0) and 72% (run 1) of the time.
+  * Run 1 ends at 0.0167, 1.04× F1's dedicated 16² model at the same 48,000 steps per resolution
+    (0.0160). At this budget, sharing no longer costs the 16² model much.
+* **Spikes decide the end-point.**
+  * Both runs show sudden error spikes that hit several resolutions at once (8 and 13 events in which
+    at least three resolutions more than doubled), each followed by recovery over a few thousand
+    steps.
+  * Run 0's spike at step 188,000 (0.188 at 16², 0.127 at 64², 0.096 at 512²) sits inside the
+    scored window. Without that one evaluation, the window's mean is 0.0209 at 16² and 0.0081 at
+    64².
+  * A decaying learning rate would be the obvious remedy. It is not tested here, and it would change
+    the registered recipe.
+* **The 96k–144k plateau.** Between 96,000 and 144,000 steps the 16² window barely moves
+  (0.026 → 0.024–0.026), then falls again. Single end-points at any one budget can mislead, as F2's
+  noise note warned.
+* **Reproducible across devices at 24,000 steps.** The F3 windows at 24,000 steps (0.065–0.066 at
+  16²) match F2's CPU run (0.065) within 2%, so the T4 runs continue F2's curve.
+* **Cost:** 0.52–0.53 s per 512² step on a T4 (2.2× the lab card's 0.24 s). The 512² steps take 92%
+  of the training time.
+
 ## GPU runs: environment, data and commands
 
 * Lab VM, NVIDIA RTX PRO 6000 Blackwell; JAX 0.10.2 with CUDA 12; float32 with matmul precision
@@ -187,4 +256,8 @@ for n in 16 64 128 512; do .venv/bin/python experiments/stage4/train_perceiver.p
 .venv/bin/python experiments/stage4/train_perceiver.py --run nocompress --res 16 --steps 48000 --out f1_nocompress_16_48k
 .venv/bin/python experiments/stage4/train_perceiver.py --run main --steps 24000 --out f2_main_24k
 python experiments/stage4/score_followups.py
+# F3, on Kaggle's two T4s (kaggle_f3.py runs these, one per card, at the same time)
+python experiments/stage4/train_perceiver.py --run main --steps 192000 --seed 0 --out f3_main_192k_s0
+python experiments/stage4/train_perceiver.py --run main --steps 192000 --seed 1 --out f3_main_192k_s1
+python experiments/stage4/score_f3.py
 ```

@@ -7,6 +7,10 @@ periodic = (False, True, True): levels are not periodic, x and y are.
 Optional (E7): a learned relative-position bias inside each window, as in Swin. A block whose params
 hold an "rpb" table ((2Wc-1)(2Wh-1)(2Ww-1), heads) adds table[offset(i, j)] to the logits of query i
 and key j. Without the table the block is exactly the Aurora block above.
+
+Optional (E8): q/k normalisation, as in ViT-22B. A block whose params hold "qn" and "kn" ({"g", "b"}, each of
+the head dimension, shared by the heads) applies a LayerNorm with those gains and biases to each head's queries
+and keys before the dot product. With unit gains and zero biases every logit lies within +-sqrt(head dim).
 """
 import itertools
 
@@ -89,6 +93,9 @@ def window_attention(p, xw, heads, mask=None, bias=None):
     dh = D // heads
     qkv = (xw @ p["qkv"]["W"] + p["qkv"]["b"]).reshape(Bw, N, 3, heads, dh).transpose(2, 0, 3, 1, 4)
     q, k, v = qkv[0], qkv[1], qkv[2]
+    if "qn" in p:  # E8: q/k normalisation over each head's dimension
+        q = layernorm_noaffine(q) * p["qn"]["g"] + p["qn"]["b"]
+        k = layernorm_noaffine(k) * p["kn"]["g"] + p["kn"]["b"]
     logits = q @ k.transpose(0, 1, 3, 2) / jnp.sqrt(jnp.asarray(dh, xw.dtype))
     if bias is not None:
         logits = logits + bias[None]
