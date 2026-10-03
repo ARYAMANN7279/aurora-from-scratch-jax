@@ -808,7 +808,7 @@ The stage and experiment reports are the record.
   add the result to the stage report (the original verdicts stand), and update the README row.
 
 **README ⚠️ rows (30 Sep):**
-* Stages 8 and 9 are resolved by E4 (3 seeds).
+* Stages 8 and 9 are resolved by E4 (3 seeds). Stage 9's row shows ✅, with the earlier miss at its own budget in the text (owner's rule, 3 Oct: no ⚠️→✅ markers).
 * Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
 * Stage 10 is explained by F1 (rank is not the limit) and stays not met. Stage 4: F1 shows that
