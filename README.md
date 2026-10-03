@@ -65,12 +65,12 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
 | 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds on a fixed machine but not across machines. This is a limit of chaotic flows plus floating point, not a bug: last-bit differences between CPU instruction sets grow by ~e²⁸. Mitigated by storing each trajectory's post-spin-up state and host ISA; `e1_v1` was generated on pinned CPU lanes |
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
-| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ⚠️ **not met**: gates pass, but through L = 3 the shared model reconstructs to 0.167 / 0.085 / 0.063 / 0.060 relative error at C = 3 / 5 / 6 / 8 (bars 0.02–0.05), still falling at 6000 steps; single-resolution controls reach 0.04–0.05. **Follow-up F1:** the C = 3 control trained 8× longer reaches 0.016, below S1's bar, so the bar is reachable with more training. **F2:** the shared model at 4× the steps (the controls' 6000 per resolution) reaches 0.058 / 0.026 / 0.018 / 0.021, beating the dedicated controls at 64² and above but 1.35× worse at 16² (F2-P1 MISS on 16² alone; S4's bar met, F2-P2 HIT). **F3** (32× the steps, two keys, Kaggle T4s; 3 of 4 HIT): 64², 128² and 512² meet their bars, and 16² dips below S1's 0.02 from step 136,000 but does not hold it at the constant learning rate. A spike at step 188,000 leaves one run at 0.038, the other at 0.017 (F3-P1 MISS) |
+| 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ✅ **met with 32× the training and a decaying learning rate (F4)**: the one shared model reconstructs to **0.008 / 0.002 / 0.001 / 0.001** relative error at C = 3 / 5 / 6 / 8 (16² / 64² / 128² / 512²; bars 0.02 / 0.02 / 0.03 / 0.05), in both runs, and holds S1's 16² bar from step ~90,000 on. Earlier it was not met: at the registered 6000 steps the errors were 0.167 / 0.085 / 0.063 / 0.060 (that verdict stays in the stage report). F1 showed S1's bar is reachable at C = 3. F2 (4× steps) met S4 but not S1. F3 (32× at a constant rate) reached S1 only intermittently, between loss spikes |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
 | 6 | U-Net backbone with skips | overfits a single trajectory | ✅ **done**: matches Aurora's backbone to 3 × 10⁻¹⁶; overfits to 0.07× persistence (16k steps) |
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
 | 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts. The single-seed MAE blow-up at Re 300 did **not** reproduce in E4 (3 seeds, 10k steps): MAE drift −11 ± 6.5% vs MSE |
-| 9 | Pushforward trick | lower rollout drift at matched compute | ⚠️→✅ not met at Stage 9's 3000-step budget (verdict kept), but **met in E4** (3 seeds, 10k steps): at matched compute pushforward cuts 50-step drift by 45 ± 5% / 47 ± 7% (Re 100 / 300) |
+| 9 | Pushforward trick | lower rollout drift at matched compute | ✅ **met in E4** (3 seeds, 10,000 steps): at matched compute pushforward cuts 50-step drift by 45 ± 5% / 47 ± 7% (Re 100 / 300). At Stage 9's own 3000-step budget it was not met earlier (that verdict stays in the stage report). On E1's 2-trajectory task (E8) the drift gain is smaller and partly damped amplitude |
 | 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot already 0.58× persistence. E5 confirms there is little headroom: even full fine-tuning gains ≤ 5.3% with 6 trajectories. **Follow-up F1** (rank sweep, on a retrained base): the gain rises with rank, but only from 0.2% (r = 1) to 1.0% (r = 64), against 2.7% for full fine-tuning, so rank is not the limit |
 | 11 | Ablation harness | one config → one run → one row of results | ✅ **done**: reproduces Stage 7 exactly from a config file |
 | 12 | Speed: what makes training faster, in JAX and against PyTorch | a JAX configuration at least 1.5× faster than the E-run loop, with numerics unchanged | ✅ **met**: running 50 steps per jitted call (`lax.scan`) trains the E1 model **2.07×** faster than the E-runs' loop, numerics unchanged; 6 of 10 predictions HIT. The step is bound by the host, not the card: it runs at 10.2 ms on a quiet host and 19.2 ms on a loaded one, with the card 49% busy. Scan, donation (1.13×), vmap over seeds (1.67× per model) and CUDA graphs pay; bfloat16 (1.12×) and fused attention (0.92×) do not. Eager PyTorch is 2.42× slower than jitted JAX, `torch.compile` is within 11%, and CUDA graphs beat jitted JAX by 1.36× but trail JAX with scan by 1.52×. A T4 supplement (Kaggle, two-card J7 included) is in the report |
@@ -151,21 +151,21 @@ python3.11 -m venv .venv
 
 ## Status
 
-**Complete.** All eleven stages and all five experiments have their results. Stages 1, 3, 5, 6, 7,
-8 and 11 met their acceptance tests. Stages 9 and 10 did not (pushforward does not pay at matched compute; LoRA shows
-little adaptation from two trajectories). E4, with 3.3× Stage 9's budget and 3 seeds, finds the
-opposite for pushforward. Stage 2's data are statistically sound, but bitwise
-regeneration of a Re 1000 trajectory is machine-dependent. Stage 4 did not meet its acceptance
-test either: the shared Perceiver was still improving when its 6000-step budget ran out.
-All five experiments are done: E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5 and E5 2
-of 4, each reported in `experiments/eN/REPORT.md`. Every stage is built
-and passes its correctness gates (98 tests on CPU, including the experiment tooling; GPU notes in
-`project_memory.md`). Each stage has a spec with pre-registered predictions in `handouts/` and a
-report in `experiments/stageN/REPORT.md`.
-
-**Follow-ups** to the Stage 4 and Stage 10 misses, with predictions committed before any run: Stage 4
-F1, Stage 4 F2 and Stage 10 F1 are all done (see those rows of the roadmap). F2 ran on the CPU because a
-GPU run overheats the shared machine's cards.
+**Complete.** All twelve stages and all nine experiments have their results.
+* **Met:** stages 1, 3, 5, 6, 7, 8, 11 and 12 met their acceptance tests. Two more are met after
+  follow-ups, and missed at their registered budgets earlier:
+  * Stage 9 (pushforward) is met in E4, with 3.3× its budget and 3 seeds;
+  * Stage 4 (the Perceiver) is met with 32× its training steps and a decaying learning rate (F4).
+* **Not met:** Stage 10 (LoRA shows little adaptation from two trajectories; F1 shows the rank is not
+  the limit).
+* **A known limit:** Stage 2's data are statistically sound, but bitwise regeneration of a Re 1000
+  trajectory is machine-dependent.
+* **Experiments:** E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5, E5 2 of 4, E6 2 of 5 (and
+  its follow-up 3 of 3), E7 2 of 3, E8 5 of 10 and E9 4 of 6. Each is reported in
+  `experiments/eN/REPORT.md`.
+* **Records:** every stage is built and passes its correctness gates (118 tests on CPU, including the
+  experiment tooling; GPU notes in `project_memory.md`). Each stage and experiment has a spec with
+  pre-registered predictions in `handouts/`, and a report.
 
 ## Advisors
 

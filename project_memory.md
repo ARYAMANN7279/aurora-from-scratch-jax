@@ -760,6 +760,20 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   stages and nearly one-hot at the coarsest (logit SD 8–11). q/k normalisation evens this out; the
   bias does not. So the spec's overlap hypothesis does not fit.
 
+### 2026-10-03 — Stage 4 F4: with a decaying learning rate every bar is met and held, 4 of 4 HIT
+* **Design** (spec §5 F4, commit 8eeea5c, before the run): F3 exactly (192,000 steps, keys 0 and 1,
+  Kaggle T4s), but with a cosine learning rate from 3e-4 to 3e-6 (`--schedule cosine`; constant by
+  default, bitwise unchanged). Job `ugp2-s4f4-runs`, 8.0–8.1 h.
+* **Results,** final 10-evaluation windows at 16² / 64² / 128² / 512²:
+  * key 0: 0.0078 / 0.0022 / 0.0012 / 0.0011;
+  * key 1: 0.0085 / 0.0026 / 0.0013 / 0.0012.
+  * 16² is below S1's bar from step 89,000 / 96,500 on, and there are no spikes after step 144,000.
+  * That is 2–5× below F3 at 16² and 3–14× at the other resolutions; the shared model ends at half
+    the error of F1's dedicated 16² model.
+* **Reading:** the constant rate, not the model, limited Stage 4. The README row is now ✅ (met with 32×
+  the steps and a decaying rate), with the miss at the registered 6000 steps in the text. That
+  verdict stays in the stage report.
+
 ## 6. Status (3 Oct 2026)
 
 **Done:**
@@ -791,9 +805,9 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 **Remaining:** none from the advisor's notes of 1 Oct. Done: E6 follow-up F1 (3 of 3 HIT), the
 attention experiment E7 (2 of 3 HIT), and the overnight follow-ups of 3 Oct: Stage 4 F3 (3 of 4 HIT)
 and E8 (bias with a finer drift and with pushforward, q/k normalisation, scan chunks; 5 of 10 HIT);
-then E9, the two attention changes together (4 of 6 HIT: they mostly overlap).
+then E9, the two attention changes together (4 of 6 HIT: they mostly overlap), and Stage 4 F4 (a
+decaying learning rate; 4 of 4 HIT, all bars met and held).
 Possible follow-ups each need their own spec and the owner's go-ahead:
-* Stage 4 with a decaying learning rate (F3's 16² spikes);
 * a rollout measure that separates tracking from amplitude (E8's exploratory check).
 The stage and experiment reports are the record.
 
@@ -808,13 +822,14 @@ The stage and experiment reports are the record.
   add the result to the stage report (the original verdicts stand), and update the README row.
 
 **README ⚠️ rows (30 Sep):**
-* Stages 8 and 9 are resolved by E4 (3 seeds).
+* Stages 8 and 9 are resolved by E4 (3 seeds). Stage 9's row shows ✅, with the earlier miss at its own budget in the text (owner's rule, 3 Oct: no ⚠️→✅ markers).
 * Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
 * Stage 10 is explained by F1 (rank is not the limit) and stays not met. Stage 4: F1 shows that
   S1's bar is reachable at C = 3; F2 shows that the shared model beats dedicated controls at 64² and
   above when given the same steps per resolution. F3 (32×) meets S2–S4. S1 is reached intermittently
-  but not held at the constant rate, so the row stays ⚠️.
+  but not held at the constant rate. F4 (32× with a cosine rate) meets and holds all four bars. The
+  row is ✅, with the earlier miss in the text.
 
 **Possible follow-ups** (each needs a new spec and the owner's go-ahead):
 * E1: a distance-matched 32-regime control; pretraining steps scaled with T.

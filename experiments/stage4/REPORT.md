@@ -37,6 +37,16 @@ steps, 32× the registered budget, with two keys on Kaggle T4s.
 * **The registered verdict stands.** Stage 4 is not met at its registered budget, and at 32× the
   budget S1 is reached only intermittently.
 
+**Follow-up F4 (pre-registered 3 Oct 2026): 4 of 4 HIT. With a decaying learning rate, every bar is
+met and held.** F3 was rerun exactly, except that the rate decays on a cosine schedule from 3e-4 to
+3e-6 over the 192,000 steps.
+* **Final windows,** 16² / 64² / 128² / 512²: **0.0078 / 0.0022 / 0.0012 / 0.0011** (key 0) and
+  **0.0085 / 0.0026 / 0.0013 / 0.0012** (key 1), against bars of 0.02 / 0.02 / 0.03 / 0.05.
+* **16² holds the bar.** It goes below S1's bar at step 89,000 (key 0) or 96,500 (key 1) and stays
+  there.
+* **Stage 4's acceptance test, S1 and S4, is met at 32× the registered budget with this schedule.**
+  The verdict at the registered 6000 steps stands.
+
 ## Gates
 
 Command: `.venv/bin/python -m pytest tests/test_stage4_gates.py -q -s` → 9 passed.
@@ -230,6 +240,57 @@ Mean of 10 evaluations ending at each step, 16² / 64² / 128² / 512²:
 * **Cost:** 0.52–0.53 s per 512² step on a T4 (2.2× the lab card's 0.24 s). The 512² steps take 92%
   of the training time.
 
+## Follow-up F4: F3 with a decaying learning rate (spec §5, F4)
+
+Predictions committed before any F4 run (commit 8eeea5c). Scored by `score_f4.py` →
+`results/f4_analysis.json`, from `results/f4_main_192k_cos_s{0,1}.json`.
+
+**Design.**
+* F3 exactly: the shared model, 192,000 steps, keys 0 and 1, one per T4 card at the same time, the
+  same software, data and evaluation.
+* Only the learning rate changes: a cosine decay from 3e-4 to 3e-6 (`--schedule cosine`).
+* Kaggle job `ugp2-s4f4-runs`, 8.0–8.1 h per run.
+* **Measure:** the mean of the 10 evaluations ending at 192,000 steps, as in F3.
+
+| # | Prediction | Key 0 | Key 1 | Verdict |
+|---|---|---|---|---|
+| F4-P1 | at 192,000 steps, 16² < 0.02 in both runs | 0.0078 | 0.0085 | **HIT** |
+| F4-P2 | at 192,000, 64² < 0.02, 128² < 0.03 and 512² < 0.05 in both runs | 0.0022, 0.0012, 0.0011 | 0.0026, 0.0013, 0.0012 | **HIT** |
+| F4-P3 | at 192,000, 16² below F3's for the same key (0.0376, 0.0167) | 0.0078 | 0.0085 | **HIT** |
+| F4-P4 | no evaluation after step 144,000 more than twice the median of the 10 before it | none | none | **HIT** |
+
+Mean of 10 evaluations ending at each step, 16² (F3, the constant rate, in brackets) / 64² / 128² / 512²:
+
+| Steps | Key 0 | Key 1 |
+|---|---|---|
+| 24,000 | 0.066 (0.065) / 0.031 / 0.022 / 0.024 | 0.066 (0.066) / 0.030 / 0.022 / 0.024 |
+| 48,000 | 0.037 (0.040) / 0.016 / 0.011 / 0.013 | 0.038 (0.040) / 0.017 / 0.012 / 0.014 |
+| 96,000 | 0.018 (0.026) / 0.008 / 0.006 / 0.006 | 0.020 (0.026) / 0.008 / 0.006 / 0.006 |
+| 144,000 | 0.011 (0.026) / 0.004 / 0.002 / 0.003 | 0.011 (0.024) / 0.004 / 0.002 / 0.002 |
+| **192,000** | **0.0078** (0.038) / 0.0022 / 0.0012 / 0.0011 | **0.0085** (0.017) / 0.0026 / 0.0013 / 0.0012 |
+
+**Readings.**
+* **The constant rate was the limit, not the model.**
+  * At the same 192,000 steps, the decaying rate leaves the 16² error 2.0–4.8× lower than F3's
+    constant rate, and the other resolutions 3–14× lower.
+  * The 16² window falls below S1's bar at step 89,000 (key 0) and 96,500 (key 1), and stays below
+    it for the rest of training.
+  * F3, at the constant rate, crossed later (136,000 and 151,500) and kept bouncing back.
+* **The spikes stop as the rate falls.**
+  * F4 still shows sudden spikes while the rate is high: 11 steps with one for key 0, the last at
+    124,000 (rate 8.6e-5); 3 for key 1, the last at 69,500.
+  * After step 144,000 (rate below 4.7e-5) there are none at any resolution.
+* **The shared model now beats the dedicated ones.**
+  * At 16² it ends at 0.008, half the error of F1's dedicated 16² model (0.016; 48,000 steps at the
+    constant rate).
+  * At 64² and above it is 16–45× below the 6000-step single-resolution controls (S5).
+  * F1 had no schedule either, so how a dedicated model would do with one is not measured.
+* **The schedule helps early too.** At 96,000 steps, with the rate at half its start, the 16² window
+  is already 0.018–0.020, against F3's 0.026. The first 48,000 steps are nearly identical to F3's
+  (0.037–0.038 against 0.040), as expected while the rate is still above 85% of its start.
+* **Stage 4's acceptance test (S1 and S4) is met** with 32× the registered steps and a decaying
+  rate. The verdict at the registered 6000 steps stays "not met", as registered.
+
 ## GPU runs: environment, data and commands
 
 * Lab VM, NVIDIA RTX PRO 6000 Blackwell; JAX 0.10.2 with CUDA 12; float32 with matmul precision
@@ -260,4 +321,8 @@ python experiments/stage4/score_followups.py
 python experiments/stage4/train_perceiver.py --run main --steps 192000 --seed 0 --out f3_main_192k_s0
 python experiments/stage4/train_perceiver.py --run main --steps 192000 --seed 1 --out f3_main_192k_s1
 python experiments/stage4/score_f3.py
+# F4, the same with a cosine learning rate (kaggle_f4.py)
+python experiments/stage4/train_perceiver.py --run main --steps 192000 --seed 0 --schedule cosine --out f4_main_192k_cos_s0
+python experiments/stage4/train_perceiver.py --run main --steps 192000 --seed 1 --schedule cosine --out f4_main_192k_cos_s1
+python experiments/stage4/score_f4.py
 ```
