@@ -147,3 +147,37 @@ Gate **D9** (added, not pre-registered) requires (a) a chunked spin-up to be bit
 single scan, and (b) an interrupted-then-resumed trajectory to give the same SHA-256 hashes as an
 uninterrupted one. D9 passes, so the 16 trajectories generated before the change stay consistent
 with the ones generated after it. M3 checks this on the real data.
+
+**F1 (4 Oct 2026, pre-registered before the run): M3 repeated on one fixed machine.**
+* **Why.** Q3 missed. Regenerated in a fresh process, `acc_v1`'s Re 1000 seed 7 did not match its
+  original.
+  * That trajectory was generated in a cloud container that was paused and restored during its
+    3.3 h run, and the container also restarted during generation (A1).
+  * The report could not identify the cause. It showed that the result depends on the CPU instruction
+    set XLA compiles for, so a change of host under the run would explain the miss.
+  * Partial checks on one machine (2,000 and 21,100 steps at 512²) were bitwise identical. A
+    full-length repeat on one fixed machine was never run.
+  * Without it, Q3 cannot tell "the generator is not reproducible" from "the machine changed under
+    the run".
+* **What.** On the lab machine's CPU (Intel Xeon w3-2525; JAX 0.10.2, float64; cores 8–15 through
+  `taskset`; GPUs hidden), with the code at this commit:
+  1. Generate M3's three picks with `acc_v1`'s settings into a new dataset, `s2f1_v1`
+     (`experiments/stage2/configs/s2f1_v1.json`, identical to `acc_v1`'s except for the name), and
+     write its manifest:
+     ```
+     generate.py --config experiments/stage2/configs/s2f1_v1.json --only re100_kf4:3 re300_kf4:5 re1000_kf4:7
+     generate.py --config experiments/stage2/configs/s2f1_v1.json --finalize --partial
+     ```
+  2. Then, in a fresh process, run M3's script unchanged. It regenerates each trajectory and compares
+     every file's SHA-256 with the manifest (→ `experiments/stage2/results/repro_s2f1_v1.json`):
+     ```
+     repro.py --dataset s2f1_v1 --pick re100_kf4:3 re300_kf4:5 re1000_kf4:7
+     ```
+  * The steps run one after the other in one lane, with no other job of ours on those cores.
+* **Prediction F1-Q3:** all three trajectories are identical (`frames_64.npy`, `frames_128.npy` and
+  `diag.npz`).
+* **Acceptance, fixed now.** If F1-Q3 holds, Stage 2's acceptance (D1–D8, Q3, Q5 and Q6) is met on a
+  fixed machine.
+  * The original Q3 verdict (MISS) stays in the report.
+  * Across machines, regeneration stays statistical, not bitwise. The report shows why that cannot
+    change for these chaotic flows, and M3 does not ask for it.
