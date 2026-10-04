@@ -833,7 +833,25 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * The README Stage 2 row keeps ⚠️ with corrected text: the "mitigated by storing the post-spin-up
     state" claim was removed, because at 512² that does not guarantee a bitwise re-derivation.
 
-## 6. Status (4 Oct 2026)
+### 2026-10-05 — Stage 10 F4: the base's training mattered; a good base leaves no room for the bar (5 of 6 HIT)
+* **Design** (spec F4, commit 3ca04eb; the owner's "both then merge"):
+  * B30k, Stage 7's recipe for 30,000 steps, on card 3 in 12.6 min. Its in-distribution error is half
+    the F1 base's: Re 100 0.032 vs 0.072, Re 300 0.083 vs 0.145.
+  * Full fine-tuning on six trajectories for 20,000 steps, from B3k and B30k, at lr 1e-4 and 1e-3.
+  * B30k zero-shot, and LoRA on B30k in Stage 10's setting.
+* **Results** (Re 3000; Re 1000):
+  * Zero-shot: B30k 0.201 and 0.150, against B3k's 0.259 and 0.213. Scratch (F3) reached 0.192 and
+    0.149.
+  * b30k_lo beats scratch by 3.7% and 6.1%, b30k_hi by 5.2% and 8.4%.
+  * b3k_hi only matches scratch (−1.2%, 0.0%): F4-P2 MISS.
+  * Over B30k's own zero-shot, full fine-tuning gains 7–9.5% and LoRA 2.2% and 2.0%.
+* **Reading:**
+  * The F1 base was under-trained, and the bar mostly measured that.
+  * With a good base, zero-shot transfer is near what six target trajectories give, and nothing
+    tested gains 20%.
+  * The Stage 10 verdict stands. The README row keeps ⚠️, with F4 in the text.
+
+## 6. Status (5 Oct 2026)
 
 **Done:**
 * Stages 1–11: built, gates pass, results reported.
@@ -843,7 +861,9 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
     * Stage 9: pushforward does not pay at matched compute.
     * Stage 10: LoRA adapts little from 2 trajectories, at Re 1000 and (F2) at Re 3000. At Re 30,
       where the base is systematically wrong, it cuts the error by 71%. With six trajectories (F3),
-      scratch beats the bar at both targets, but fine-tuning the base does not.
+      scratch beats the bar at both targets, but fine-tuning the base does not. F4: that base was
+      under-trained; a base trained 10× longer transfers almost as well zero-shot, and no method then
+      gains 20% over it.
   * Stage 2: spectra stable; a full-length Re 1000 trajectory does not regenerate bitwise, even on
     one machine (F1, 4 Oct).
 * E1–E5: specs frozen (28 Sep); all 186 runs done and analysed. The real-data smoke test passed
