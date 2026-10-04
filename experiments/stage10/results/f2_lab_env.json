@@ -1,0 +1,26 @@
+{
+ "commit": "0196e650c85140f3e6332f8c9783ed1f5dc79d56",
+ "machine": "lab machine (idle cards only, through the lane runner's claim and thermal guard)",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, driver 570.133.20",
+ "python": "3.11.15",
+ "versions": {
+  "jax": "0.10.2",
+  "jaxlib": "0.10.2",
+  "optax": "0.2.8",
+  "numpy": "2.4.6"
+ },
+ "env": {
+  "JAX_DEFAULT_MATMUL_PRECISION": "highest",
+  "XLA_PYTHON_CLIENT_PREALLOCATE": "false",
+  "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+  "JAX_COMPILATION_CACHE_DIR": "persistent compilation cache on (a run whose programs are cached starts in seconds)"
+ },
+ "where": {
+  "generation re3000_kf4 seeds 0, 1": "card 2, 4 Oct 01:28-08:05 IST; the card kept reaching 87 C (paused 185 times, preempted and restarted from its checkpoint 25 times), so most of that time was spent paused",
+  "generation re3000_kf4 seeds 6, 7": "card 3, 4 Oct 01:28-02:21 IST",
+  "resolution check re3000_kf4 (512, 1024, 2048)": "card 2, 4 Oct 08:05-08:12 IST (paused 9 times)",
+  "generation and resolution check re30_kf4": "CPU, 4 cores (12-15), 4 Oct 01:28-01:30 IST (25 s per trajectory)",
+  "fine-tuning re1000_kf4 (zero-shot, LoRA and full, seeds 0-2)": "card 3, 4 Oct 02:21-02:30 IST",
+  "fine-tuning re3000_kf4 and re30_kf4 (zero-shot, LoRA and full, seeds 0-2)": "card 3, 4 Oct from 09:48 IST"
+ }
+}
