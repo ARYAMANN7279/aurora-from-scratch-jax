@@ -1,0 +1,35 @@
+{
+ "dataset": "s2f1_v1",
+ "rows": [
+  {
+   "tag": "re100_kf4",
+   "seed": 3,
+   "equal": {
+    "frames_64.npy": true,
+    "frames_128.npy": true,
+    "diag.npz": true
+   }
+  },
+  {
+   "tag": "re300_kf4",
+   "seed": 5,
+   "equal": {
+    "frames_64.npy": true,
+    "frames_128.npy": true,
+    "diag.npz": true
+   }
+  },
+  {
+   "tag": "re1000_kf4",
+   "seed": 7,
+   "equal": {
+    "frames_64.npy": false,
+    "frames_128.npy": false,
+    "diag.npz": false
+   }
+  }
+ ],
+ "n": 3,
+ "n_equal": 2,
+ "command": ".venv/bin/python experiments/stage2/repro.py --dataset s2f1_v1 --pick re100_kf4:3 re300_kf4:5 re1000_kf4:7"
+}

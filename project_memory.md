@@ -818,6 +818,21 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * The models sit 9–12 times above the physics floor, so the error is modelling error.
   * The Stage 10 verdict stands. The README row keeps ⚠️, with F3 in the text.
 
+### 2026-10-04 — Stage 2 F1: M3 on one fixed machine, still a MISS at Re 1000
+* **Design** (spec F1 in `handouts/stage02_dataset.md`, commit a6a5510, before the run):
+  * Generate M3's picks (re100:3, re300:5, re1000:7) into `s2f1_v1` on the lab CPU (cores 8–15,
+    GPUs hidden, persistent compilation cache off).
+  * Then regenerate them in a fresh process with `repro.py` unchanged.
+* **Result:** Re 100 and Re 300 are identical. Re 1000 differs in all three files: F1-Q3 MISS. The
+  first pass took 2.5 h (Re 1000 alone 2.3 h), the second 2.5 h.
+* **Reading:**
+  * The original miss was not a change of host, the report's leading suspect. A full-length 512²
+    trajectory does not regenerate bitwise even on one machine.
+  * Cause not identified: earlier 2,000- and 21,100-step checks at 512² were identical, so it is rare
+    per step, and chaos amplifies one last-bit difference.
+  * The README Stage 2 row keeps ⚠️ with corrected text: the "mitigated by storing the post-spin-up
+    state" claim was removed, because at 512² that does not guarantee a bitwise re-derivation.
+
 ## 6. Status (4 Oct 2026)
 
 **Done:**
@@ -829,7 +844,8 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
     * Stage 10: LoRA adapts little from 2 trajectories, at Re 1000 and (F2) at Re 3000. At Re 30,
       where the base is systematically wrong, it cuts the error by 71%. With six trajectories (F3),
       scratch beats the bar at both targets, but fine-tuning the base does not.
-  * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
+  * Stage 2: spectra stable; a full-length Re 1000 trajectory does not regenerate bitwise, even on
+    one machine (F1, 4 Oct).
 * E1–E5: specs frozen (28 Sep); all 186 runs done and analysed. The real-data smoke test passed
   after the W10 fix.
 * E4: done, 1 of 5 HIT (pushforward wins even at matched compute; MAE is stable; depth 24 helps).
@@ -870,8 +886,8 @@ The stage and experiment reports are the record.
 
 **README ⚠️ rows (30 Sep):**
 * Stages 8 and 9 are resolved by E4 (3 seeds). Stage 9's row shows ✅, with the earlier miss at its own budget in the text (owner's rule, 3 Oct: no ⚠️→✅ markers).
-* Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
-  chaotic flows; the post-spin-up state helps only on the same XLA ISA).
+* Stage 2 is a documented limit. F1 (4 Oct) showed that a full-length Re 1000 trajectory does not
+  regenerate bitwise even on one fixed machine; the cause is not identified. Re 100 and 300 do.
 * Stage 10 is explained by F1 (rank is not the limit), F2 (a systematic error at Re 30 adapts, a
   direction error at Re 1000 and 3000 does not) and F3 (with six trajectories, scratch reaches the
   bar and adapting the base does not; the physics floor is far below), and stays not met. Stage 4: F1 shows that

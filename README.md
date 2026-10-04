@@ -63,7 +63,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | # | Deliverable | Acceptance test | Status |
 |---|---|---|---|
 | 1 | Pseudo-spectral Kolmogorov solver | energy budget balances to < 1%; expected inertial-range scaling | ✅ **done** |
-| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration holds on a fixed machine but not across machines. This is a limit of chaotic flows plus floating point, not a bug: last-bit differences between CPU instruction sets grow by ~e²⁸. Mitigated by storing each trajectory's post-spin-up state and host ISA; `e1_v1` was generated on pinned CPU lanes |
+| 2 | Dataset generator + loader | reproducible from seed; spectra stable across trajectories | ✅ spectra stable (all HIT); ⚠️ bitwise regeneration from the seed holds at Re 100 and 300 but not for a full-length Re 1000 trajectory (512²). **Follow-up F1** repeated the test on one fixed machine and Re 1000 still differs, so the cause is not a change of machine; it is not yet identified. Chaos turns any last-bit difference into a different trajectory (~e²⁸ over the spin-up), so each trajectory stays a valid sample and the data's statistics are unaffected |
 | 3 | Spectral-band levels, patch embed / unembed | round trip at machine precision | ✅ **done** (1.9 × 10⁻¹⁴) |
 | 4 | Perceiver level aggregator | variable level counts map to fixed latent levels and back | ✅ **met with 32× the training and a decaying learning rate (F4)**: the one shared model reconstructs to **0.008 / 0.002 / 0.001 / 0.001** relative error at C = 3 / 5 / 6 / 8 (16² / 64² / 128² / 512²; bars 0.02 / 0.02 / 0.03 / 0.05), in both runs, and holds S1's 16² bar from step ~90,000 on. Earlier it was not met: at the registered 6000 steps the errors were 0.167 / 0.085 / 0.063 / 0.060 (that verdict stays in the stage report). F1 showed S1's bar is reachable at C = 3. F2 (4× steps) met S4 but not S1. F3 (32× at a constant rate) reached S1 only intermittently, between loss spikes |
 | 5 | Windowed + shifted-window attention | matches a reference Swin block to 1e-5 | ✅ **done**: matches Aurora's own block to 2.8 × 10⁻⁷ |
@@ -160,8 +160,8 @@ python3.11 -m venv .venv
   is not the limit (F1). At Re 30, where the base is systematically wrong, LoRA cuts the error by
   71% (F2). With six trajectories, training from scratch beats the bar at both targets, but
   fine-tuning the base does not (F3).
-* **A known limit:** Stage 2's data are statistically sound, but bitwise regeneration of a Re 1000
-  trajectory is machine-dependent.
+* **A known limit:** Stage 2's data are statistically sound, but a full-length Re 1000 trajectory does
+  not regenerate bit for bit, even on one machine (F1).
 * **Experiments:** E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5, E5 2 of 4, E6 2 of 5 (and
   its follow-up 3 of 3), E7 2 of 3, E8 5 of 10 and E9 4 of 6. Each is reported in
   `experiments/eN/REPORT.md`.
