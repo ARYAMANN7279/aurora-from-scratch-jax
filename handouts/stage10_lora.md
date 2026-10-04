@@ -234,3 +234,51 @@ finetune.py --arm full    --steps 10000 ... --out f3_re3000_full_s<s>      # sam
 finetune.py --arm lora    --steps 10000 ... --out f3_re3000_lora_s<s>
 # Re 1000: --dataset acc_v1 --target re1000_kf4 and f3_re1000_* names, otherwise the same
 ```
+
+**F4 (5 Oct 2026, pre-registered before any F4 measuring run): the base or the learning rate?**
+* **Why.** In F3, training from scratch (lr 1e-3, 20,000 steps) beat full fine-tuning of the F1 base
+  (lr 1e-4, 10,000 steps) by 16–21% (F3-P3 MISS). Two causes were not separated:
+  * the base saw only about four passes over its data;
+  * fine-tuning used a tenth of scratch's learning rate, and half its steps.
+* **Bases:**
+  * **B3k:** the F1 base (Stage 7's recipe, 3000 steps, about four passes).
+  * **B30k:** the same recipe for 30,000 steps (about 40 passes), trained on lab card 3:
+    `train_onestep.py --loss mse --steps 30000 --params-name onestep_mse_long --out onestep_mse_long`.
+    `train_onestep.py` gains `--params-name`, whose default leaves its behaviour unchanged, so the
+    F1 base's files are not touched. `finetune.py` gains `--base`; its default is the F1 base.
+* **Arms.** Full fine-tuning on the target's seeds 0–5 for 20,000 steps (scratch's budget), batch 8,
+  cosine decay, seeds 0–2, at Re 3000 (`s10f3_v1`) and Re 1000 (`acc_v1`), all on lab card 3:
+  * **b3k_lo** and **b3k_hi:** B3k at lr 1e-4 and at lr 1e-3;
+  * **b30k_lo** and **b30k_hi:** B30k at lr 1e-4 and at lr 1e-3;
+  * **B30k zero-shot**, and **b30k_lora:** LoRA r = 4 on B30k in Stage 10's registered setting
+    (seeds 0–1, 1000 steps, lr 1e-3), seeds 0–2;
+  * **reference:** F3's scratch arm (same targets, budget and card).
+
+| # | Prediction (each must hold at both targets) |
+|---|---|
+| F4-P1 | With B3k, the higher learning rate does better: e(b3k_hi) < e(b3k_lo) |
+| F4-P2 | With the learning rate and the steps matched, B3k is no worse a start than random: e(b3k_hi) ≤ e(scratch) |
+| F4-P3 | At Stage 10's learning rate, the longer-trained base does better: e(b30k_lo) < e(b3k_lo) |
+| F4-P4 | At Stage 10's learning rate, the longer-trained base beats scratch: e(b30k_lo) < e(scratch) |
+| F4-P5 | The longer-trained base transfers better zero-shot than B3k |
+| F4-P6 | LoRA on B30k in Stage 10's setting still misses the bar: its gain over B30k's zero-shot is < 20% |
+
+Scored by `score_f4.py`, written before any F4 measuring run.
+* **Smoke tests before this commit** (lab CPU), after the predictions were written. None changed them:
+  * the default zero-shot reproduces F1's result exactly;
+  * a 2-step `train_onestep.py --params-name` run wrote only its own files, and the F1 base's files are
+    unchanged.
+* **Reading, fixed now:**
+  * if P1 and P2 hold and P4 fails, F3's result came from the learning rate, not the base;
+  * if P3 and P4 hold, the base's training matters: a well-trained base, fine-tuned at Stage 10's
+    rate, beats scratch;
+  * both can hold.
+  * The Stage 10 verdict stands in every case.
+* **Commands:**
+  ```
+  train_onestep.py --loss mse --steps 30000 --params-name onestep_mse_long --out onestep_mse_long
+  finetune.py --arm zeroshot --base onestep_mse_long --dataset s10f3_v1 --target re3000_kf4 --out f4_re3000_b30k_zeroshot
+  finetune.py --arm full [--lr 1e-3] [--base onestep_mse_long] --steps 20000 --seed <s> --dataset s10f3_v1 --target re3000_kf4 --train-seeds 0 1 2 3 4 5 --eval-every 1000 --out f4_re3000_<arm>_s<s>
+  finetune.py --arm lora --base onestep_mse_long --seed <s> --dataset s10f3_v1 --target re3000_kf4 --out f4_re3000_b30k_lora_s<s>
+  # Re 1000: --dataset acc_v1 --target re1000_kf4 and f4_re1000_* names, otherwise the same
+  ```

@@ -4,6 +4,7 @@ usage: finetune.py --arm zeroshot|lora|full|scratch [--steps 1000] [--rank r] [-
        [--dataset acc_v1 --target re1000_kf4 --seed 0]   (F2: other unseen regimes, other seeds; the defaults are
                                                           Stage 10's and give its runs unchanged)
        [--train-seeds 0 1] [--eval-every 250]             (F3: more fine-tuning trajectories, longer runs)
+       [--base onestep_mse]                                (F4: another base, data/stage7/<name>_params.npz)
 --arm scratch trains every parameter from a random initialisation (key --seed) at lr 1e-3, the Stage 7 recipe,
 with the base model's normalisation, so its error is measured exactly as the other arms'.
 (results: finetune_<arm>[_lr..][_r..].json, or <name>.json)
@@ -39,10 +40,11 @@ ap.add_argument("--target", default="re1000_kf4", help="the unseen regime: fine-
 ap.add_argument("--seed", type=int, default=0, help="key of the LoRA or scratch initialisation and seed of the batch order")
 ap.add_argument("--train-seeds", type=int, nargs="+", default=[0, 1], help="the target's trajectories to fine-tune on")
 ap.add_argument("--eval-every", type=int, default=250, help="steps between evaluations on the curve")
+ap.add_argument("--base", default="onestep_mse", help="base model: data/stage7/<name>_params.npz (default: the F1 base)")
 args = ap.parse_args()
 MC, B, DT, R, TAG = model.ModelConfig(), 8, 0.2, 4, args.target
 VARS = model.VARS
-z = np.load(os.path.join(ROOT, "data", "stage7", "onestep_mse_params.npz"))
+z = np.load(os.path.join(ROOT, "data", "stage7", f"{args.base}_params.npz"))
 _, unravel = jax.flatten_util.ravel_pytree(model.init(jax.random.PRNGKey(0), MC, dtype=jnp.float32))
 base = unravel(jnp.asarray(z["flat"]))
 mu, sd = z["mean"][:, None, None], z["std"][:, None, None]
@@ -106,7 +108,7 @@ for i in range(steps):
         print(curve[-1], flush=True)
 ev = evaluate(trainable)
 n_tr = lora.n_params(trainable) if args.arm == "lora" else (0 if args.arm == "zeroshot" else n_params(trainable))
-res = dict(arm=args.arm, dataset=args.dataset, target=TAG, seed=args.seed, train_seeds=args.train_seeds, steps=steps, lr=lr,
+res = dict(arm=args.arm, base=args.base, dataset=args.dataset, target=TAG, seed=args.seed, train_seeds=args.train_seeds, steps=steps, lr=lr,
            r=R if args.arm == "lora" else None, n_trainable=int(n_tr),
            n_total=int(n_params(base)), trainable_frac=n_tr / n_params(base), eval=ev, curve=curve,
            wall_s=time.time() - t0,

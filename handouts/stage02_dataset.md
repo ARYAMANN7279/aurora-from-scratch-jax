@@ -181,3 +181,52 @@ with the ones generated after it. M3 checks this on the real data.
   * The original Q3 verdict (MISS) stays in the report.
   * Across machines, regeneration stays statistical, not bitwise. The report shows why that cannot
     change for these chaotic flows, and M3 does not ask for it.
+
+**F2 (5 Oct 2026, pre-registered before the runs): where the Re 1000 regeneration parts, and whether
+single-threaded XLA prevents it.**
+* **Why.** F1 missed. On one fixed machine, a full-length Re 1000 trajectory (512², 316,500 steps)
+  did not regenerate bitwise in a fresh process, while Re 100 and Re 300 did. Earlier checks at
+  512² of 2,000 and 21,100 steps were identical.
+  * The leading hypothesis is XLA's multi-threaded FFT on the CPU. For large transforms it splits
+    the work across threads. If the split can vary between runs, and the code paths differ in their
+    last bits, a difference appears now and then, and chaos amplifies it.
+  * F1 ran with XLA's default threading on 8 cores. `e1_v1` was generated with single-threaded XLA
+    (`--xla_cpu_multi_thread_eigen=false`, one core per job).
+* **Runs.**
+  * **Settings:** the lab machine's CPU, GPUs hidden, the persistent compilation cache off, code at
+    this commit. The jobs run at the lowest scheduling priority, so other users' jobs come first.
+  * **Dataset settings:** `acc_v1`'s, through `experiments/stage2/configs/s2f2_v1.json`, which is
+    identical except for the name.
+  * **M:** `re1000_kf4:7` once more with F1's settings (cores 8–15, default threading), into
+    `data/stage2/s2f2_v1_m`. It is compared with F1's first pass, which is kept in
+    `data/stage2/s2f1_v1`.
+  * **S-a and S-b:** M3's three picks with single-threaded XLA, on one core each (6 and 7), side by
+    side in two fresh processes, into `data/stage2/s2f2_v1_a` and `data/stage2/s2f2_v1_b`.
+  * **Gates:** the Stage 2 gates are rerun with single-threaded XLA
+    (→ `experiments/stage2/results/f2_gates_single_thread.txt`).
+  * **Comparison:** `divergence_f2.py` compares each pair (→ `results/f2_divergence_m.json` and
+    `results/f2_divergence_s.json`):
+    * the files (SHA-256);
+    * the post-spin-up states;
+    * per frame, the differences in E (float64) and in the 128² vorticity;
+    * for a pair that parts: the first frame at which E differs, the growth rate of the difference,
+      and the time at which it would have been a last-bit difference.
+
+| # | Prediction |
+|---|---|
+| F2-Q1 | M differs from F1's first pass: F1's miss replicates with the same settings |
+| F2-Q2 | S-a and S-b are identical for all three trajectories: every file and the post-spin-up state |
+| F2-Q3 | The M pair parts during the spin-up: their post-spin-up states already differ |
+
+Scored by `score_f2.py`, written before the runs.
+* **Smoke tests before this commit** (lab CPU), after the predictions were written. None changed them:
+  * `divergence_f2.py` on an identical pair (F1's Re 100 trajectory against itself);
+  * on F1's Re 300 and Re 1000 trajectories against `acc_v1`'s lab copies. Re 300 is identical.
+    Re 1000, which `acc_v1` made on a GPU, already differs after the spin-up (7.5e-3).
+  * `score_f2.py` on those outputs.
+* **Acceptance, fixed now.** If F2-Q2 holds and the gates pass with single-threaded XLA, Stage 2's
+  acceptance is met for single-threaded generation on a fixed machine. That covers D1–D8, M3's
+  criterion (every file identical when the three trajectories are generated in another fresh
+  process), Q5 and Q6.
+  * The README would then show Stage 2 as met, with the earlier misses (Q3 and F1) and the
+    multi-threaded limit in its text.

@@ -31,6 +31,8 @@ ap.add_argument("--time-only", action="store_true")
 ap.add_argument("--loss", choices=["mse", "mae"], default="mse")
 ap.add_argument("--pushforward", action="store_true")
 ap.add_argument("--out", help="results file name (default: the run name); follow-ups must not overwrite Stage 7-9 files")
+ap.add_argument("--params-name", help="name of the checkpoint and data/stage7/<name>_params.npz (default: the run name); "
+                "follow-ups must not overwrite the base model other stages load")
 args = ap.parse_args()
 B, DT, TAGS = 8, 0.2, ("re100_kf4", "re300_kf4")
 MC = model.ModelConfig()
@@ -87,7 +89,7 @@ def evaluate(prm):
     return out
 
 
-name = f"onestep_{args.loss}" + (f"_pf{args.steps}" if args.pushforward else "")
+name = args.params_name or f"onestep_{args.loss}" + (f"_pf{args.steps}" if args.pushforward else "")
 os.makedirs(os.path.join(ROOT, "data", "stage7"), exist_ok=True)
 ckpt = os.path.join(ROOT, "data", "stage7", f"{name}_ckpt")  # restart safety: every 250 steps
 rng = np.random.default_rng(0)
