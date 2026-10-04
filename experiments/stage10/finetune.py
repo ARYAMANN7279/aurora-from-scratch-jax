@@ -1,6 +1,8 @@
 """A1-A4 (handouts/stage10_lora.md, section 3): adapt the Stage 7 model to the unseen Re = 1000.
 
 usage: finetune.py --arm zeroshot|lora|full [--steps 1000] [--rank r] [--out name]
+       [--dataset acc_v1 --target re1000_kf4 --seed 0]   (F2: other unseen regimes, other seeds; the defaults are
+                                                          Stage 10's and give its runs unchanged)
 (results: finetune_<arm>[_lr..][_r..].json, or <name>.json)
 """
 import argparse
@@ -29,14 +31,17 @@ ap.add_argument("--steps", type=int, default=1000)
 ap.add_argument("--lr", type=float, help="override the pre-registered learning rate (exploratory runs only)")
 ap.add_argument("--rank", type=int, help="LoRA rank (default: the pre-registered 4; follow-up F1 sweeps it)")
 ap.add_argument("--out", help="results file name (default: finetune_<arm>[_lr..][_r..]); follow-ups must not overwrite Stage 10 files")
+ap.add_argument("--dataset", default="acc_v1", help="dataset under data/stage2 holding the target regime")
+ap.add_argument("--target", default="re1000_kf4", help="the unseen regime: fine-tune on its seeds 0-1, evaluate on 6-7")
+ap.add_argument("--seed", type=int, default=0, help="key of the LoRA initialisation and seed of the batch order")
 args = ap.parse_args()
-MC, B, DT, R, TAG = model.ModelConfig(), 8, 0.2, 4, "re1000_kf4"
+MC, B, DT, R, TAG = model.ModelConfig(), 8, 0.2, 4, args.target
 VARS = model.VARS
 z = np.load(os.path.join(ROOT, "data", "stage7", "onestep_mse_params.npz"))
 _, unravel = jax.flatten_util.ravel_pytree(model.init(jax.random.PRNGKey(0), MC, dtype=jnp.float32))
 base = unravel(jnp.asarray(z["flat"]))
 mu, sd = z["mean"][:, None, None], z["std"][:, None, None]
-acc = os.path.join(ROOT, "data", "stage2", "acc_v1")
+acc = os.path.join(ROOT, "data", "stage2", args.dataset)
 load = lambda s: jnp.asarray(((np.load(os.path.join(traj_dir(acc, TAG, s), "frames_64.npy")) - mu) / sd).astype(np.float32))
 train = jnp.stack([load(s) for s in (0, 1)])
 evals = jnp.stack([load(s) for s in (6, 7)])
@@ -45,7 +50,7 @@ fwd = jax.vmap(partial(model.apply, variables=VARS, dt=DT, mc=MC), in_axes=(None
 
 if args.arm == "lora":
     R = args.rank or R
-    trainable = lora.init(jax.random.PRNGKey(0), base, r=R)
+    trainable = lora.init(jax.random.PRNGKey(args.seed), base, r=R)
     full = lambda t: lora.merge(base, t, r=R)
     lr = 1e-3
 else:
@@ -80,7 +85,7 @@ def evaluate(t):
     return dict(rel_err=float(np.sqrt(a / c)), persistence=float(np.sqrt(b / c)), ratio=float(np.sqrt(a / b)))
 
 
-rng = np.random.default_rng(0)
+rng = np.random.default_rng(args.seed)
 t0 = time.time()
 curve = []
 steps = 0 if args.arm == "zeroshot" else args.steps
@@ -92,7 +97,8 @@ for i in range(steps):
         print(curve[-1], flush=True)
 ev = evaluate(trainable)
 n_tr = lora.n_params(trainable) if args.arm == "lora" else (0 if args.arm == "zeroshot" else n_params(trainable))
-res = dict(arm=args.arm, steps=steps, lr=lr, r=R if args.arm == "lora" else None, n_trainable=int(n_tr),
+res = dict(arm=args.arm, dataset=args.dataset, target=TAG, seed=args.seed, steps=steps, lr=lr,
+           r=R if args.arm == "lora" else None, n_trainable=int(n_tr),
            n_total=int(n_params(base)), trainable_frac=n_tr / n_params(base), eval=ev, curve=curve,
            wall_s=time.time() - t0,
            command=" ".join([".venv/bin/python", os.path.relpath(sys.argv[0], ROOT)] + sys.argv[1:]))

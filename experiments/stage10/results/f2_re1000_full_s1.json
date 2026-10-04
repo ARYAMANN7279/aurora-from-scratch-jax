@@ -1,0 +1,57 @@
+{
+ "arm": "full",
+ "dataset": "acc_v1",
+ "target": "re1000_kf4",
+ "seed": 1,
+ "steps": 1000,
+ "lr": 0.0001,
+ "r": null,
+ "n_trainable": 5106688,
+ "n_total": 5106688,
+ "trainable_frac": 1.0,
+ "eval": {
+  "rel_err": 0.20706860581844494,
+  "persistence": 0.3645428797044367,
+  "ratio": 0.5680226314839328
+ },
+ "curve": [
+  {
+   "step": 250,
+   "loss": 0.06739485263824463,
+   "eval": {
+    "rel_err": 0.2103226684980883,
+    "persistence": 0.3645428797044367,
+    "ratio": 0.5769490510104415
+   }
+  },
+  {
+   "step": 500,
+   "loss": 0.07277731597423553,
+   "eval": {
+    "rel_err": 0.20833197017934552,
+    "persistence": 0.3645428797044367,
+    "ratio": 0.5714882439845114
+   }
+  },
+  {
+   "step": 750,
+   "loss": 0.05677823722362518,
+   "eval": {
+    "rel_err": 0.20733675868445953,
+    "persistence": 0.3645428797044367,
+    "ratio": 0.5687582181074653
+   }
+  },
+  {
+   "step": 1000,
+   "loss": 0.0880119726061821,
+   "eval": {
+    "rel_err": 0.20706860581844494,
+    "persistence": 0.3645428797044367,
+    "ratio": 0.5680226314839328
+   }
+  }
+ ],
+ "wall_s": 12.16147756576538,
+ "command": ".venv/bin/python experiments/stage10/finetune.py --arm full --seed 1 --out f2_re1000_full_s1"
+}

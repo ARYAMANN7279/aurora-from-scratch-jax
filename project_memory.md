@@ -774,7 +774,31 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   the steps and a decaying rate), with the miss at the registered 6000 steps in the text. That
   verdict stays in the stage report.
 
-## 6. Status (3 Oct 2026)
+### 2026-10-04 — Stage 10 F2: farther viscosities, 6 of 6 HIT, acceptance still not met
+* **Design** (spec F2 in `handouts/stage10_lora.md`, commit 0196e65, before any fine-tuning run):
+  * Re 3000 (primary, ν 10× below the band) and Re 30 (ν 3.3× above it), with Re 1000 rerun.
+  * Stage 10's protocol, with seeds 0–2.
+  * Acceptance is decided at Re 3000 only.
+* **Data `s10f2_v1`:**
+  * Re 3000 at 1024² on lab cards 2 and 3. Card 2 spent most of 6.6 h paused at 87 °C (185 pauses,
+    25 restarts from its checkpoint); card 3 took 53 min for two trajectories.
+  * Re 30 at 128² on the CPU.
+  * Both grids pass Stage 2's rule by far: 5.6e-9 and 2.3e-12, against 1e-3.
+* **Runs:** all 21 on lab card 3, 8–12 s each once compiled.
+* **Results** (gain over zero-shot, mean of 3 seeds, SE ≤ 0.1 points):
+  * Re 3000: zero-shot 0.64× persistence; LoRA 0.46%, full 3.20%. Acceptance not met (0.995×).
+  * Re 1000: 0.58×; LoRA 0.35%, full 2.70%. This reproduces F1's CPU numbers (seed 0: 0.3655% on
+    both machines).
+  * Re 30: zero-shot 1.92× persistence; LoRA 71.4%, full 82.5%.
+* **Exploratory check** (`diagnose_f2.py`, base model only), splitting the error into the size and the
+  direction of the predicted change:
+  * At Re 100–3000 the size is already optimal (best factor 0.98–1.03), and the direction degrades
+    with Re (correlation 0.94 → 0.77; worst in vorticity).
+  * At Re 30 the predicted change is 2.2× too large: a systematic error that one factor halves.
+  * So fine-tuning from two trajectories fixes a systematic error, not a direction error.
+* The README row keeps ⚠️ not met, with F2 in the text.
+
+## 6. Status (4 Oct 2026)
 
 **Done:**
 * Stages 1–11: built, gates pass, results reported.
@@ -782,7 +806,8 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * Not met, with the causes measured:
     * Stage 4: the shared Perceiver is under-trained at 6000 steps (0.06–0.17 vs bars 0.02–0.05).
     * Stage 9: pushforward does not pay at matched compute.
-    * Stage 10: LoRA adapts little from 2 trajectories.
+    * Stage 10: LoRA adapts little from 2 trajectories, at Re 1000 and (F2) at Re 3000. At Re 30,
+      where the base is systematically wrong, it cuts the error by 71%.
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
 * E1–E5: specs frozen (28 Sep); all 186 runs done and analysed. The real-data smoke test passed
   after the W10 fix.
@@ -798,15 +823,16 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6–E9 and Stage 4 F3 (Kaggle) are
-  done and reported.
+* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6–E9, Stage 4 F3 and F4 (Kaggle)
+  and Stage 10 F2 (lab cards 2 and 3) are done and reported.
 * The VM's lanes are idle. The owner approves each launch on the lab machine. Card 0 stays excluded.
 
 **Remaining:** none from the advisor's notes of 1 Oct. Done: E6 follow-up F1 (3 of 3 HIT), the
 attention experiment E7 (2 of 3 HIT), and the overnight follow-ups of 3 Oct: Stage 4 F3 (3 of 4 HIT)
 and E8 (bias with a finer drift and with pushforward, q/k normalisation, scan chunks; 5 of 10 HIT);
 then E9, the two attention changes together (4 of 6 HIT: they mostly overlap), and Stage 4 F4 (a
-decaying learning rate; 4 of 4 HIT, all bars met and held).
+decaying learning rate; 4 of 4 HIT, all bars met and held). On 4 Oct, Stage 10 F2 (farther
+viscosities; 6 of 6 HIT; the acceptance test still fails at Re 3000).
 Possible follow-ups each need their own spec and the owner's go-ahead:
 * a rollout measure that separates tracking from amplitude (E8's exploratory check).
 The stage and experiment reports are the record.
@@ -825,7 +851,8 @@ The stage and experiment reports are the record.
 * Stages 8 and 9 are resolved by E4 (3 seeds). Stage 9's row shows ✅, with the earlier miss at its own budget in the text (owner's rule, 3 Oct: no ⚠️→✅ markers).
 * Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
-* Stage 10 is explained by F1 (rank is not the limit) and stays not met. Stage 4: F1 shows that
+* Stage 10 is explained by F1 (rank is not the limit) and F2 (a systematic error at Re 30 adapts,
+  a direction error at Re 1000 and 3000 does not), and stays not met. Stage 4: F1 shows that
   S1's bar is reachable at C = 3; F2 shows that the shared model beats dedicated controls at 64² and
   above when given the same steps per resolution. F3 (32×) meets S2–S4. S1 is reached intermittently
   but not held at the constant rate. F4 (32× with a cosine rate) meets and holds all four bars. The
