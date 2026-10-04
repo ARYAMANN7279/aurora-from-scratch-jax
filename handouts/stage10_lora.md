@@ -161,7 +161,8 @@ Scored by `score_f2.py`, written before any F2 fine-tuning run.
 
   The base matters here. It was trained for 3000 steps at batch 8, about two passes over its 12
   trajectories, so ample training on the target may beat its zero-shot error by more than
-  adaptation alone would.
+  adaptation alone would. (Correction, 4 Oct, after the runs: about four passes, not two: 24,000
+  samples over 5,988 one-step pairs. No prediction depends on the figure.)
 * **Data: `s10f3_v1`** (`experiments/stage10/configs/s10f3_v1.json`): Re 3000, k_f 4, 1024², seeds 0–7.
   * Seeds 0, 1, 6 and 7 are copies of `s10f2_v1`'s.
   * Seeds 2–5 are new, generated on lab card 3. Generation started before this commit; it is solver

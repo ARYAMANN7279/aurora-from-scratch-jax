@@ -32,6 +32,18 @@ by 71% and full fine-tuning by 82%. An exploratory check of the base model shows
 Fine-tuning from two trajectories fixes the first kind and barely touches the second. See
 "Follow-up F2" below.
 
+**Follow-up F3 (pre-registered 4 Oct 2026; the verdicts above stand).** Can anything reach the bar?
+With six target trajectories, 3 seeds per arm:
+* **A model trained from scratch beats the bar at both targets:** 26% below zero-shot at Re 3000 and
+  30% at Re 1000.
+* **Fine-tuning the base does not.** Full fine-tuning gains 12% and LoRA 1%, even with ten times
+  Stage 10's steps.
+* **The physics allows far more.** An exact solver that sees only the 64² band predicts the next frame
+  at 0.05× persistence at Re 3000, against 0.47× for the best model.
+
+6 of 7 predictions HIT. F3-P3, that pretraining still pays with six trajectories, is a MISS. So the
+Stage 10 miss lies in adapting this base, not in the data or the physics. See "Follow-up F3" below.
+
 ## Gates
 
 | Gate | Measured | Bar |
@@ -226,6 +238,85 @@ gain = 1 − error / zero-shot error, on each target's evaluation seeds 6–7, a
   farther Re 3000. LoRA would pass the bar at Re 30 (0.29× zero-shot). But the spec named Re 30 a
   second target that does not decide acceptance.
 
+## Follow-up F3: can anything reach the bar? (pre-registered 4 Oct 2026)
+
+Spec: F3 in `handouts/stage10_lora.md`, committed before any F3 measuring run (a6a5510). Results:
+`results/f3_*.json`, scored by `score_f3.py` → `results/f3_analysis.json`. Floor: `closure_f3.py` →
+`results/f3_closure.json`.
+
+**Set-up as registered.**
+* **Data:** Re 3000 seeds 2–5 were generated on lab card 3 in 1.8 h, completing `s10f3_v1`. Its
+  manifest verified all 8 trajectories. Re 1000 uses `acc_v1`.
+* **Arms:** each trained on the target's seeds 0–5 and evaluated on seeds 6–7, with 3 seeds per arm.
+  * scratch: 20,000 steps at lr 1e-3;
+  * full fine-tuning of the F1 base: 10,000 steps at lr 1e-4;
+  * LoRA r = 4: 10,000 steps at lr 1e-3.
+* **Where:** all 20 runs on lab card 3. A scratch run took about 5 min, a full one 2.5–2.9 min and a
+  LoRA run 0.8–1.6 min.
+* **Check:** the zero-shot reruns equal F2's results exactly at both targets.
+
+Mean ± SE over seeds 0–2. Error, with its ratio to persistence in brackets, and the gain over
+zero-shot:
+
+| Target | Zero-shot | Scratch | Full | LoRA r = 4 | Floor |
+|---|---|---|---|---|---|
+| Re 3000 | 0.2588 (0.64) | 0.1917 (0.47): **25.9% ± 0.4%** | 0.2292 (0.57): 11.5% ± 0.01% | 0.2561 (0.63): 1.1% ± 0.01% | 0.054 |
+| Re 1000 | 0.2128 (0.58) | 0.1485 (0.41): **30.2% ± 0.8%** | 0.1871 (0.51): 12.1% ± 0.01% | 0.2110 (0.58): 0.9% ± 0.01% | 0.029 |
+
+| # | Prediction | Measured | Verdict |
+|---|---|---|---|
+| F3-P1 | the ceiling reaches the bar at Re 3000 (gain ≥ 20%) | scratch, 25.9% | **HIT** |
+| F3-P2 | LoRA stays below the bar at Re 3000 | 1.1% | **HIT** |
+| F3-P3 | full fine-tuning's mean error is below scratch's at Re 3000 | 0.2292 vs 0.1917 | **MISS** |
+| F3-P4 | the ceiling reaches the bar at Re 1000 | scratch, 30.2% | **HIT** |
+| F3-P5 | LoRA stays below the bar at Re 1000 | 0.9% | **HIT** |
+| F3-P6 | the floor at Re 3000 is below half the base's zero-shot ratio (0.32) | 0.054 | **HIT** |
+| F3-P7 | the floor rises with Re | 0.0003, 0.0066, 0.029, 0.054 | **HIT** |
+
+The floor, as error over persistence, next to the models:
+
+| Regime | Floor, all channels | Floor, vorticity | Base zero-shot | Best F3 model |
+|---|---|---|---|---|
+| Re 100 (trained on) | 0.0003 | 0.0005 | 0.33 | — |
+| Re 300 (trained on) | 0.0066 | 0.0095 | 0.47 | — |
+| Re 1000 | 0.029 | 0.039 | 0.58 | 0.41 (scratch) |
+| Re 3000 | 0.054 | 0.073 | 0.64 | 0.47 (scratch) |
+
+**Readings**
+* **With six trajectories the bar is reachable at both targets, but only by training from
+  scratch.**
+  * Fine-tuning the base falls short: full fine-tuning gains 11.5–12.1% and LoRA 0.9–1.1%.
+  * That is about four times F2's full fine-tuning gain and twice its LoRA gain, from three times
+    the data and ten times the steps.
+  * The reading fixed in the spec applies at both targets: more data makes the bar reachable, but
+    not for attention-only LoRA at r = 4. Full fine-tuning at Stage 10's learning rate does not
+    reach it either.
+* **Here the base is a worse start than a random one (F3-P3 MISS).**
+  * Scratch is ahead even at equal steps. At 10,000 steps (seed 0) it is at 0.196 against full
+    fine-tuning's 0.229 at Re 3000, and 0.152 against 0.187 at Re 1000.
+  * In seed 0 it passes full fine-tuning's final error by step 4000 at Re 3000 and step 3000 at
+    Re 1000.
+  * Full fine-tuning's curve has flattened: 0.2296 → 0.2292 over its last 2000 steps at Re 3000.
+  * F3 does not separate two explanations:
+    * the base saw only about four passes over its 12 trajectories (Stage 7's 3000 steps at batch 8:
+      24,000 samples over 5,988 one-step pairs);
+    * fine-tuning's learning rate, a tenth of scratch's, may keep the model near the base.
+  * E5's base saw about seven times as many training samples, and there full fine-tuning beat
+    scratch by 4.9% at six trajectories.
+* **The physics floor is far below every model.**
+  * An exact solver that sees only the current 64² band predicts the next frame at 0.054×
+    persistence at Re 3000, and at 0.029× at Re 1000.
+  * The floor rises 160-fold from Re 100 to Re 3000, as the scales finer than the band gain weight.
+    It is highest in vorticity.
+  * The base's error is 12 times the floor at Re 3000, and the best scratch model's 9 times.
+  * So F2's direction error is not missing information. It is modelling error, and training on
+    the target removes part of it.
+  * The floor is a reference, not a bound: a learned model does not know the equations, but it also
+    sees the previous frame.
+* **The Stage 10 verdict stands.** F3 locates the miss: it lies in adapting this base at Stage 10's
+  learning rates, not in the amount of information in the data or in the physics. LoRA with three
+  times the data and ten times the steps still gains only about 1%.
+
 ## Commands
 ```
 .venv/bin/python -m pytest tests/test_stage10_gates.py -q -s
@@ -255,4 +346,16 @@ for t in re3000 re30; do
 done
 python experiments/stage10/score_f2.py
 .venv/bin/python experiments/stage10/diagnose_f2.py   # exploratory
+# follow-up F3: Re 3000 seeds 2-5 (seeds 0, 1, 6, 7 copied from s10f2_v1), then 20 runs and the floor on one idle lab GPU
+.venv/bin/python experiments/stage2/generate.py --config experiments/stage10/configs/s10f3_v1.json --only re3000_kf4:2 re3000_kf4:3 re3000_kf4:4 re3000_kf4:5
+.venv/bin/python experiments/stage2/generate.py --config experiments/stage10/configs/s10f3_v1.json --finalize
+.venv/bin/python experiments/stage10/finetune.py --arm zeroshot --dataset s10f3_v1 --target re3000_kf4 --out f3_re3000_zeroshot
+.venv/bin/python experiments/stage10/finetune.py --arm zeroshot --out f3_re1000_zeroshot
+for td in re3000:s10f3_v1 re1000:acc_v1; do t=${td%%:*}; d=${td#*:}
+  for an in scratch:20000 full:10000 lora:10000; do a=${an%%:*}; n=${an#*:}; for s in 0 1 2; do
+    .venv/bin/python experiments/stage10/finetune.py --arm $a --steps $n --seed $s --dataset $d --target ${t}_kf4 --train-seeds 0 1 2 3 4 5 --eval-every 1000 --out f3_${t}_${a}_s$s
+  done; done
+done
+.venv/bin/python experiments/stage10/closure_f3.py
+python experiments/stage10/score_f3.py
 ```

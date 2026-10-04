@@ -1,0 +1,24 @@
+{
+ "arm": "zeroshot",
+ "dataset": "s10f3_v1",
+ "target": "re3000_kf4",
+ "seed": 0,
+ "train_seeds": [
+  0,
+  1
+ ],
+ "steps": 0,
+ "lr": 0.0001,
+ "r": null,
+ "n_trainable": 0,
+ "n_total": 5106688,
+ "trainable_frac": 0.0,
+ "eval": {
+  "rel_err": 0.2588413202709898,
+  "persistence": 0.4041027910832786,
+  "ratio": 0.6405333642391179
+ },
+ "curve": [],
+ "wall_s": 1.918395757675171,
+ "command": ".venv/bin/python experiments/stage10/finetune.py --arm zeroshot --dataset s10f3_v1 --target re3000_kf4 --out f3_re3000_zeroshot"
+}

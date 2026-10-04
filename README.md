@@ -71,7 +71,7 @@ Each stage has an acceptance test and is not passed until that test is met.
 | 7 | Full encoder → backbone → decoder | trains one-step prediction | ✅ **done**: 0.32× / 0.46× persistence error on unseen trajectories (Re 100 / 300) |
 | 8 | Autoregressive rollout + MAE loss | stable 50-step rollout | ✅ MSE model stable over all 50-step rollouts. The single-seed MAE blow-up at Re 300 did **not** reproduce in E4 (3 seeds, 10k steps): MAE drift −11 ± 6.5% vs MSE |
 | 9 | Pushforward trick | lower rollout drift at matched compute | ✅ **met in E4** (3 seeds, 10,000 steps): at matched compute pushforward cuts 50-step drift by 45 ± 5% / 47 ± 7% (Re 100 / 300). At Stage 9's own 3000-step budget it was not met earlier (that verdict stays in the stage report). On E1's 2-trajectory task (E8) the drift gain is smaller and partly damped amplitude |
-| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot already 0.58× persistence. E5 confirms there is little headroom: even full fine-tuning gains ≤ 5.3% with 6 trajectories. **Follow-up F1** (rank sweep, on a retrained base): the gain rises with rank, but only from 0.2% (r = 1) to 1.0% (r = 64), against 2.7% for full fine-tuning, so rank is not the limit. **Follow-up F2** (farther viscosities, 3 seeds; 6/6 predictions HIT): still not met at Re 3000, ν 10× below the training band (LoRA −0.5%, full −3.2%). At Re 30, where the base is worse than persistence, LoRA cuts the error by 71% and full fine-tuning by 82%: fine-tuning fixes a systematic error, not the direction error that grows with Re |
+| 10 | LoRA fine-tuning | adapts to unseen ν with < 1% of parameters trainable | ⚠️ **not met**: 0.84% trainable, but with 2 trajectories neither LoRA nor full fine-tuning adapts much (−0.5% / −3%); zero-shot is already 0.58× persistence. **F1:** rank is not the limit (r = 64 gains 1.0%, full fine-tuning 2.7%). **F2** (3 seeds): still not met at Re 3000, ν 10× below the training band (LoRA −0.5%, full −3.2%); at Re 30, where the base is worse than persistence, LoRA cuts the error by 71%. **F3** (6 trajectories): a model trained from scratch beats the bar at both targets (−26% at Re 3000, −30% at Re 1000), while full fine-tuning gets −12% and LoRA −1%; an exact solver that sees only the 64² band predicts at 0.05× persistence. So the miss lies in adapting this base, not in the data or the physics |
 | 11 | Ablation harness | one config → one run → one row of results | ✅ **done**: reproduces Stage 7 exactly from a config file |
 | 12 | Speed: what makes training faster, in JAX and against PyTorch | a JAX configuration at least 1.5× faster than the E-run loop, with numerics unchanged | ✅ **met**: running 50 steps per jitted call (`lax.scan`) trains the E1 model **2.07×** faster than the E-runs' loop, numerics unchanged; 6 of 10 predictions HIT. The step is bound by the host, not the card: it runs at 10.2 ms on a quiet host and 19.2 ms on a loaded one, with the card 49% busy. Scan, donation (1.13×), vmap over seeds (1.67× per model) and CUDA graphs pay; bfloat16 (1.12×) and fused attention (0.92×) do not. Eager PyTorch is 2.42× slower than jitted JAX, `torch.compile` is within 11%, and CUDA graphs beat jitted JAX by 1.36× but trail JAX with scan by 1.52×. A T4 supplement (Kaggle, two-card J7 included) is in the report |
 
@@ -156,9 +156,10 @@ python3.11 -m venv .venv
   follow-ups, and missed at their registered budgets earlier:
   * Stage 9 (pushforward) is met in E4, with 3.3× its budget and 3 seeds;
   * Stage 4 (the Perceiver) is met with 32× its training steps and a decaying learning rate (F4).
-* **Not met:** Stage 10 (LoRA shows little adaptation from two trajectories; F1 shows the rank is not
-  the limit; F2 misses again at Re 3000, while at Re 30, where the base is systematically wrong, LoRA
-  cuts the error by 71%).
+* **Not met:** Stage 10. LoRA adapts little from two trajectories, at Re 1000 and at Re 3000, and rank
+  is not the limit (F1). At Re 30, where the base is systematically wrong, LoRA cuts the error by
+  71% (F2). With six trajectories, training from scratch beats the bar at both targets, but
+  fine-tuning the base does not (F3).
 * **A known limit:** Stage 2's data are statistically sound, but bitwise regeneration of a Re 1000
   trajectory is machine-dependent.
 * **Experiments:** E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5, E5 2 of 4, E6 2 of 5 (and

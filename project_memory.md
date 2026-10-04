@@ -798,6 +798,26 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * So fine-tuning from two trajectories fixes a systematic error, not a direction error.
 * The README row keeps ⚠️ not met, with F2 in the text.
 
+### 2026-10-04 — Stage 10 F3: training from scratch reaches the bar; adapting the base does not (6 of 7 HIT)
+* **Design** (spec F3, commit a6a5510, before any measuring run; the owner asked to "do best for
+  remaining stages"):
+  * Six target trajectories (seeds 0–5) at Re 3000 (new data `s10f3_v1`) and Re 1000, 3 seeds per arm.
+  * Arms: scratch, 20,000 steps at lr 1e-3; full fine-tuning, 10,000 steps at lr 1e-4; LoRA, 10,000
+    steps at lr 1e-3.
+  * Floor (`closure_f3.py`): one frame of the exact solver from the 64² band against the full state.
+* **Results:**
+  * Scratch gains 25.9% (Re 3000) and 30.2% (Re 1000) over zero-shot. Full fine-tuning gains 11.5%
+    and 12.1%, LoRA 1.1% and 0.9%.
+  * The floor is 0.0003, 0.0066, 0.029 and 0.054 at Re 100, 300, 1000 and 3000.
+  * All 20 runs ran on card 3, 1–5 min each. The zero-shot reruns equal F2's exactly.
+* **Reading:**
+  * The bar is reachable with six trajectories, but only from scratch. Scratch passes full
+    fine-tuning's final error within 3000–4000 steps (F3-P3 MISS).
+  * Possible causes, not separated: the base saw only about four passes over its data, and
+    fine-tuning used a tenth of scratch's learning rate.
+  * The models sit 9–12 times above the physics floor, so the error is modelling error.
+  * The Stage 10 verdict stands. The README row keeps ⚠️, with F3 in the text.
+
 ## 6. Status (4 Oct 2026)
 
 **Done:**
@@ -807,7 +827,8 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
     * Stage 4: the shared Perceiver is under-trained at 6000 steps (0.06–0.17 vs bars 0.02–0.05).
     * Stage 9: pushforward does not pay at matched compute.
     * Stage 10: LoRA adapts little from 2 trajectories, at Re 1000 and (F2) at Re 3000. At Re 30,
-      where the base is systematically wrong, it cuts the error by 71%.
+      where the base is systematically wrong, it cuts the error by 71%. With six trajectories (F3),
+      scratch beats the bar at both targets, but fine-tuning the base does not.
   * Stage 2: spectra stable; bitwise regeneration is machine-dependent at Re 1000.
 * E1–E5: specs frozen (28 Sep); all 186 runs done and analysed. The real-data smoke test passed
   after the W10 fix.
@@ -851,8 +872,9 @@ The stage and experiment reports are the record.
 * Stages 8 and 9 are resolved by E4 (3 seeds). Stage 9's row shows ✅, with the earlier miss at its own budget in the text (owner's rule, 3 Oct: no ⚠️→✅ markers).
 * Stage 2 is a documented limit (bitwise regeneration across machines is impossible for these
   chaotic flows; the post-spin-up state helps only on the same XLA ISA).
-* Stage 10 is explained by F1 (rank is not the limit) and F2 (a systematic error at Re 30 adapts,
-  a direction error at Re 1000 and 3000 does not), and stays not met. Stage 4: F1 shows that
+* Stage 10 is explained by F1 (rank is not the limit), F2 (a systematic error at Re 30 adapts, a
+  direction error at Re 1000 and 3000 does not) and F3 (with six trajectories, scratch reaches the
+  bar and adapting the base does not; the physics floor is far below), and stays not met. Stage 4: F1 shows that
   S1's bar is reachable at C = 3; F2 shows that the shared model beats dedicated controls at 64² and
   above when given the same steps per resolution. F3 (32×) meets S2–S4. S1 is reached intermittently
   but not held at the constant rate. F4 (32× with a cosine rate) meets and holds all four bars. The
