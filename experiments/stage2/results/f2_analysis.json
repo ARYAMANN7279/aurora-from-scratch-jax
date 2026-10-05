@@ -1,0 +1,31 @@
+{
+ "predictions": {
+  "F2-Q1": true,
+  "F2-Q2": true,
+  "F2-Q3": true
+ },
+ "single_thread": {
+  "re100_kf4:3": true,
+  "re300_kf4:5": true,
+  "re1000_kf4:7": true
+ },
+ "multi_thread": {
+  "files_equal": {
+   "frames_64.npy": false,
+   "frames_128.npy": false,
+   "diag.npz": false
+  },
+  "state_t0_equal": false,
+  "state_t0_rel_diff": 6.742246881699758e-08,
+  "first_E_diff_t": 50.0,
+  "growth": {
+   "rate": 0.6974255584374432,
+   "fit_frames": 88,
+   "start_t": 28.26292025880533
+  },
+  "start_t0": {
+   "lambda_0.565": 14.019338091044084,
+   "lambda_0.697": 20.851263288792218
+  }
+ }
+}

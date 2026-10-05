@@ -851,21 +851,44 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
     tested gains 20%.
   * The Stage 10 verdict stands. The README row keeps ⚠️, with F4 in the text.
 
+### 2026-10-05 — Stage 2 F2: multi-threading is the cause; single-threaded generation regenerates bitwise (3 of 3 HIT)
+* **Design** (spec F2 in `handouts/stage02_dataset.md`, commit 3ca04eb, before the runs). All lanes
+  ran on the lab CPU, GPUs hidden, with the compilation cache off, at nice 19, from 01:45 IST:
+  * M: `re1000_kf4:7` with F1's settings (cores 8–15, default threading), compared with F1's first
+    pass;
+  * S-a and S-b: M3's three picks with single-threaded XLA, on cores 6 and 7, side by side;
+  * the gates with single-threaded XLA.
+* **Result:** all three predictions HIT.
+  * S-a and S-b are identical: every file and the post-spin-up state, Re 1000 included (4.1–4.3 h on
+    one core).
+  * M differs from F1's first pass. Their post-spin-up states already differ by 6.7e-8, which
+    extrapolates back to a last-bit difference at t ≈ 14–21 of the 50-unit spin-up.
+  * The gates pass: 8 of 8.
+  * Not pre-registered: single-threaded equals F1's multi-threaded output at Re 100 and 300. At
+    Re 1000 they differ by 3.2e-2 after the spin-up.
+* **Reading:**
+  * XLA's multi-threaded execution at 512² does not give the same bits from run to run; one thread
+    does.
+  * By F2's acceptance, Stage 2 is met for single-threaded generation on a fixed machine.
+  * The README row is ✅, with Q3, F1 and the multi-threaded limit in the text. The report adds a
+    dated correction to the 2,000-step threading check that had "ruled out" threading.
+
 ## 6. Status (5 Oct 2026)
 
 **Done:**
-* Stages 1–11: built, gates pass, results reported.
-  * Acceptance met: 1, 3, 5, 6, 7, 8, 11.
+* Stages 1–12: built, gates pass, results reported.
+  * Acceptance met: 1, 3, 5, 6, 7, 8, 11, 12.
+  * Met after follow-ups, missed earlier (the earlier verdicts stay in the reports):
+    * Stage 9 in E4 (3 seeds, 3.3× the budget);
+    * Stage 4 with 32× the steps and a decaying learning rate (F4);
+    * Stage 2 for single-threaded generation on a fixed machine (F2, 5 Oct). With default
+      multi-threading, a full-length Re 1000 trajectory does not regenerate bitwise (F1).
   * Not met, with the causes measured:
-    * Stage 4: the shared Perceiver is under-trained at 6000 steps (0.06–0.17 vs bars 0.02–0.05).
-    * Stage 9: pushforward does not pay at matched compute.
     * Stage 10: LoRA adapts little from 2 trajectories, at Re 1000 and (F2) at Re 3000. At Re 30,
       where the base is systematically wrong, it cuts the error by 71%. With six trajectories (F3),
       scratch beats the bar at both targets, but fine-tuning the base does not. F4: that base was
       under-trained; a base trained 10× longer transfers almost as well zero-shot, and no method then
       gains 20% over it.
-  * Stage 2: spectra stable; a full-length Re 1000 trajectory does not regenerate bitwise, even on
-    one machine (F1, 4 Oct).
 * E1–E5: specs frozen (28 Sep); all 186 runs done and analysed. The real-data smoke test passed
   after the W10 fix.
 * E4: done, 1 of 5 HIT (pushforward wins even at matched compute; MAE is stable; depth 24 helps).
@@ -880,8 +903,8 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   at `highest`; D9 fails for a diagnostics-only reason.
 
 **Running (lab VM):**
-* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6–E9, Stage 4 F3 and F4 (Kaggle)
-  and Stage 10 F2 (lab cards 2 and 3) are done and reported.
+* Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6–E9, Stage 4 F3 and F4 (Kaggle),
+  Stage 10 F2–F4 (lab cards 2 and 3) and Stage 2 F1 and F2 (lab CPU) are done and reported.
 * The VM's lanes are idle. The owner approves each launch on the lab machine. Card 0 stays excluded.
 
 **Remaining:** none from the advisor's notes of 1 Oct. Done: E6 follow-up F1 (3 of 3 HIT), the
@@ -889,7 +912,9 @@ attention experiment E7 (2 of 3 HIT), and the overnight follow-ups of 3 Oct: Sta
 and E8 (bias with a finer drift and with pushforward, q/k normalisation, scan chunks; 5 of 10 HIT);
 then E9, the two attention changes together (4 of 6 HIT: they mostly overlap), and Stage 4 F4 (a
 decaying learning rate; 4 of 4 HIT, all bars met and held). On 4 Oct, Stage 10 F2 (farther
-viscosities; 6 of 6 HIT; the acceptance test still fails at Re 3000).
+viscosities; 6 of 6 HIT; the acceptance test still fails at Re 3000). On 4–5 Oct, Stage 10 F3 (6 of
+7 HIT) and F4 (5 of 6 HIT), and Stage 2 F1 (MISS) and F2 (3 of 3 HIT; Stage 2 met for
+single-threaded generation).
 Possible follow-ups each need their own spec and the owner's go-ahead:
 * a rollout measure that separates tracking from amplitude (E8's exploratory check).
 The stage and experiment reports are the record.
@@ -906,8 +931,10 @@ The stage and experiment reports are the record.
 
 **README ⚠️ rows (30 Sep):**
 * Stages 8 and 9 are resolved by E4 (3 seeds). Stage 9's row shows ✅, with the earlier miss at its own budget in the text (owner's rule, 3 Oct: no ⚠️→✅ markers).
-* Stage 2 is a documented limit. F1 (4 Oct) showed that a full-length Re 1000 trajectory does not
-  regenerate bitwise even on one fixed machine; the cause is not identified. Re 100 and 300 do.
+* Stage 2: F1 (4 Oct) showed that a full-length Re 1000 trajectory does not regenerate bitwise even
+  on one fixed machine. F2 (5 Oct) traced it to XLA's multi-threading at 512²; with one thread all
+  three regenerate. The row is ✅ for single-threaded generation on a fixed machine, with the earlier
+  misses in the text.
 * Stage 10 is explained by F1 (rank is not the limit), F2 (a systematic error at Re 30 adapts, a
   direction error at Re 1000 and 3000 does not) and F3 (with six trajectories, scratch reaches the
   bar and adapting the base does not; the physics floor is far below), and stays not met. Stage 4: F1 shows that
