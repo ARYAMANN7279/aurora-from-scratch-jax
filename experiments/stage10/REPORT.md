@@ -371,8 +371,8 @@ Each fine-tuned arm against scratch (1 − e / e(scratch)) and against its own b
 |---|---|---|---|
 | F4-P1 | with B3k, lr 1e-3 beats lr 1e-4 | 0.194 vs 0.222; 0.149 vs 0.179 | **HIT** |
 | F4-P2 | with the learning rate and steps matched, B3k is no worse a start than random | 0.1940 vs 0.1917; 0.14848 vs 0.14850 | **MISS** (at Re 3000) |
-| F4-P3 | at Stage 10's learning rate, B30k beats B3k | 0.185 vs 0.222; 0.140 vs 0.179 | **HIT** |
-| F4-P4 | at Stage 10's learning rate, B30k beats scratch | 0.185 vs 0.192; 0.140 vs 0.149 | **HIT** |
+| F4-P3 | at Stage 10's learning rate, B30k beats B3k | 0.185 vs 0.222; 0.139 vs 0.179 | **HIT** |
+| F4-P4 | at Stage 10's learning rate, B30k beats scratch | 0.185 vs 0.192; 0.139 vs 0.149 | **HIT** |
 | F4-P5 | B30k transfers better zero-shot than B3k | 0.201 vs 0.259; 0.150 vs 0.213 | **HIT** |
 | F4-P6 | LoRA on B30k in Stage 10's setting misses the bar | 2.2%; 2.0% | **HIT** |
 
