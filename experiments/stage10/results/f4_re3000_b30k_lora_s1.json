@@ -1,0 +1,62 @@
+{
+ "arm": "lora",
+ "base": "onestep_mse_long",
+ "dataset": "s10f3_v1",
+ "target": "re3000_kf4",
+ "seed": 1,
+ "train_seeds": [
+  0,
+  1
+ ],
+ "steps": 1000,
+ "lr": 0.001,
+ "r": 4,
+ "n_trainable": 43008,
+ "n_total": 5106688,
+ "trainable_frac": 0.00842189693202326,
+ "eval": {
+  "rel_err": 0.19627600431362754,
+  "persistence": 0.4041027910832786,
+  "ratio": 0.4857081134912984
+ },
+ "curve": [
+  {
+   "step": 250,
+   "loss": 0.06686829030513763,
+   "eval": {
+    "rel_err": 0.19704591555128745,
+    "persistence": 0.4041027910832786,
+    "ratio": 0.48761334962093766
+   }
+  },
+  {
+   "step": 500,
+   "loss": 0.0733204260468483,
+   "eval": {
+    "rel_err": 0.19651349981213903,
+    "persistence": 0.4041027910832786,
+    "ratio": 0.4862958241029347
+   }
+  },
+  {
+   "step": 750,
+   "loss": 0.0613936148583889,
+   "eval": {
+    "rel_err": 0.19630263104442566,
+    "persistence": 0.4041027910832786,
+    "ratio": 0.48577400447593316
+   }
+  },
+  {
+   "step": 1000,
+   "loss": 0.054200537502765656,
+   "eval": {
+    "rel_err": 0.19627600431362754,
+    "persistence": 0.4041027910832786,
+    "ratio": 0.4857081134912984
+   }
+  }
+ ],
+ "wall_s": 12.66190218925476,
+ "command": ".venv/bin/python experiments/stage10/finetune.py --arm lora --base onestep_mse_long --seed 1 --dataset s10f3_v1 --target re3000_kf4 --out f4_re3000_b30k_lora_s1"
+}

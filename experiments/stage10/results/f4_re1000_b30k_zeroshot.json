@@ -1,0 +1,25 @@
+{
+ "arm": "zeroshot",
+ "base": "onestep_mse_long",
+ "dataset": "acc_v1",
+ "target": "re1000_kf4",
+ "seed": 0,
+ "train_seeds": [
+  0,
+  1
+ ],
+ "steps": 0,
+ "lr": 0.0001,
+ "r": null,
+ "n_trainable": 0,
+ "n_total": 5106688,
+ "trainable_frac": 0.0,
+ "eval": {
+  "rel_err": 0.14981890161309686,
+  "persistence": 0.3645428797044367,
+  "ratio": 0.41097744587568596
+ },
+ "curve": [],
+ "wall_s": 1.9016897678375244,
+ "command": ".venv/bin/python experiments/stage10/finetune.py --arm zeroshot --base onestep_mse_long --out f4_re1000_b30k_zeroshot"
+}
