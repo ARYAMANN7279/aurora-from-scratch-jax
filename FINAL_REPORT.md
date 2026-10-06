@@ -3,8 +3,8 @@
 
 **Final report, Undergraduate Project II (UGP-II)**
 
-Aryamann Srivastava, Department of Aerospace Engineering, IIT Kanpur
-Advisors: Prof. Rajesh Ranjan (ACAL, IIT Kanpur) and Prashant Kumar (PhD)
+Aryamann Srivastava, Department of Aerospace Engineering, IIT Kanpur\
+Advisors: Prof. Rajesh Ranjan (ACAL, IIT Kanpur) and Prashant Kumar (PhD)\
 October 2026
 
 Code, specifications, result files and per-stage reports: repository
@@ -145,8 +145,9 @@ positive Lyapunov exponents; §4), cheap, and noise-free.
 Learned simulators for fluids [8] and autoregressive neural PDE solvers [9] motivated the one-step
 recipe. Brandstetter et al. [9] introduced the pushforward trick tested here. Several recent models
 pretrain on many PDE families and fine-tune downstream [10–12]. Subramanian et al. [13] characterised
-how transfer depends on pretraining data and model scale. This project shares their question. It
-differs in method: one PDE family whose data properties can be varied one at a time, an architecture
+how transfer scales with model size and downstream data, how it degrades as physics parameters move
+out of distribution, and how a model pretrained on a mixture of physics adapts. This project asks a
+related question about the pretraining data itself. It differs in method: one PDE family whose data properties can be varied one at a time, an architecture
 copied from a production foundation model, and predictions fixed before every run.
 
 ---
@@ -180,13 +181,13 @@ and 12 Swin blocks, for **5,106,688 parameters**. Per sample:
 
 | Step | What it does | Shape |
 |---|---|---|
-| input | two snapshots, 4 fields each (u, v, p, ω), normalised | 2 × (4, 64, 64) |
-| levels | split each field into 5 spectral octave bands with the FFT (these play the role of Aurora's pressure levels; they sum back to the field) | (4, 5, 64, 64) |
-| embed | 4 × 4 patches, per-variable linear embedding summed over variables, plus position, patch-area and level encodings; the two snapshots are summed with learned frame vectors | (5, 256, 64) |
-| Perceiver encoder | 3 latent queries attend over the 5 level tokens at each position | (3, 256, 64) |
-| backbone | Swin U-Net on a 3 × 16 × 16 token grid: 3 stages down and 3 up (widths 64, 128, 256), 2 blocks each, windows of 3 × 4 × 4, shifted every second block, skips, AdaLN on lead time | (768, 128) |
-| Perceiver decoder and heads | back to 5 levels, per-variable heads, sum over levels | (4, 64, 64) = Δ |
-| output | X(t) + Δ; the heads start at zero, so the untrained model is persistence | (4, 64, 64) |
+| input | two snapshots, 4 fields each (u, v, p, ω), normalised | 2 × (4, 64, 64) |
+| levels | split each field into 5 spectral octave bands with the FFT (these play the role of Aurora's pressure levels; they sum back to the field) | (4, 5, 64, 64) |
+| embed | 4 × 4 patches, per-variable linear embedding summed over variables, plus position, patch-area and level encodings; the two snapshots are summed with learned frame vectors | (5, 256, 64) |
+| Perceiver encoder | 3 latent queries attend over the 5 level tokens at each position | (3, 256, 64) |
+| backbone | Swin U-Net on a 3 × 16 × 16 token grid: 3 stages down and 3 up (widths 64, 128, 256), 2 blocks each, windows of 3 × 4 × 4, shifted every second block, skips, AdaLN on lead time | (768, 128) |
+| Perceiver decoder and heads | back to 5 levels, per-variable heads, sum over levels | (4, 64, 64) = Δ |
+| output | X(t) + Δ; the heads start at zero, so the untrained model is persistence | (4, 64, 64) |
 
 * **Differences from Aurora** [1] (see `docs/architecture.md`): the levels are spectral bands rather
   than pressure levels; the windows wrap around in both x and y, because the box is periodic; and the
@@ -692,22 +693,24 @@ notebooks.
 
 ## References
 
-1. C. Bodnar et al., A foundation model for the Earth system, *Nature* (2025). arXiv:2405.13063.
-2. A. Jaegle, F. Gimeno, A. Brock, A. Zisserman, O. Vinyals, J. Carreira, Perceiver: General
-   perception with iterative attention, *ICML* (2021).
+1. C. Bodnar et al., A foundation model for the Earth system, *Nature* 641, 1180–1187 (2025).
+   arXiv:2405.13063.
+2. A. Jaegle, F. Gimeno, A. Brock, O. Vinyals, A. Zisserman, J. Carreira, Perceiver: General
+   perception with iterative attention, *ICML*, PMLR 139, 4651–4664 (2021).
 3. Z. Liu et al., Swin Transformer: Hierarchical vision transformer using shifted windows, *ICCV*
    (2021).
 4. O. Ronneberger, P. Fischer, T. Brox, U-Net: Convolutional networks for biomedical image
-   segmentation, *MICCAI* (2015).
+   segmentation, *MICCAI*, LNCS 9351, 234–241 (2015).
 5. E. J. Hu et al., LoRA: Low-rank adaptation of large language models, *ICLR* (2022).
 6. G. Boffetta, R. E. Ecke, Two-dimensional turbulence, *Annual Review of Fluid Mechanics* 44,
    427–451 (2012).
 7. G. J. Chandler, R. R. Kerswell, Invariant recurrent solutions embedded in a turbulent
    two-dimensional Kolmogorov flow, *Journal of Fluid Mechanics* 722, 554–595 (2013).
-8. D. Kochkov et al., Machine learning–accelerated computational fluid dynamics, *PNAS* 118 (2021).
+8. D. Kochkov et al., Machine learning–accelerated computational fluid dynamics, *PNAS* 118 (21),
+   e2101784118 (2021).
 9. J. Brandstetter, D. Worrall, M. Welling, Message passing neural PDE solvers, *ICLR* (2022).
-10. M. McCabe et al., Multiple physics pretraining for physical surrogate models, arXiv preprint
-    (2023).
+10. M. McCabe et al., Multiple physics pretraining for spatiotemporal surrogate models, *NeurIPS*
+    (2024).
 11. Z. Hao et al., DPOT: Auto-regressive denoising operator transformer for large-scale PDE
     pre-training, *ICML* (2024).
 12. M. Herde et al., Poseidon: Efficient foundation models for PDEs, *NeurIPS* (2024).
@@ -717,8 +720,7 @@ notebooks.
     high-wavenumber components, *Journal of the Atmospheric Sciences* 28, 1074 (1971).
 15. J. D. Lawson, Generalized Runge–Kutta processes for stable systems with large Lipschitz
     constants, *SIAM Journal on Numerical Analysis* 4, 372–380 (1967).
-16. M. Dehghani et al., Scaling vision transformers to 22 billion parameters, *ICML* (2023). (q/k
-    normalisation)
+16. M. Dehghani et al., Scaling vision transformers to 22 billion parameters, *ICML* (2023).
 17. J. Bradbury et al., JAX: composable transformations of Python+NumPy programs (2018).
     https://github.com/jax-ml/jax
 
@@ -739,8 +741,10 @@ To check the code and reproduce a result:
 ```bash
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
-.venv/bin/python -m pytest tests -q                                          # correctness gates
-.venv/bin/python experiments/run.py experiments/configs/h1_stage7_repro.json # one config -> one run -> one row
+# correctness gates (118 tests, about 8 min on 4 CPU cores)
+.venv/bin/python -m pytest tests -q
+# one config -> one run -> one row: reproduces the Stage 7 result
+.venv/bin/python experiments/run.py experiments/configs/h1_stage7_repro.json
 ```
 
 Each report ends with the exact commands that produced its numbers.
