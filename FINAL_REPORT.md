@@ -626,12 +626,23 @@ about Aurora.
 ### 7.3 The pre-registration record
 
 The experiments made 49 pre-registered predictions and hit 25. E1–E5, frozen together on 28 Sep
-2026, hit 9 of 22. The misses were often the most informative results:
-* E4 overturned two leads from single-seed stages (MAE instability, and pushforward at matched
-  compute).
-* E1 found no diversity effect where one was predicted.
-* E6 found that simulation pretraining hurt where it was predicted to help.
-* E8 found that q/k normalisation helps where no effect was predicted.
+2026, hit 9 of 22.
+
+**A miss is not a failed experiment.** Every experiment ran as designed, and its result stands. A
+miss means that the expectation written down before the run was wrong.
+* **The predictions were meant to be falsifiable.** Most have numeric bars, for example "the
+  advantage lies in [10%, 40%]" or "at least 9%". A hit rate near one half shows they were genuine
+  bets.
+* **Many of the early ones rested on single-seed stage results** that later did not hold.
+
+The 24 misses fall into four kinds:
+
+| Kind of miss | Count | Predictions |
+|---|---|---|
+| The expectation was wrong, and the miss is the finding | 10 | E1-P2 and P3 (diversity did not raise the advantage); E1-P6 (rollouts do not follow one-step error); E2-P1 and P2 (fusion cost the Perceiver accuracy, and pad-and-mask beat it); E6-P1, P2 and P3 (simulation pretraining did not help on real data); E8-P4 and P5 (pushforward on a 2-trajectory task) |
+| Better than predicted | 5 | E1-P4 (pretraining helped more); E4-P1 (MAE stayed stable); E4-P2 (pushforward paid even at matched compute); E4-P4 (24 blocks helped); E8-P7 (q/k normalisation helped) |
+| Missed by a hair, or within noise | 5 | E8-P2 (3.3% against a 3% limit); E8-P8 (10.1% against 10%); E9-P1 (8.9% against 9%); E9-P6 (0.8% against 0.5%); E4-P5 (L = 1 at +2.0 ± 2.8% and L = 6 at −3.9 ± 4.4%, within noise but outside the stated bands) |
+| Too noisy to resolve, ill-posed, or smaller than predicted | 4 | E3-P3 (a fall with distance, not resolved); E5-P2 (5.3% against ≥ 8%); E5-P3 (a ratio that is ill-posed with one trajectory); E7-P2 (4 rollouts could not resolve the drift; E8's 84 did) |
 
 Because each miss was recorded against a prediction made in advance, none could be explained away
 after the fact.
