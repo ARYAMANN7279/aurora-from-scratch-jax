@@ -120,7 +120,7 @@ Full report: [`experiments/stage1/REPORT.md`](experiments/stage1/REPORT.md).
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
 
-# correctness gates (98 tests, about 7-10 min on 4 CPU cores)
+# correctness gates (118 tests, about 8 min on 4 CPU cores)
 .venv/bin/python -m pytest tests -q
 
 # one config -> one run -> one row: reproduces the Stage 7 result (needs the acc_v1 dataset)
