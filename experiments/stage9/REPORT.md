@@ -17,6 +17,9 @@ rollouts in each regime at 6–9 standard errors, with almost no one-step cost (
 0.150 vs 0.146). So the trick does improve rollout robustness here, but it does not pay for its
 extra compute at this scale and budget.
 
+Addendum (9 Oct 2026): E4 later met this test with 3 seeds and a longer budget; see the end of
+this report.
+
 ## Predictions
 
 Paired by initial condition, n = 4 rollouts per regime (seeds 6–7 × t₀ ∈ {50, 250}).
@@ -50,3 +53,16 @@ Paired by initial condition, n = 4 rollouts per regime (seeds 6–7 × t₀ ∈ 
   The answer depends on which one is asked.
 * Stage 8 found the MAE-trained model unstable under rollout. Whether pushforward fixes the MAE
   instability is a natural E4 cell.
+
+## Addendum (written 9 Oct 2026): the test repeated in E4 (the verdicts above stand)
+E4 (28–29 Sep) repeated the comparison with 3 seeds, 10,000 steps (5,000 at matched compute) and the
+50-step drift (`experiments/e4/REPORT.md`):
+* **At matched compute,** pushforward cut the 50-step drift by 44.6 ± 4.6% (Re 100) and
+  47.1 ± 6.9% (Re 300), about 10 SE, at the price of a 21.5 ± 3.8% higher one-step error.
+* **At matched steps,** it cut the drift by 49.8 ± 3.8% and 31.3 ± 8.1%, with no one-step cost
+  (−0.5 ± 2.1%).
+
+So the plan's test, lower drift at matched compute, is met in E4, and the README shows Stage 9 as met
+there. The single-seed, 3000-step result above did not hold up. On E1's two-trajectory task (E8),
+the gain is smaller: 6.2 ± 1.6% in 50-step drift at matched steps, about two-thirds of it from damped
+amplitude.

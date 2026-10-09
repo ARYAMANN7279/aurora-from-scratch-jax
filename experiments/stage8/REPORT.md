@@ -48,6 +48,14 @@ feedback are not suppressed. **Caveat:** this is one training seed per loss, so 
 E4 (MAE vs MSE, 3 seeds) and for Stage 9 (does pushforward remove it?), not a conclusion.
 Aurora trains with MAE, which makes this worth testing properly.
 
+## Addendum (written 9 Oct 2026): MAE tested in E4 (the verdicts above stand)
+E4 (28–29 Sep) trained MAE against MSE with 3 seeds and 10,000 steps (`experiments/e4/REPORT.md`).
+MAE did not blow up:
+* its 50-step drift was 19.2 ± 0.8% lower than MSE's at Re 100 and 11.1 ± 6.5% lower at Re 300;
+* its one-step error was within noise of MSE's (−4.1 ± 3.7%).
+
+The single-seed blow-up above did not reproduce. The experiments kept MSE, as fixed before E4.
+
 ## Commands
 ```
 .venv/bin/python -m pytest tests/test_stage8_gates.py -q -s
