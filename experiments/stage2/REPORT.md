@@ -124,13 +124,20 @@ Figures: `figs/spectra_by_seed.png` (the 8 seeds per regime overlap), `figs/ener
 All gates pass on CPU. On the lab VM (RTX PRO 6000, JAX 0.10.2, CUDA 12.8), **gate D9 fails**:
 * After an interrupted-then-resumed trajectory, both frame files are bitwise identical to the
   uninterrupted run, but `diag.npz` differs.
-* **Likely cause (not yet confirmed on the GPU):** `shell_spectrum`
+* **Likely cause (as stated on 28 Sep; confirmed on 9 Oct, below):** `shell_spectrum`
   (`src/kolmogorov/diagnostics.py`) bins energy into shells with a scatter-add. On GPUs, XLA
   implements scatter-add with atomics, so the summation order, and hence the last bits, can change
   from run to run. The frames involve no scatter.
 * **Confirmation check:** rerun D9 with `XLA_FLAGS=--xla_gpu_deterministic_ops=true`, which is
   expected to pass. Or compare two *uninterrupted* GPU runs, which are expected to differ in
   `diag.npz` only.
+* **Confirmed (9 Oct 2026),** on lab card 3 (RTX PRO 6000, JAX 0.10.2):
+  * D9 fails in both of two runs at the default settings, and passes in both of two runs with
+    `XLA_FLAGS=--xla_gpu_deterministic_ops=true`, as expected.
+  * Rebuilding D9's interrupted and uninterrupted trajectories at the default settings,
+    `frames_16.npy` and `frames_32.npy` are identical and only `diag.npz` differs.
+  * So the GPU failure comes from non-deterministic operations in the diagnostics, and disappears
+    when XLA is made deterministic. The frames do not depend on it.
 * **Consequences:**
   * the training data (the frames) is unaffected;
   * the gate is unchanged;

@@ -873,7 +873,25 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   * The README row is ✅, with Q3, F1 and the multi-threaded limit in the text. The report adds a
     dated correction to the 2,000-step threading check that had "ruled out" threading.
 
-## 6. Status (5 Oct 2026)
+### 2026-10-09 — Full audit of the repository; D9 on the GPU confirmed
+* **Checked:**
+  * Mac, GitHub and the lab clone all at 3797128; nothing running.
+  * All 118 tests pass (lab CPU, 4 cores, 8 min 12 s).
+  * All 21 scoring scripts re-run from the committed rows: every analysis file reproduces byte for
+    byte.
+  * Every prediction in the 21 specs has a verdict in its report. The hit counts (25 of 49 for the
+    experiments, and every stage follow-up) and the headline numbers in the README and the final
+    report match the analysis files.
+  * No broken links. The plan's four deliverables exist.
+* **Fixed:**
+  * Gate D9's GPU failure, marked "likely cause, not yet confirmed" since 28 Sep, is now confirmed
+    on card 3. D9 fails twice at the default settings and passes twice with
+    `--xla_gpu_deterministic_ops=true`; only `diag.npz` differs, and the frames are identical.
+    Dated note in the Stage 2 report.
+  * The Stage 8 and Stage 9 reports did not record E4's later outcome (the MAE blow-up did not
+    reproduce; pushforward met the test at matched compute). Dated addenda added; the verdicts stand.
+
+## 6. Status (9 Oct 2026)
 
 **Done:**
 * Stages 1–12: built, gates pass, results reported.
@@ -898,9 +916,14 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
   move it; zero-shot follows distance; fine-tuned models drift more than scratch).
 * E3: done, 3 of 4 HIT (zero-shot degrades slowly with distance; the fine-tuned advantage stays at
   36–41%).
+* E6–E9: done. E6 2 of 5 HIT (follow-up F1 3 of 3), E7 2 of 3, E8 5 of 10, E9 4 of 6. All nine
+  experiments: 25 of 49 predictions HIT.
+* Final report: `FINAL_REPORT.md` and `FINAL_REPORT.pdf` (6 Oct; references checked against their
+  sources).
 * `e1_v1`: all 326 trajectories generated on CPU (29 Sep, 05:34 VM time).
 * 118 tests pass on CPU (3 Oct: the 92 earlier ones, E6's gates R1–R6, E7's G1–G6, E8's Q1–Q6 and H1–H4, and E9's RQ1–RQ3). On the GPU (the 91 tests before W10): 87 pass at default precision and 90
-  at `highest`; D9 fails for a diagnostics-only reason.
+  at `highest`; D9 fails for a diagnostics-only reason (confirmed 9 Oct: only `diag.npz` differs,
+  and D9 passes with `--xla_gpu_deterministic_ops=true`).
 
 **Running (lab VM):**
 * Nothing. Stage 12 (lab card 3 and the Kaggle T4 supplement), E6–E9, Stage 4 F3 and F4 (Kaggle),
