@@ -1,15 +1,4 @@
-# What Does Pretraining Data Buy a Neural PDE Surrogate?
-## A from-scratch JAX reimplementation of Aurora, used as an instrument on Kolmogorov flow
-
-**Final report, Undergraduate Project II (UGP-II)**
-
-Aryamann Srivastava, Department of Aerospace Engineering, IIT Kanpur\
-Advisors: Prof. Rajesh Ranjan (ACAL, IIT Kanpur) and Prashant Kumar (PhD)\
-October 2026
-
-Code, specifications, result files and per-stage reports: repository
-`ARYAMANN7279/aurora-from-scratch-jax`. Every number in this report is copied from a report or
-result file there; Appendix A lists where.
+# Aurora-JAX Report
 
 ---
 
