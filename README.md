@@ -135,6 +135,7 @@ python3.11 -m venv .venv
 
 | Path | Contents |
 |---|---|
+| `FINAL_REPORT.md`, `FINAL_REPORT.pdf` | The final report: methods, every stage and experiment result, discussion, limitations and references |
 | `PROJECT_PLAN.md` | Research questions, testbed, architecture, staged deliverables, experiments |
 | `project_memory.md` | Decision record and open issues. Read §2 (protocol rules) before running any experiment |
 | `docs/architecture.md` | How the model works: the forward pass with shapes, each part next to Aurora's, where the parameters and the computation are, and a reading guide |
@@ -151,7 +152,8 @@ python3.11 -m venv .venv
 
 ## Status
 
-**Complete.** All twelve stages and all nine experiments have their results.
+**Complete.** All twelve stages and all nine experiments have their results. The final report is
+[`FINAL_REPORT.md`](FINAL_REPORT.md) ([PDF](FINAL_REPORT.pdf)).
 * **Met:** stages 1, 3, 5, 6, 7, 8, 11 and 12 met their acceptance tests. Three more are met after
   follow-ups, and missed earlier:
   * Stage 9 (pushforward) is met in E4, with 3.3× its budget and 3 seeds;
