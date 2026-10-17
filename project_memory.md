@@ -1098,8 +1098,10 @@ README and the feedback tracker record the completed outcomes. The architecture 
 proposal, as requested; no gain or completed architecture experiment is claimed.
 
 **Handoff:** the completed report / results commit is `b928739`. The Mac, lab clone and GitHub
-branch `vm-results` are synchronised; review is in draft PR
-[#49](https://github.com/ARYAMANN7279/aurora-from-scratch-jax/pull/49). `main` was not merged.
+branch `vm-results` were synchronised for review in PR
+[#49](https://github.com/ARYAMANN7279/aurora-from-scratch-jax/pull/49), initially a draft.
+The owner subsequently requested its merge on 17 Oct. Preserve the pre-registration and training
+commits with a merge commit; GitHub's PR record is the source for the final merge SHA and status.
 Before the lab fast-forward, generated artifacts were preserved in its stash named
 `report-feedback-generated-artifacts-before-sync-2026-10-17`; raw data and all 45 saved checkpoints
 remain under ignored `data/`. There are no remaining training jobs from this work.
