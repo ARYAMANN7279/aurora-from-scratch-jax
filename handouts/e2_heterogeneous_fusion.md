@@ -107,3 +107,10 @@ Run with `experiments/run.py`, keeping follow-up result rows separate from E2's 
 Score with `experiments/analyse_e345.py --exp e2f1 --results <follow-up rows>`; the output is
 `experiments/e2/results/f1_analysis.json`. Report means and SE, all predictions including misses,
 the hardware and code version, and the limitation that physics and format remain paired by source.
+
+**Outcome, 17 Oct 2026:** all 30 runs complete and audited against the registered configs.
+**1/4 predictions HIT:** F1-P1 HIT; F1-P2, P3 and P4 MISS. Pad-and-mask changes B error by
+−9.5 ± 2.3% / −6.9 ± 1.8% in (a) / (c). The unchanged-format fusion costs are −2.4 ± 1.7%
+(B in a) and +53.9 ± 7.3% (A in b). Per-source changes on B are +0.7 ± 2.3%, −5.7 ± 2.2%,
+−5.3 ± 1.6% in (a), (b), (c). The original thresholds and E2 verdicts remain unchanged.
+Full results: `experiments/e2/REPORT.md` and `experiments/e2/results/f1_analysis.json`.

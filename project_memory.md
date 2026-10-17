@@ -987,7 +987,7 @@ bitwise with the current code, and it only buys a diagnostic.
 **Before any further GPU run:** use `glane3.sh` (idle cards only, card-placement interlock). Card 0
 stays excluded unless the lab agrees otherwise.
 
-## 7. Report feedback, 17 Oct 2026 — in progress
+## 7. Report feedback, 17 Oct 2026 — complete
 
 The owner asked to finish the work interrupted by the earlier session's weekly limit, using
 Prashant's annotated `Downloads/FINAL_REPORT_261017_165949.pdf`. They explicitly authorised
@@ -1023,11 +1023,11 @@ Tracking: `docs/prashant_feedback_2026-10-17.md`.
   the JAX persistent compilation cache. No scratch on the root partition. Card 0 is excluded.
 * A local ignored `.venv` was also created, Python 3.11.16 / JAX 0.10.2, for analysis / PDF checks.
 
-**Data and running lanes:**
+**Data and executed lanes:**
 * `e2f1_v1` has 16 checksum-verified trajectories: the four existing Re 30 seeds from
   `s10f2_v1`, eight Re 3000 seeds from `s10f3_v1`, plus Re 30 seeds 2–5 generated on CPU.
   Existing trajectories are linked; raw data remains off git. Provenance: E2 `results/f1_data.json`.
-* Three guarded lanes each run five E1 curve configs for one seed, then ten E2 F1 configs
+* Three guarded lanes each ran five E1 curve configs for one seed, then ten E2 F1 configs
   (`--shard seed --n-shards 3`). They use `--skip-done` and distinct result files.
   Logs: `logs/feedback_lane_{0,1,2}.log`. Rows: E1 `results/curves_rows_{0,1,2}.jsonl` and
   E2 `results/f1_rows_{0,1,2}.jsonl`. Initial guard PIDs: 1026958, 1026959, 1026960.
@@ -1046,7 +1046,7 @@ Tracking: `docs/prashant_feedback_2026-10-17.md`.
   seed 0, frame 50 (physical t = 60), n = 2 and 32 at T = 32. Truth sets a common colour range;
   triangles mark clipping of growing predictions. Separate error maps use a shared error range.
 
-**Report clarifications drafted:**
+**Report clarifications included:**
 * The FNO's 0.094819 against PAm's 0.109403 is a 15.4% error gap, 0.66 subscore points.
   A concrete protocol difference is now explicit: the FNO sees 20 past frames and forecasts
   jointly, while E6 uses frames 18 and 19 and recurses for 20 steps. Verified in the VM's
@@ -1075,6 +1075,24 @@ validation split. Final paired advantages are 47.98 ± 0.88% (n = 2) and 46.34 �
 All six fine-tunes end at their minimum logged target error. E1's report, learning-curve figure
 and final-report text are updated; analysis is `experiments/e1/results/f1_analysis.json`.
 
-**Still to finish:** score the 30 E2 F1 GPU runs and add its results / figure, finish the status
-records, rebuild and inspect the final PDF, commit and sync. The final PDF in the repository is
-still the old version until that rebuild; the current Markdown contains the draft.
+**E2 F1 complete:** all 30 expected configurations have exactly one row; the full stored configs
+match the registered design, all losses / metrics are finite, and every row records `606e4f6`.
+**1/4 predictions HIT:** P1 HIT, P2–P4 MISS. Paired mean ± SE changes on source B:
+* Pad-and-mask versus Perceiver: **−9.5 ± 2.3%** (a), **−6.9 ± 1.8%** (c).
+* Per-source versus Perceiver: +0.7 ± 2.3% (a), −5.7 ± 2.2% (b), −5.3 ± 1.6% (c).
+* Unchanged-format fusion costs: **−2.4 ± 1.7% on B (a)**, **+53.9 ± 7.3% on A (b)**.
+Per-source encoders also lower A's error by 34.4 ± 8.6%, 42.6 ± 5.9%, 45.3 ± 1.6% in (a/b/c).
+Thus a larger physics gap changes the ranking and does not uniformly amplify fusion cost.
+Physics and format remain paired by source; a wider resolution gap and unseen format stay open.
+Full outcome: `experiments/e2/REPORT.md`, `results/f1_analysis.json`, `figs/e2_f1_rel_err.png`.
+
+Seed 2 initially exhausted its four guarded attempts on the hotter card after two E2 runs. It
+was restarted on idle card 1 with `--skip-done` and completed the eight remaining configs;
+no recipe changed. All training processes have exited and released their GPU contexts.
+
+**Completion:** 45 new training runs (282 including the original study), 1/6 new predictions HIT.
+Original numerical results and the original 25/49 record remain unchanged. `FINAL_REPORT.md`
+and the rebuilt 24-page `FINAL_REPORT.pdf` include all requested figures and explanations.
+All PDF pages were rendered for visual review; image loading is checked by the builder.
+README and the feedback tracker record the completed outcomes. The architecture is an untested
+proposal, as requested; no gain or completed architecture experiment is claimed.

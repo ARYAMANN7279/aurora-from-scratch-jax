@@ -178,12 +178,13 @@ the default macOS location. The builder checks image loading before replacing th
   experiment tooling; GPU notes in `project_memory.md`). Each stage and experiment has a spec with
   pre-registered predictions in `handouts/`, and a report.
 
-**Report feedback (17 Oct):** the original study is complete; Prashant's new report revisions are
-in progress. The original-checkpoint contours and rollout diagnosis are in the report draft.
-E1's 15 training-curve reruns are complete (0/2 predictions HIT: historical reproduction varies
-by up to 2.82%, and scratch ends 4.4–5.0% above its curve minima). The E2 comparison at Re 30 / 3000
-is running. Both follow-ups were registered before launch and are reported separately from the
-original study. The updated 125-test CPU suite passes.
+**Report feedback (17 Oct):** Prashant's revisions add training curves, original-checkpoint
+contours and rollout diagnosis, clearer signs, the FNO-gap explanation and an architecture
+proposal. All **45 registered follow-up runs** are complete (282 including the original study).
+E1 F1: **0/2 HIT** — historical endpoints vary by up to 2.82%, and scratch ends 4.4–5.0% above its
+logged minima. E2 F1 at Re 30 / 3000: **1/4 HIT** — pad-and-mask still improves B by 7–10%,
+per-source encoders help, and fusion cost does not grow uniformly. Original verdicts are retained;
+the follow-ups are reported separately. The updated **125-test CPU suite passes**.
 See [`docs/prashant_feedback_2026-10-17.md`](docs/prashant_feedback_2026-10-17.md).
 
 ## Advisors

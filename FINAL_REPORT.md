@@ -13,26 +13,27 @@ code to 2.8 × 10⁻⁷ in float32. We then used it as an instrument on two-dime
 where every property of the pretraining data can be set independently and ground truth is exact.
 Twelve staged deliverables, each with an acceptance test, built the solver, data pipeline, model and
 experiment harness. Nine experiments (237 training runs), each with predictions committed before any
-run, address the research questions.
+run, address the research questions. Dated report follow-ups add 45 registered runs for learning
+curves and a wider physics gap.
 
 * **Pretraining helps one step ahead.** It roughly halves the one-step error on a held-out regime
   (42–50%), and the advantage holds out to 2.8× the pretraining band's Reynolds number (36–41%).
-* **Proximity matters, not diversity or volume.** At a fixed pretraining budget, neither changes the
-  advantage. Zero-shot accuracy follows the distance to the nearest pretraining regime.
+* **Proximity tracks zero-shot accuracy.** Neither diversity nor volume changes the fine-tuned
+  advantage at this fixed budget. Distance and optimisation remain confounds in interpreting why.
 * **The advantage is a small-data effect.** It falls from 41% with one target trajectory to 5% with
   six. A well-trained base transfers zero-shot almost as well as a model trained on six target
   trajectories.
 * **The one-step advantage does not carry over to rollouts.** Fine-tuned models drift 51–123% more
   than scratch over 20 steps.
-* **The Perceiver does not earn its place on mixed-resolution data.** Pad-and-mask is 23% better on
-  the upsampled source.
+* **The Perceiver does not earn its place on these mixed-resolution sets.** Pad-and-mask improves
+  the upsampled source's error by 23% originally and by 7–10% with a 100× Reynolds-number gap.
 * **Simulations buy no accuracy on real measurements.** On airfoil PIV data, given the same
   real-data budget, a start pretrained on simulations matches training from scratch.
 * **LoRA adapts little.** With 0.84% of the parameters it gains at most about 2% at the unseen
   viscosities, except where the base model is systematically wrong (71% at Re 30).
 
-Of 49 pre-registered experiment predictions, 25 hit. Several misses overturned leads from earlier
-single-seed stages.
+Of the original 49 pre-registered experiment predictions, 25 hit; the dated report follow-ups hit
+1 of 6. Several misses overturned leads from earlier single-seed stages.
 
 ---
 
@@ -87,8 +88,8 @@ power for the main accuracy channel. On synthetic data none of these obstacles e
 3. **An ablation harness** that turns one config file into one run and one row of results. It
    refuses a config without a written prediction, and refuses a held-out regime that leaks into
    training.
-4. **Nine pre-registered experiments** (237 runs) answering RQ1–RQ5, plus a sim-to-real test on
-   real measurements and three attention experiments.
+4. **Nine pre-registered experiments** (237 runs) answering RQ1–RQ5, including a sim-to-real test on
+   real measurements and three attention experiments; 45 dated report-follow-up runs supplement them.
 5. **Measured answers about the training loop itself:** where its time goes, and JAX against
    PyTorch.
 
@@ -225,7 +226,8 @@ traces back to one run.
   before any measuring run (E1–E5 were frozen on 28 Sep 2026).
 * A miss stays a miss.
 * Changes after a run are dated amendments, and the original verdict stays beside the new one.
-* Results are held out by regime, never by sample.
+* Splits hold out full trajectories, rather than frames from a training trajectory. Transfer
+  tests also specify which target regimes are excluded from pretraining.
 * Any fit is treated as inflated until it is scored on disjoint data.
 
 ### 3.7 Compute
@@ -503,7 +505,35 @@ carries only (u, v). Predictions: 1 of 3 hit.
   source's format from the other's.
 * **Per-dataset encoders are the worst** of the three.
 * **So at this scale and gap (2× in resolution), the Perceiver does not earn its place.** Whether a
-  larger gap or an unseen format would change this was not tested.
+  larger resolution gap or an unseen format would change this was not tested.
+
+**Wider physics gap (E2 F1, 17 Oct).** The same 30-run design was repeated with **A = Re 30 and
+B = Re 3000**, both at k_f = 4. The Reynolds-number gap grows from 3× to 100×, while the methods,
+formats, 10,000-step training recipes and three model seeds stay fixed. Dataset `e2f1_v1` reuses
+12 trajectories and adds four Re 30 trajectories generated on CPU; training seeds 0–5 and
+evaluation seeds 6–7 are disjoint. Predictions were committed before training. All 30 expected
+configurations are present exactly once, with finite losses and metrics.
+
+| Registered comparison | Relative error change, mean ± SE | Verdict |
+|---|---|---|
+| Pad-and-mask improves B by > 5% in both (a) and (c) | **−9.5 ± 2.3%** (a); **−6.9 ± 1.8%** (c) | HIT |
+| Both unchanged-format Perceiver fusion costs exceed 5% | −2.4 ± 1.7% on B (a); +53.9 ± 7.3% on A (b) | MISS |
+| Per-source encoders are > 5% worse on B in every set | +0.7 ± 2.3% (a); −5.7 ± 2.2% (b); −5.3 ± 1.6% (c) | MISS |
+| Both fusion costs exceed their original values | B: −2.4% versus +12.8%; A: +53.9% versus +38.8% | MISS |
+
+Changes mean 100 × (method error / reference error − 1), paired by seed; negative is better.
+**1 of 4 predictions hit.** The original E2 verdict remains 1 of 3.
+
+<p align="center"><img src="experiments/e2/figs/e2_f1_rel_err.png" width="760" alt="E2 F1 one-step errors at Re 30 and 3000; homogeneous references are marked only for matching source formats"></p>
+
+The dashed homogeneous reference is comparable on A in (b) and B in (a), where format is
+unchanged. Compare methods within a set: B has only (u, v) in (b) and (c). **The wider physics
+gap changes the ranking.** Per-source encoders now lower A's error by 34.4 ± 8.6%, 42.6 ± 5.9%
+and 45.3 ± 1.6% in (a), (b) and (c), and lower B's mean error in (b) and (c). Pad-and-mask still
+helps upsampled B, but by less than the original 22–23%. Fusion's cost grows on A and has no
+resolved positive cost on B; it does not grow uniformly with the physics gap. Specialisation
+through separate encoders is a possible explanation, not an isolated mechanism. Physics and
+format remain paired by source. A wider resolution gap and an unseen format remain untested.
 
 ### 5.5 Sim-to-real on real measurements (E6)
 
@@ -684,8 +714,9 @@ step is bound by the host, not the card.
   (E5).
 * **A well-trained base already captures nearly all that fine-tuning would add** at these
   viscosities (Stage 10 F4).
-* **Heterogeneous formats cost accuracy, and the Perceiver did not absorb that cost** better than
-  pad-and-mask (E2).
+* **The cost of heterogeneous formats depends on the source regimes.** Pad-and-mask beats the
+  Perceiver on upsampled B in both E2 and its wider-physics-gap repeat. With the wider gap,
+  per-source encoders help and the unchanged-format fusion penalty grows on A but is not resolved on B.
 * **Pretraining on simulations of a different flow bought nothing** on real measurements, once the
   real data got a full training budget (E6).
 
@@ -704,8 +735,9 @@ intrinsically unhelpful.
   steps, where damping looks like skill (§5.6, §6.2).
 * **Check the base before judging an adaptation method.** Stage 10's verdict was set mostly by how
   long the base had trained (F4). Stage 4, and Stage 9 against E4, showed similar budget effects.
-* **Compare within one job.** On the GPU, reruns of the same configuration differed by up to 0.8%
-  in one-step error (E9). Comparisons against the same job's control are the reliable ones.
+* **Use paired, contemporaneous controls.** GPU reruns differed by up to 0.8% in E9; the newly
+  logged E1 reruns differ from their historical endpoints by up to 2.82%. Pair model seeds and
+  report rerun variation when comparing results collected in different sessions.
 * **Distance confounds diversity.** Adding regimes usually also brings the nearest one closer. E1
   separated the two only because two of its sets share their nearest neighbours.
 
@@ -713,6 +745,7 @@ intrinsically unhelpful.
 
 The original experiments made 49 pre-registered predictions and hit 25. E1–E5, frozen together
 on 28 Sep 2026, hit 9 of 22. Dated report follow-ups are scored separately in Appendix B.
+The 17 Oct follow-ups add 45 training runs and hit 1 of 6 predictions: E1 F1 0/2 and E2 F1 1/4.
 
 **A miss is not a failed experiment.** Every experiment ran as designed, and its result stands. A
 miss means that the expectation written down before the run was wrong.
@@ -744,8 +777,8 @@ after the fact.
   reproducible at the level of the finding, but a stopping recipe can affect its size.
 * **One fine-tuning recipe.** Most transfer results use 2000 steps at lr 1e-4. E6 F1 and Stage 10 F4
   show that the recipe can change the verdict.
-* **Three seeds.** Effects of a few percent sit near the resolution of 3 seeds, and of the GPU's
-  run-to-run noise (up to 0.8%).
+* **Three seeds.** Effects of a few percent sit near the resolution of 3 seeds and the observed
+  rerun variation (up to 0.8% in E9 and 2.82% in the later E1 reruns).
 * **Confounds left open.** In E1, the n = 32 cells are confounded with distance. E3 extrapolates
   upward in Re only. E2 tests a 2× resolution gap and no unseen format.
 * **Data copies.** The original Stages 7–10 used a cloud copy of `acc_v1`. E2, E4, E5 and the later
@@ -759,8 +792,9 @@ after the fact.
 
 **Conclusion.** We built a verified small-scale copy of Aurora's architecture and used it to take
 apart the pretraining advantage on a flow where the data can be controlled exactly.
-* **The advantage is large when target data is scarce, and fades as it grows.** It is driven by how
-  close the pretraining data is to the target, not by its volume or diversity at a fixed budget.
+* **The advantage is large when target data is scarce, and fades as it grows.** Zero-shot accuracy
+  tracks proximity to the target; diversity and volume do not change the fine-tuned advantage at
+  this budget. Distance-matched, better-optimised controls are needed to separate their causes.
 * **It does not survive into rollouts** under a short fine-tune.
 * **Among architectural components:**
   * pushforward helps rollouts on a 12-trajectory task, and mostly damps amplitude on a
@@ -897,6 +931,14 @@ Each report ends with the exact commands that produced its numbers.
 | E4 ablations | 1 / 5 | E8 follow-ups | 5 / 10 |
 | E5 LoRA vs full | 2 / 4 | E9 bias and q/k normalisation | 4 / 6 |
 | **Experiments, total** | **25 / 49** | | |
+
+Report follow-ups registered on 17 Oct (45 additional runs; 282 including the original study):
+
+| Follow-up | Predictions hit | Finding |
+|---|---|---|
+| E1 F1: learning curves | 0 / 2 | Historical endpoints vary by up to 2.82%; scratch ends 4.4–5.0% above its logged minima |
+| E2 F1: Re 30 / 3000 | 1 / 4 | Pad-and-mask still helps B; per-source encoders help, and fusion cost does not grow uniformly |
+| **Report follow-ups, total** | **1 / 6** | Original predictions and verdicts retained |
 
 Stage follow-ups:
 * **Stage 4:** F1 1 / 2, F2 1 / 2, F3 3 / 4, F4 4 / 4.

@@ -5,18 +5,18 @@ The original scientific verdicts remain the record; new measurements are dated f
 
 | Annotated page | Request | Resolution / evidence |
 |---|---|---|
-| 7, top | Figure of training steps / loops | Add a training-protocol schematic and E1 learning curves (E1 F1, 15 reruns). |
-| 7, margin; 16, top | Contours: truth, zero-shot and fine-tuned results | Add fixed-trajectory E1 vorticity contours at steps 1, 5 and 20, shared scales and error maps. |
-| 8, E1 drift plot | Why do n = 8 and n = 32 have a smaller rollout penalty? | Diagnose original E1 rollout amplitude and alignment; distinguish evidence from untested explanations. |
-| 10, E2 | Repeat on more diverse physics, Re 30 and 3000 | E2 F1: same 30-run comparison with a 100× Re gap; preserve the original E2 results. |
+| 7, top | Figure of training steps / loops | Added the protocol schematic and E1 learning curves; 15 reruns complete, 0/2 predictions HIT. |
+| 7, margin; 16, top | Contours: truth, zero-shot and fine-tuned results | Added fixed-trajectory E1 vorticity contours at steps 1, 5 and 20, shared scales and error maps. |
+| 8, E1 drift plot | Why do n = 8 and n = 32 have a smaller rollout penalty? | Original-checkpoint amplitude / alignment diagnosis shows less runaway growth; causal explanation remains qualified. |
+| 10, E2 | Repeat on more diverse physics, Re 30 and 3000 | E2 F1: all 30 runs complete and scored, 1/4 predictions HIT; original E2 results retained. |
 | 11, F1 / FNO rows | Any reason for the remaining FNO gap? | Quantify the error gap and explain the uncontrolled training / architecture differences. |
 | 12, E4 table | Make “negative is better” clear | Put the relative-change definition and sign convention in the table headers and caption. |
 | 13, speed paragraph | Tick beside CUDA-graph comparison | Retain the comparison; no correction was requested. |
 | 14, hypothesis | Underlined proximity interpretation | Keep the interpretation qualified by fixed compute, distance confounding and small scale. |
 | 15, bottom | Propose an architecture informed by RealPDE experience | Add a specific, untested proposal and an evaluation plan; respect PIV's non-solenoidal component. |
 
-Execution status and commands will be recorded here after validation and measurements. Training
-curves and E2 F1 predictions are in their respective `handouts/` files before any training run.
+The execution record below links the measurements and validation. Training-curve and E2 F1
+predictions were committed in their respective `handouts/` files before any training run.
 
 ## Execution record
 
@@ -48,10 +48,18 @@ curves and E2 F1 predictions are in their respective `handouts/` files before an
   Six historical comparisons exceed 2% (maximum 2.82%). Scratch minima occur at steps
   9,000 / 9,500 / 9,000; final errors are 5.04 / 4.47 / 4.39% higher. The original final-step
   scores are retained; the minima are a diagnostic, not independently validated new baselines.
-* Report prose, protocol schematic, contours, rollout diagnosis, sign labels and architecture
-  proposal are drafted. `scripts/build_report.mjs` builds the PDF from the Markdown and checks
-  that every image loaded. The final PDF awaits the new training measurements.
+* E2 F1 is complete: **30/30 expected unique configs**, exact registered configs, all on code
+  `606e4f6`, finite losses and metrics. **1/4 predictions HIT**: P1 HIT, P2–P4 MISS. Pad-and-mask
+  changes B error by −9.5 ± 2.3% (a) and −6.9 ± 1.8% (c). Unchanged-format fusion costs are
+  −2.4 ± 1.7% on B (a), +53.9 ± 7.3% on A (b). Per-source encoders now help; the wider physics
+  gap does not uniformly amplify the original fusion cost. Results: E2 `results/f1_analysis.json`.
+* Seed 2 exhausted its initial thermal retries after two E2 runs; it resumed on idle card 1
+  using `--skip-done`, retained those two completed rows and finished the eight remaining runs.
+  No training recipe changed. All training processes have exited and released their GPU contexts.
+* The report includes the protocol schematic, curves, contours, diagnosis, sign labels, qualified
+  proximity interpretation, FNO-gap explanation and untested architecture proposal.
+  `scripts/build_report.mjs` builds the PDF from Markdown and checks that every image loaded.
 
-Remaining: finish and score the 30 E2 F1 runs, add its results / figure, finish the status records,
-rebuild and inspect the final PDF, and sync the finished work. E1's learning curves, figures and
-report are complete; its two registered misses are retained.
+All requested measurements are complete: 45 additional runs, 1/6 predictions HIT. Original scores
+and verdicts remain unchanged. A larger resolution gap, unseen-format evaluation and training the
+proposed architecture are future experiments, not claimed results of this revision.

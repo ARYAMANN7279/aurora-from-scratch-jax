@@ -16,5 +16,5 @@
   "2, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 570.133.20",
   "3, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 570.133.20"
  ],
- "notes": "E1 curve wall times include diagnostic evaluation and cold compilation; do not compare them as training throughput."
+ "notes": "Follow-up F1 uses the registered 10,000-step recipes. Wall times include cold compilation, diagnostic evaluation and guarded thermal pauses / restarts; they are not dedicated-card throughput measurements. Card 0 excluded; completed configurations retained on restart."
 }

@@ -22,7 +22,8 @@ METHODS = (("perceiver", "Perceiver", "#2a78d6"), ("pad", "pad-and-mask", "#eb68
            ("per_source", "per-source encoders", "#1baf7a"))
 SETS = (("a", "(a) mixed\nresolution"), ("b", "(b) mixed\nvariables"), ("c", "(c) both"))
 
-fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.2), facecolor=SURFACE)
+fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.8 if args.followup else 4.2), facecolor=SURFACE)
+font = 11 if args.followup else 9
 labels = (("A", "Source A (Re 30)"), ("B", "Source B (Re 3000)")) if args.followup else \
          (("A", "Source A (Re 100)"), ("B", "Source B (Re 300)"))
 for ax, (src, title) in zip(axs, labels):
@@ -36,24 +37,32 @@ for ax, (src, title) in zip(axs, labels):
         ax.bar(xs, mu, width=w, color=col, label=lab, zorder=2)
         ax.errorbar(xs, mu, yerr=se, fmt="none", ecolor=INK, elinewidth=1, capsize=2, zorder=3)
     href = R[f"h/perceiver/{src}"][0]
-    ax.axhline(href, color=INK2, lw=1, ls="--", zorder=1)
-    ax.annotate("(h) homogeneous", (len(SETS) - 0.45, href), xytext=(0, 3), textcoords="offset points",
-                va="bottom", ha="left", color=INK2, fontsize=8)
+    if args.followup:
+        # The reference format is unchanged only on A in (b), and B in (a).
+        ref_x = 1 if src == "A" else 0
+        ax.hlines(href, ref_x - .46, ref_x + .46, color=INK2, lw=1.4, ls="--", zorder=4)
+        ax.annotate("(h)", (ref_x + .46, href), xytext=(3, 3), textcoords="offset points",
+                    va="bottom", ha="left", color=INK2, fontsize=font - 1)
+    else:
+        ax.axhline(href, color=INK2, lw=1, ls="--", zorder=1)
+        ax.annotate("(h) homogeneous", (len(SETS) - 0.45, href), xytext=(0, 3), textcoords="offset points",
+                    va="bottom", ha="left", color=INK2, fontsize=font - 1)
     ax.set_xticks(x)
-    ax.set_xticklabels([t for _, t in SETS], color=INK, fontsize=9)
-    ax.set_title(title, color=INK, fontsize=10, loc="left")
+    ax.set_xticklabels([t for _, t in SETS], color=INK, fontsize=font)
+    ax.set_title(title, color=INK, fontsize=font + 1, loc="left")
     ax.grid(axis="y", color=GRID, lw=0.8, zorder=0)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
     for s in ("left", "bottom"):
         ax.spines[s].set_color(INK2)
-    ax.tick_params(colors=INK2, labelsize=9, length=0)
+    ax.tick_params(colors=INK2, labelsize=font, length=0)
     ax.set_xlim(-0.5, len(SETS) + 0.6)
-axs[0].set_ylabel("one-step relative error (mean ± SE, 3 seeds)", color=INK2, fontsize=9)
+axs[0].set_ylabel("one-step relative error (mean ± SE, 3 seeds)", color=INK2, fontsize=font)
 h, lab = axs[0].get_legend_handles_labels()
-fig.legend(h, lab, frameon=False, fontsize=8, labelcolor=INK2, loc="lower center", ncol=3)
-fig.suptitle(("E2 F1" if args.followup else "E2") + ": one-step error in each source's own format (lower is better; dashed: Perceiver on (h))",
-             color=INK, fontsize=11, x=0.01, ha="left")
+fig.legend(h, lab, frameon=False, fontsize=font - 1, labelcolor=INK2, loc="lower center", ncol=3)
+title = "E2 F1: one-step error in each source's own format\nDashed: homogeneous reference where the source format matches" if args.followup else \
+        "E2: one-step error in each source's own format (lower is better; dashed: Perceiver on (h))"
+fig.suptitle(title, color=INK, fontsize=font + 2, x=0.01, ha="left")
 fig.tight_layout(rect=(0, 0.06, 1, 1))
 filename = "e2_f1_rel_err.png" if args.followup else "e2_rel_err.png"
 fig.savefig(os.path.join(HERE, filename), dpi=150, facecolor=SURFACE)
