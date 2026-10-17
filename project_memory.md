@@ -1096,3 +1096,10 @@ and the rebuilt 24-page `FINAL_REPORT.pdf` include all requested figures and exp
 All PDF pages were rendered for visual review; image loading is checked by the builder.
 README and the feedback tracker record the completed outcomes. The architecture is an untested
 proposal, as requested; no gain or completed architecture experiment is claimed.
+
+**Handoff:** the completed report / results commit is `b928739`. The Mac, lab clone and GitHub
+branch `vm-results` are synchronised; review is in draft PR
+[#49](https://github.com/ARYAMANN7279/aurora-from-scratch-jax/pull/49). `main` was not merged.
+Before the lab fast-forward, generated artifacts were preserved in its stash named
+`report-feedback-generated-artifacts-before-sync-2026-10-17`; raw data and all 45 saved checkpoints
+remain under ignored `data/`. There are no remaining training jobs from this work.
