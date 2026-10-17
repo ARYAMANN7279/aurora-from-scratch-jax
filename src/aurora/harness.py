@@ -91,6 +91,12 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
     runs_root = runs_root or os.path.join(REPO, "data", "runs")
     results_path = results_path or os.path.join(REPO, "experiments", "results.jsonl")
     d, m, t, e = cfg["data"], cfg["model"], cfg["train"], cfg["eval"]
+    every_c = t.get("curve_every")
+    if every_c is not None:
+        if type(every_c) is not int or every_c <= 0:
+            raise ValueError("curve_every must be a positive integer")
+        if t.get("scan_chunk"):
+            raise ValueError("curve_every needs the step-by-step loop (no scan_chunk)")
     ds = os.path.join(data_root, d["dataset"])
     sp = make_splits(ds, train=d["train"], test=d.get("test", []), val=d.get("val", []))
     N, stride = d["N"], d.get("stride", 1)
@@ -150,6 +156,30 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
         n_traj, F = by_tag[tag].shape[:2]
         return tag, rng.integers(0, n_traj, B), rng.integers(1, F - 2 if pf else F - 1, B)
 
+    @jax.jit
+    def sq(prm, xm, x0, xp):
+        return jnp.sum((fwd(prm, xm, x0) - xp) ** 2), jnp.sum((x0 - xp) ** 2), jnp.sum(xp**2)
+
+    curve, curve_data = [], {}
+    if every_c:  # training curve: mean training loss and one-step error on the eval splits every `every_c` steps
+        for split in e["splits"]:
+            for tag, s in sp[split]:
+                curve_data.setdefault(f"{split}/{tag}", []).append(norm(load(tag, s)))
+
+    def log_curve(i, acc, count=None):
+        prm = full(trainable)
+        row = {"step": i, "train_loss": None if acc is None else float(acc) / (count or every_c)}
+        for key, arrs in curve_data.items():
+            a = c = 0.0
+            for v in arrs:
+                F = v.shape[0]
+                for j in range(1, F - 1, 16):
+                    k = np.arange(j, min(j + 16, F - 1))
+                    x, _, zz = sq(prm, v[k - 1], v[k], v[k + 1])
+                    a, c = a + float(x), c + float(zz)
+            row[key] = float(np.sqrt(a / c))
+        curve.append(row)
+
     t0 = time.time()
     loss = jnp.nan
     chunk, done = t.get("scan_chunk") or 0, 0
@@ -175,17 +205,23 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
             trainable, state, loss = run_chunk(trainable, state, stack, ti, np.stack([x[1] for x in d]),
                                                np.stack([x[2] for x in d]))
             done += chunk
-    for _ in range(steps - done):  # same sampling scheme as experiments/stage7/train_onestep.py
+    acc = 0.0
+    if every_c:
+        log_curve(0, None)
+    for i in range(steps - done):  # same sampling scheme as experiments/stage7/train_onestep.py
         tag, s, k = draw()
         v = by_tag[tag]
         F = v.shape[1]
         trainable, state, loss = step(trainable, state, v[s, k - 1], v[s, k], v[s, k + 1], v[s, np.minimum(k + 2, F - 1)])
+        if every_c:
+            acc = acc + loss
+            if (i + 1) % every_c == 0:
+                log_curve(i + 1, acc)
+                acc = 0.0
+    if every_c and steps % every_c:
+        log_curve(steps, acc, steps % every_c)
     p = jax.block_until_ready(full(trainable))
     train_s = time.time() - t0
-
-    @jax.jit
-    def sq(prm, xm, x0, xp):
-        return jnp.sum((fwd(prm, xm, x0) - xp) ** 2), jnp.sum((x0 - xp) ** 2), jnp.sum(xp**2)
 
     roll = jax.jit(partial(rollout, n=e.get("rollout_steps", 0), dt=dt, mc=mc)) if e.get("rollout_steps") else None
     every, n_long = e.get("drift_every"), e.get("drift_steps") or e.get("rollout_steps", 0)
@@ -232,6 +268,8 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
     out = dict(config_hash=h, name=cfg.get("name"), prediction=cfg["prediction"], git_commit=_git_commit(),
                started=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0)), wall_s=time.time() - t0, train_s=train_s,
                n_params=int(flat.size), n_trainable=int(n_tr), final_loss=float(loss), metrics=metrics, config=cfg)
+    if every_c:
+        out["curve"] = curve
     os.makedirs(os.path.dirname(os.path.abspath(results_path)), exist_ok=True)
     with open(results_path, "a") as f:
         f.write(json.dumps(out) + "\n")

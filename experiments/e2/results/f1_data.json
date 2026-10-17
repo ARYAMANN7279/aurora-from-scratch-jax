@@ -1,0 +1,83 @@
+{
+ "reused": [
+  {
+   "tag": "re30_kf4",
+   "seed": 0,
+   "source": "s10f2_v1"
+  },
+  {
+   "tag": "re30_kf4",
+   "seed": 1,
+   "source": "s10f2_v1"
+  },
+  {
+   "tag": "re30_kf4",
+   "seed": 6,
+   "source": "s10f2_v1"
+  },
+  {
+   "tag": "re30_kf4",
+   "seed": 7,
+   "source": "s10f2_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 0,
+   "source": "s10f3_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 1,
+   "source": "s10f3_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 2,
+   "source": "s10f3_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 3,
+   "source": "s10f3_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 4,
+   "source": "s10f3_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 5,
+   "source": "s10f3_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 6,
+   "source": "s10f3_v1"
+  },
+  {
+   "tag": "re3000_kf4",
+   "seed": 7,
+   "source": "s10f3_v1"
+  }
+ ],
+ "generated": [
+  {
+   "tag": "re30_kf4",
+   "seed": 2
+  },
+  {
+   "tag": "re30_kf4",
+   "seed": 3
+  },
+  {
+   "tag": "re30_kf4",
+   "seed": 4
+  },
+  {
+   "tag": "re30_kf4",
+   "seed": 5
+  }
+ ],
+ "verified_trajectories": 16
+}

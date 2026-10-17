@@ -1,9 +1,10 @@
 """Analysis of E2–E5 (handouts/e2_heterogeneous_fusion.md, e3_ood_transfer.md, e4_ablations.md,
 e5_lora_vs_full.md).
 
-usage: analyse_e345.py --exp e2|e3|e4|e5 --results <rows.jsonl> [more.jsonl ...]
+usage: analyse_e345.py --exp e2|e2f1|e3|e4|e5 --results <rows.jsonl> [more.jsonl ...]
 Rows are matched to the design (experiments/designs.py) by config hash, never by name. Writes
-experiments/<exp>/results/analysis.json and prints the table and verdicts (HIT / MISS).
+experiments/<exp>/results/analysis.json (e2f1: experiments/e2/results/f1_analysis.json) and prints the
+table and verdicts (HIT / MISS).
 """
 import argparse
 import json
@@ -34,8 +35,7 @@ def _verdicts(v):
     return {k: "HIT" if bool(x) else "MISS" for k, x in v.items()}
 
 
-def e2(rows):
-    runs = D.e2()
+def _e2_core(rows, runs):
     err = {}
     for c in runs:
         _, st, *meth, s = c["name"].split("_")
@@ -50,10 +50,25 @@ def e2(rows):
     p2 = [rel(st, "pad", "B", (st, "perceiver")) for st in ("a", "c")]
     # P3: per-source encoders worse than Perceiver on B by > 5%, all three sets
     p3 = [rel(st, "per_source", "B", (st, "perceiver")) for st in ("a", "b", "c")]
+    return out, p1, p2, p3
+
+
+def e2(rows):
+    out, p1, p2, p3 = _e2_core(rows, D.e2())
     v = {"E2-P1": all(abs(m) <= 0.05 for m, _ in p1), "E2-P2": all(m > 0.05 for m, _ in p2),
          "E2-P3": all(m > 0.05 for m, _ in p3)}
     return dict(rel_err=out, p1_vs_h=p1, p2_pad_vs_perceiver=p2, p3_per_source_vs_perceiver=p3,
                 verdicts=_verdicts(v))
+
+
+def e2f1(rows):
+    """E2 follow-up F1 (A = Re 30, B = Re 3000): the same comparisons, scored against F1-P1..P4."""
+    out, p1, p2, p3 = _e2_core(rows, D.e2f1())
+    e2_cost = [m for m, _ in json.load(open(os.path.join(HERE, "e2", "results", "analysis.json")))["p1_vs_h"]]
+    v = {"F1-P1": all(m < -0.05 for m, _ in p2), "F1-P2": all(m > 0.05 for m, _ in p1),
+         "F1-P3": all(m > 0.05 for m, _ in p3), "F1-P4": all(m > ref for (m, _), ref in zip(p1, e2_cost))}
+    return dict(rel_err=out, fusion_cost_vs_h=p1, e2_fusion_cost_vs_h=e2_cost, pad_vs_perceiver=p2,
+                per_source_vs_perceiver=p3, verdicts=_verdicts(v))
 
 
 def e3(rows):
@@ -130,7 +145,7 @@ def e5(rows):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--exp", required=True, choices=["e2", "e3", "e4", "e5"])
+    ap.add_argument("--exp", required=True, choices=["e2", "e2f1", "e3", "e4", "e5"])
     ap.add_argument("--results", nargs="+", required=True)
     args = ap.parse_args()
     rows = {}
@@ -139,8 +154,9 @@ if __name__ == "__main__":
             if line.strip():
                 r = json.loads(line)
                 rows[r["config_hash"]] = r
-    res = {"e2": e2, "e3": e3, "e4": e4, "e5": e5}[args.exp](rows)
-    out = os.path.join(HERE, args.exp, "results", "analysis.json")
+    res = {"e2": e2, "e2f1": e2f1, "e3": e3, "e4": e4, "e5": e5}[args.exp](rows)
+    out = os.path.join(HERE, "e2", "results", "f1_analysis.json") if args.exp == "e2f1" else \
+        os.path.join(HERE, args.exp, "results", "analysis.json")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(res, open(out, "w"), indent=1)
     print(json.dumps(res, indent=1))
