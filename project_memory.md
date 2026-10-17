@@ -3,6 +3,7 @@
 **Owner:** Aryamann Srivastava, 4th year, Dept. of Aerospace Engineering, IIT Kanpur
 **Advisors:** Prof. Rajesh Ranjan (ACAL) · Prashant Kumar (PhD)
 **Project:** `UGP-II`. This file is the decision record for the NEW project.
+**Latest work:** 17 Oct report revisions; see §7 below. The 9 Oct status in §6 is historical.
 **Predecessor:** `~/Desktop/sem7/UGP/project_memory.md` (12,797 lines, sections 1–188).
 Do NOT append UGP-II work to that file; it is closed. Read it only for the carry-over rules in §2.
 
@@ -985,3 +986,95 @@ bitwise with the current code, and it only buys a diagnostic.
 
 **Before any further GPU run:** use `glane3.sh` (idle cards only, card-placement interlock). Card 0
 stays excluded unless the lab agrees otherwise.
+
+## 7. Report feedback, 17 Oct 2026 — in progress
+
+The owner asked to finish the work interrupted by the earlier session's weekly limit, using
+Prashant's annotated `Downloads/FINAL_REPORT_261017_165949.pdf`. They explicitly authorised
+accessing the VM and referring to GitHub. All 987 earlier lines of this record were read.
+
+**Requests:** a training-loop / learning-curve figure, truth / zero-shot / fine-tuned contours,
+an explanation of E1's smaller drift penalty at n = 8 and 32, E2 repeated at Re 30 / 3000,
+an explanation of the remaining RealPDE FNO gap, clearer percentage signs, and an architecture
+proposal informed by UGP-I. The marked source has notes on pages 7–16; all 17 pages were checked.
+Tracking: `docs/prashant_feedback_2026-10-17.md`.
+
+**Registration and code:**
+* New predictions committed in `90517d2` before any follow-up training: E1 F1 (15 runs, two
+  predictions) and E2 F1 (30 runs, four predictions). The original verdicts remain unchanged.
+* Implementation committed in `606e4f6`: optional `train.curve_every`, full evaluation curves
+  without consuming training randomness, E1 config / scoring tooling, parameterised E2 design
+  and follow-up scoring, dataset assembly, guarded launches, and correctness checks.
+* **125 CPU tests pass**, 982.08 s on the lab's cores 4–7 while three cold GPU compilations ran.
+  The focused gate proves that logging leaves the trained parameters bitwise unchanged and the
+  last curve point matches the final metric, including a partial final interval.
+* The original E2, E3, E4 and E5 analysis JSONs recompute exactly from their committed rows.
+
+**Environment corrections (checked now, rather than assuming the older notes still apply):**
+* Use the VM repository's `.venv/bin/python`: Python 3.11.15, JAX / jaxlib 0.10.2, NumPy 2.4.6,
+  Optax 0.2.8, driver 570.133.20. `Aryamann/env` no longer contains JAX.
+* The older `ugp2_scratch` directory and scratch `glane3.sh` / `glane4.sh` were not found.
+  A tested replacement is tracked at `experiments/lab/glane3.sh` with `gpu_guard.py`:
+  cards 1–3 only, no shell startup files, device selected by UUID, group placement checked,
+  start below 85 °C, pause at 87 °C / thermal slowdown / foreign process, resume at ≤ 80 °C.
+  A pause lasting 60 seconds terminates only our own process group and requeues, up to three
+  retries. It yielded card 3 once to a detected foreign process and restarted after release.
+* All scratch and caches are under `data/feedback_scratch/`, including `TMPDIR`, matplotlib and
+  the JAX persistent compilation cache. No scratch on the root partition. Card 0 is excluded.
+* A local ignored `.venv` was also created, Python 3.11.16 / JAX 0.10.2, for analysis / PDF checks.
+
+**Data and running lanes:**
+* `e2f1_v1` has 16 checksum-verified trajectories: the four existing Re 30 seeds from
+  `s10f2_v1`, eight Re 3000 seeds from `s10f3_v1`, plus Re 30 seeds 2–5 generated on CPU.
+  Existing trajectories are linked; raw data remains off git. Provenance: E2 `results/f1_data.json`.
+* Three guarded lanes each run five E1 curve configs for one seed, then ten E2 F1 configs
+  (`--shard seed --n-shards 3`). They use `--skip-done` and distinct result files.
+  Logs: `logs/feedback_lane_{0,1,2}.log`. Rows: E1 `results/curves_rows_{0,1,2}.jsonl` and
+  E2 `results/f1_rows_{0,1,2}.jsonl`. Initial guard PIDs: 1026958, 1026959, 1026960.
+* Cold compilation was substantial; do not treat these wall times as training-speed measurements.
+
+**New diagnosis, on original weights (exploratory, no new training):**
+* E1 T = 32: four held-out trajectories, original start frame 50, three model seeds.
+  Mean drifts reproduce the original rows within 9.97e-6.
+* Step-20 amplitudes (in each model's training-normalised variables): fine-tuned n = 2
+  **3.782 ± 0.062**, n = 8 **2.764 ± 0.304**, n = 32 **2.704 ± 0.139**; scratch **0.983 ± 0.004**.
+  Alignment is 0.146 / 0.175 / 0.192 versus scratch's 0.339. The smaller penalty at n = 8 / 32
+  accompanies less growth, not a recovered rollout advantage. This does not causally isolate
+  diversity, distance and optimisation. The exact e² = 1 + a² − 2ac identity holds within 1.07e-14.
+* `experiments/e1/fields.py` writes `results/fields.json`, rollout diagnosis, and physical-vorticity
+  contours at steps 1, 5, 20. The example was fixed before re-evaluation: trajectory 2, model
+  seed 0, frame 50 (physical t = 60), n = 2 and 32 at T = 32. Truth sets a common colour range;
+  triangles mark clipping of growing predictions. Separate error maps use a shared error range.
+
+**Report clarifications drafted:**
+* The FNO's 0.094819 against PAm's 0.109403 is a 15.4% error gap, 0.66 subscore points.
+  A concrete protocol difference is now explicit: the FNO sees 20 past frames and forecasts
+  jointly, while E6 uses frames 18 and 19 and recurses for 20 steps. Verified in the VM's
+  UGP `r12_eval.window`, our `fno_baseline.py`, and `run_e6.evaluate`. Training history and
+  possibly exposure to held-out conditions also differ. This is an upper reference, not a
+  controlled comparison of architectures. No individual cause of the gap is claimed as measured.
+* Code inspection found that the present history token sum is symmetric: shared linear
+  embeddings plus two added frame vectors lose order before the Perceiver. The current-frame
+  residual retains the current frame, but the learned correction only sees the sum.
+  Proposed first change: ordered current-frame / temporal-increment projections. Then compare
+  2 versus 20 frames, and a boundary-aware local residual branch / spatial multiscale encoder.
+  Attention options and rollout objectives should be separate ablations; no proposed gain is claimed.
+  Keep measured PIV's non-solenoidal component; do not impose hard 2-D incompressibility.
+* The report labels 80.08 as UGP-I's **development-phase** score. The current GitHub README
+  distinguishes that phase from the later decision-phase result; UGP-I was not reopened here.
+* `scripts/build_report.mjs` uses pandoc and Chrome to rebuild the PDF from the Markdown,
+  verifying image loading; styling is in `docs/report.css`. A preview builds successfully.
+
+**E1 F1 complete:** all 15 expected configs have exactly one row, finite curves / losses, and
+every last curve point matches its final metric. **0/2 predictions HIT.** Six historical
+comparisons exceed 2% (maximum 2.82%); the original values remain the record. Scratch's
+evaluation minima occur at steps 9,000 / 9,500 / 9,000, with endpoints 5.04 / 4.47 / 4.39% above
+them despite training MSE continuing to fall. This is consistent with overfitting two trajectories.
+No minimum was selected as a new score: a fair early-stopping comparison needs a separate
+validation split. Final paired advantages are 47.98 ± 0.88% (n = 2) and 46.34 ± 0.53% (n = 32).
+All six fine-tunes end at their minimum logged target error. E1's report, learning-curve figure
+and final-report text are updated; analysis is `experiments/e1/results/f1_analysis.json`.
+
+**Still to finish:** score the 30 E2 F1 GPU runs and add its results / figure, finish the status
+records, rebuild and inspect the final PDF, commit and sync. The final PDF in the repository is
+still the old version until that rebuild; the current Markdown contains the draft.

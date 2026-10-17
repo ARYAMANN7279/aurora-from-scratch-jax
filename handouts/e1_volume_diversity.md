@@ -140,3 +140,8 @@ evaluation trajectories at E1's original frame 50 for every n at T = 32 and all 
 Report the exact identity e² = 1 + a² − 2 a c per forecast, where a = ||prediction|| / ||truth|| and
 c is their cosine similarity in each model's training-normalised coordinates. This is a diagnosis,
 not a causal experiment separating diversity, distance and optimisation.
+
+**Outcome (17 Oct 2026): 0 of 2 HIT.** F1-P1 misses: 6/15 reruns are outside 2%, with a maximum
+2.82% change. F1-P2 misses: scratch endpoints are 4.4–5.0% above their logged minima, which occur
+at steps 9,000–9,500. No tolerance or historical E1 verdict was changed. See the dated F1 section
+of `experiments/e1/REPORT.md` and `results/f1_analysis.json` for all values.

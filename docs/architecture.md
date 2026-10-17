@@ -56,6 +56,12 @@ Per sample; training adds a batch axis in front (16 in E1).
   so its window covers it whole and it is never shifted. x and y are periodic, so the shift wraps
   around and no window needs a mask.
 
+**Temporal information:** the current two-frame token sum is symmetric. The shared embedding is
+linear in the input, and adding `frame[0]` and `frame[1]` before summing cannot attach an order to
+the two frames. The learned correction sees their sum; the final residual still uses the current
+frame. Aurora's ordered temporal patch projection differs here. The report's §8.1 proposes
+separate current-frame and increment projections as a follow-up, without changing this baseline.
+
 ## 3. Part by part, against Aurora
 
 | Part | Aurora (1.3 billion parameters) | Ours (5.1 million) |

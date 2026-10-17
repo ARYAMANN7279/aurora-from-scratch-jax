@@ -1,0 +1,20 @@
+{
+ "python": "3.11.15",
+ "jax": "0.10.2",
+ "jaxlib": "0.10.2",
+ "numpy": "2.4.6",
+ "optax": "0.2.8",
+ "code_commit": "606e4f6",
+ "spec_commit": "90517d2",
+ "platform": "lab RTX PRO 6000 Blackwell",
+ "training_matmul_precision": "highest",
+ "cuda_device_order": "PCI_BUS_ID",
+ "xla_flags": "",
+ "gpu_query": [
+  "0, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 570.133.20",
+  "1, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 570.133.20",
+  "2, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 570.133.20",
+  "3, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 570.133.20"
+ ],
+ "notes": "E1 curve wall times include diagnostic evaluation and cold compilation; do not compare them as training throughput."
+}

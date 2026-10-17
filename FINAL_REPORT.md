@@ -60,7 +60,7 @@ to measure.
 ### 1.2 Where it came from
 
 The question is the one UGP-I ended on. UGP-I was the author's entry to the NeurIPS 2026 RealPDE
-competition (Track 1, sim-to-real, airfoil PIV data; final score 80.08). It closed with an evidenced
+competition (Track 1, sim-to-real, airfoil PIV data; development-phase score 80.08). It closed with an evidenced
 but untestable claim: the remaining gap was a better *pretrained* backbone. The competition banned
 outside weights and offered only 81 real trajectories. Its offline validation also had no predictive
 power for the main accuracy channel. On synthetic data none of these obstacles exists. Experiment E6
@@ -185,6 +185,11 @@ and 12 Swin blocks, for **5,106,688 parameters**. Per sample:
   switched on; both are off by default and tested in E7–E9.
 * **Most of the parameters sit in the backbone's deepest stage** (67%). A forward pass costs about
   1.3 GFLOP per sample.
+* **History limitation.** The same linear embedding is applied to both frames and then summed.
+  Adding two frame vectors before this sum does not preserve their order: the learned correction
+  sees their sum, while the residual still singles out the current frame. This differs from
+  Aurora's ordered temporal patch projection. Section 8 proposes an explicit ordered-history
+  encoder; no result here uses that proposed change.
 
 ### 3.4 Training and evaluation
 
@@ -232,7 +237,8 @@ traces back to one run.
   6000 Blackwell, JAX 0.10.2), on idle cards only.
 * **E6–E9 and Stage 4's longest follow-ups (F3, F4):** Kaggle's T4 GPUs, used when the lab's cards
   were busy, with software pinned to the lab machine's versions.
-* **Tests:** 118 tests run on CPU.
+* **Tests:** 125 tests pass on CPU (17 Oct, including seven report-follow-up checks; the original
+  118-test baseline also passed the 9 Oct audit).
 
 ---
 
@@ -320,6 +326,74 @@ Scratch reaches 0.150 ± 0.002 (0.49× persistence). Predictions: 2 of 6 hit.
 less often than T = 32. The flat response to volume may reflect this fixed budget.
 
 <p align="center"><img src="experiments/e1/figs/e1_cells.png" width="760" alt="E1 per cell: one-step advantage, drift advantage and zero-shot error"></p>
+
+**Training protocol and follow-up figures (17 Oct).** Pretraining excludes the target regime;
+fine-tuning and scratch share the two target training trajectories. The evaluation trajectories
+are never used for a gradient or checkpoint selection.
+
+<p align="center"><img src="experiments/e1/figs/e1_protocol.png" width="760" alt="E1 pretraining, fine-tuning, scratch and held-out evaluation protocol"></p>
+
+**Learning curves (E1 F1, 15 reruns).** The n = 2 and n = 32 cells at T = 32 were rerun with
+all three seeds, together with scratch, logging the full target evaluation error. These are new
+training runs, not recovered logs from the original E1 checkpoints. Nine of 15 final errors are
+within 2% of their originals; the other six differ by 2.15–2.82%, so the registered replication
+prediction F1-P1 misses. The CPU logging gate leaves parameters bitwise unchanged; that gate
+does not establish bitwise reproduction of the historical GPU training. The original E1 table
+and verdicts are retained.
+
+Scratch ends at 0.1499 ± 0.0024, but its lowest logged evaluation errors occur at steps 9,000 /
+9,500 / 9,000. Its final error is **4.4–5.0% above those minima**, despite training MSE falling
+from 0.00218–0.00238 near the minima to 0.00069–0.00071 at the end. Thus F1-P2 also misses:
+scratch does not end within 2% of its minimum. This is consistent with overfitting the two
+training trajectories under the fixed recipe. All six fine-tunes end at their lowest logged
+target error. Their final paired advantages are 48.0 ± 0.9% (n = 2) and 46.3 ± 0.5% (n = 32),
+consistent with the original finding. Selecting the minimum on these evaluation curves would
+reuse the scored data; a fair early-stopping comparison needs a separate validation split.
+
+<p align="center"><img src="experiments/e1/figs/e1_curves.png" width="760" alt="E1 pretraining, fine-tuning and scratch error curves and training losses for three seeds"></p>
+
+Each line is a model seed. Pretraining / scratch are logged every 500 steps and fine-tuning every
+100. Training MSE uses each arm's own normalisation and training distribution, so its values
+are compared along a curve rather than directly across arms. The target-error panel shows the
+effect of the short fine-tune and the late rise of scratch's held-out error.
+
+**Why does the rollout penalty shrink at n = 8 and n = 32?** An exploratory re-evaluation of the
+original T = 32 checkpoints separates the amplitude from alignment. It uses E1's original four
+evaluation trajectories, start frame 50, and all three model seeds. Its mean drifts reproduce the
+original rows within 1.0 × 10⁻⁵; it adds no training.
+
+| Original E1 arm, T = 32 | Mean 20-step drift | Step-20 amplitude / truth | Step-20 alignment |
+|---|---|---|---|
+| Fine-tuned, n = 2 | 1.551 ± 0.040 | 3.782 ± 0.062 | 0.146 ± 0.021 |
+| Fine-tuned, n = 8 | 1.152 ± 0.085 | 2.764 ± 0.304 | 0.175 ± 0.018 |
+| Fine-tuned, n = 32 | 1.107 ± 0.013 | 2.704 ± 0.139 | 0.192 ± 0.011 |
+| Scratch | 0.699 ± 0.019 | 0.983 ± 0.004 | 0.339 ± 0.024 |
+
+Amplitude a = ‖prediction‖ / ‖truth‖ and alignment c is their uncentred cosine, in each model's
+training-normalised variables. For each forecast, e² = 1 + a² − 2ac holds to 1.1 × 10⁻¹⁴.
+The n = 8 and n = 32 models grow less strongly than n = 2, which explains much of their smaller
+late error; their late alignment is also slightly higher. They still grow to about 2.7 times the
+truth's amplitude, whereas scratch stays near one and retains more alignment. Thus the smaller
+penalty is not a recovered rollout advantage. One-step fine-tuning does not constrain this
+autoregressive growth. Why a particular pretraining set changes it is not causally isolated by
+this diagnostic: n = 32 also changes distance, and the normalisations weight the channels
+differently. It does not establish that diversity causes stability.
+
+<p align="center"><img src="experiments/e1/figs/e1_rollout_diagnosis.png" width="760" alt="Original E1 rollout error, amplitude and alignment with uncertainty over model seeds"></p>
+
+**Prediction contours.** The following are fixed examples, selected before this re-evaluation:
+model seed 0, held-out trajectory 2, start frame 50 (physical time 60), forecast steps 1, 5 and 20.
+They show physical vorticity, using the same truth-based colour range in both figures; colourbar
+triangles mark predictions beyond that range. The printed vorticity errors use unclipped fields.
+They are single-example, single-variable errors, distinct from the table's error across all
+normalised channels. The example illustrates the three-seed diagnosis above; it is not an
+aggregate score.
+
+<p align="center"><img src="experiments/e1/figs/e1_contours_n2.png" width="650" alt="Truth, zero-shot, fine-tuned and scratch vorticity contours for the two-regime E1 cell"></p>
+
+<p align="center"><img src="experiments/e1/figs/e1_contours_n32.png" width="650" alt="Truth, zero-shot, fine-tuned and scratch vorticity contours for the thirty-two-regime E1 cell"></p>
+
+<p align="center"><img src="experiments/e1/figs/e1_errors.png" width="760" alt="Absolute vorticity errors at step 20, with a common error scale"></p>
 
 ### 5.2 RQ3: out-of-distribution transfer (E3)
 
@@ -444,6 +518,9 @@ carries only (u, v). Predictions: 1 of 3 hit.
     then fine-tuned for 2000 steps;
   * **zero-shot** versions of PD and PA, without fine-tuning.
 * **Metric:** a 20-step rollout scored by the competition's own scoring code.
+* **Input-history difference:** our model uses the last two of the 20 available input frames and
+  predicts recursively. The supplied FNO receives all 20 input frames and outputs the 20-frame
+  forecast together. The targets and evaluation windows match; the information budgets differ.
 
 | Arm | Rollout rel_l2 | Subscore |
 |---|---|---|
@@ -466,6 +543,21 @@ Predictions: 2 of 5 hit, and 3 of 3 in the follow-up.
 * **UGP-I's hypothesis is not supported here.** For this data and model size, a simulation-pretrained
   backbone does not buy accuracy on the measurements. UGP-I's strong reference model had in fact been
   fine-tuned on real data (corrected 1 Oct 2026).
+
+**Why does the FNO remain ahead?** The best matched-budget arm, PAm, has error 0.1094 against
+0.0948 for the organisers' fine-tuned FNO: a 15.4% relative error gap, or 0.66 accuracy-subscore
+points. F1 establishes why the short fine-tune lost to scratch: restoring the real-data budget
+removes that deficit. It does not identify the cause of the remaining FNO gap. The supplied FNO
+is an external checkpoint with a different architecture and training history; its real-data
+fine-tuning may include E6's held-out conditions. It is an upper reference, rather than a
+controlled architecture comparison. There is also a concrete protocol difference: the FNO sees
+20 past frames, against our model's two, and makes a joint forecast instead of 20 recursive calls
+(`fno_baseline.py`, UGP-I's `r12_eval.window`, and `run_e6.evaluate`). That gives it more temporal
+information and a different route for accumulating error. History length, the ordered-history
+limitation (§3.3), boundary treatment and training objective need controlled ablations (§8);
+their individual contributions to the 15.4% gap have not been measured. In particular, the
+simulation-only FNO's error is 1.23: the strong FNO reference
+does not demonstrate that simulation pretraining alone solves transfer to measurements.
 
 ### 5.6 One step ahead vs rollouts
 
@@ -495,7 +587,7 @@ one-step error alone overstates what it buys.
 (12 trajectories), 10,000 steps, 3 seeds (27 runs). The base reaches 0.192 / 0.330 of persistence
 one step ahead at Re 100 / 300.
 
-| Variant | One-step error | Drift, Re 100 | Drift, Re 300 |
+| Variant | Δ one-step error (%) | Δ drift, Re 100 (%) | Δ drift, Re 300 (%) |
 |---|---|---|---|
 | no shifted windows | +6.0 ± 4.5% | +0.8 ± 3.0% | −11.5 ± 6.6% |
 | 6 blocks | +9.8 ± 1.6% | −3.4 ± 11.2% | −15.9 ± 9.9% |
@@ -506,7 +598,9 @@ one step ahead at Re 100 / 300.
 | pushforward, matched compute | +21.5 ± 3.8% | **−44.6 ± 4.6%** | **−47.1 ± 6.9%** |
 | MAE loss | −4.1 ± 3.7% | −19.2 ± 0.8% | −11.1 ± 6.5% |
 
-Change against the base, paired by seed. Negative is better. Predictions: 1 of 5 hit.
+Δ = 100 × (error of variant / error of base − 1), paired by seed. **Negative means lower error
+(better); positive means higher error (worse).** This is the opposite sign to an advantage or
+gain, defined as 1 − error / reference in §3.4 and §5.3. Predictions: 1 of 5 hit.
 
 * **Pushforward is the largest effect.** It roughly halves the 50-step drift, even at matched compute
   (about 10 SE). At matched compute the price is 21.5% one-step accuracy. This overturned Stage 9's
@@ -598,7 +692,10 @@ step is bound by the host, not the card.
 For the question Aurora leaves open, these results suggest a hypothesis. Much of a pretraining gain
 may come from pretraining data that lies close to the target. The volume and variety of the
 pretraining data may matter less. This is a reading of one PDE family at small scale, not a claim
-about Aurora.
+about Aurora. In particular, these are fixed-compute results: larger datasets received fewer
+passes, and the 32-regime set also reduced the nearest-neighbour distance. A distance-matched
+design with enough optimisation is required before concluding that diversity or volume is
+intrinsically unhelpful.
 
 ### 7.2 Lessons for evaluating pretrained surrogates
 
@@ -614,8 +711,8 @@ about Aurora.
 
 ### 7.3 The pre-registration record
 
-The experiments made 49 pre-registered predictions and hit 25. E1–E5, frozen together on 28 Sep
-2026, hit 9 of 22.
+The original experiments made 49 pre-registered predictions and hit 25. E1–E5, frozen together
+on 28 Sep 2026, hit 9 of 22. Dated report follow-ups are scored separately in Appendix B.
 
 **A miss is not a failed experiment.** Every experiment ran as designed, and its result stands. A
 miss means that the expectation written down before the run was wrong.
@@ -642,7 +739,9 @@ after the fact.
   Effects that need scale or genuinely different physics cannot appear here.
 * **Fixed budgets.** E1 held pretraining compute fixed across volumes, and E4 trained for 10,000
   steps. Stage 4 and Stage 10 showed that under-training can dominate a comparison, so the volume
-  and depth conclusions hold at these budgets only.
+  and depth conclusions hold at these budgets only. E1 F1 also shows that scratch's evaluation
+  error rises after steps 9,000–9,500 while training loss falls. The final-step comparison is
+  reproducible at the level of the finding, but a stopping recipe can affect its size.
 * **One fine-tuning recipe.** Most transfer results use 2000 steps at lr 1e-4. E6 F1 and Stage 10 F4
   show that the recipe can change the verdict.
 * **Three seeds.** Effects of a few percent sit near the resolution of 3 seeds, and of the GPU's
@@ -680,6 +779,45 @@ apart the pretraining advantage on a flow where the data can be controlled exact
   trade rollout stability for one-step accuracy, for example pushforward during fine-tuning.
 * **Stage 10:** a re-specified test framed relative to a well-trained base, if the question is
   still of interest.
+
+### 8.1 Proposed architecture: preserve time order and resolve local measured flow
+
+The first change I would test is an **ordered-history encoder**. Replace the shared-embedding
+sum by separate projections of X(t) and X(t) − X(t−Δt), or concatenate the two frames before a
+learned temporal projection. Retain the current-frame residual. This gives the backbone access
+to the direction of the recent change, which the current symmetric token sum discards. It is a
+small, specific change to test before adding depth. A temporal-swap gate should verify that the
+learned correction can distinguish the two input orders. A separate history-length ablation
+should then compare two frames with all 20 available frames, matching the FNO's information
+budget before attributing its accuracy advantage to the backbone.
+
+For the RealPDE foil measurements, the next proposal is a **boundary-aware local residual branch**
+beside the Swin backbone. A small spatial convolutional encoder/decoder would operate on the
+ordered velocity inputs with non-periodic padding and exchange features at each U-Net scale.
+Its output would add a learned correction to the Swin prediction, with its last projection
+initialised to zero. This provides a direct path for local shear and wake structure at 32 × 64,
+which is otherwise patchified and compressed through spectral bands. Compare this with replacing
+FFT bands by a spatial multiscale pyramid, since masked Swin windows do not remove the periodic
+extension implicit in an FFT. These are proposed inductive biases; the existing experiments do
+not measure their gains.
+
+Two measured lessons constrain this design. First, relative-position bias and q/k normalisation
+are inexpensive attention options with a joint 8.9% one-step gain on Kolmogorov flow, but no
+demonstrated long-horizon gain (§6.3); test them on real data rather than assuming transfer.
+Second, UGP-I's PIV data are a two-dimensional slice of three-dimensional flow. About 45% of
+their fluctuation energy is non-solenoidal, and hard divergence-free projection lost nine
+competition points (`project_memory.md`, §2). The proposed velocity head therefore keeps both
+components unconstrained. A local branch must not enforce a two-dimensional incompressibility
+condition that the measurements violate.
+
+**Evaluation plan, not a new result.** First ablate ordered history alone; then the local branch
+alone and their combination, with attention options in a separate comparison. Use E6's disjoint
+Re split, at least three seeds, the same real-data optimiser steps and separately matched wall
+compute, and report parameter count and inference cost. Pre-register the tests before training.
+Report one-step error, the competition's 20-step rollout metric, amplitude and alignment, plus
+velocity contours and error maps. A rollout loss should be a separate ablation: E4 and E8 show
+that pushforward can improve a drift score through damping. No gain is claimed until these
+controlled comparisons succeed.
 
 ---
 
@@ -741,7 +879,7 @@ To check the code and reproduce a result:
 ```bash
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
-# correctness gates (118 tests, about 8 min on 4 CPU cores)
+# correctness gates (125 tests; run on CPU)
 .venv/bin/python -m pytest tests -q
 # one config -> one run -> one row: reproduces the Stage 7 result
 .venv/bin/python experiments/run.py experiments/configs/h1_stage7_repro.json

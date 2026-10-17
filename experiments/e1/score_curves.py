@@ -64,7 +64,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 COL = {"n2_T32": "#2a6fdb", "n32_T32": "#e8743b", "scratch": "#19a979"}
-fig, ax = plt.subplots(1, 3, figsize=(13.5, 3.9))
+plt.rcParams.update({"font.size": 11})
+fig = plt.figure(figsize=(9.5, 7.2), layout="constrained")
+grid = fig.add_gridspec(2, 2)
+ax = [fig.add_subplot(grid[0, 0]), fig.add_subplot(grid[0, 1]), fig.add_subplot(grid[1, :])]
 for name, cv in curves_by.items():
     arm = name.split("_")[1]
     cell = "scratch" if arm == "scratch" else name.split("_", 2)[2].rsplit("_s", 1)[0]
@@ -80,15 +83,21 @@ for name, cv in curves_by.items():
         ax[2].plot(st[1:], [x["train_loss"] for x in cv[1:]], ls="--", **kw)
     if arm != "scratch":
         ax[2].plot(st[1:] + (20_000 if arm == "ft" else 0), [x["train_loss"] for x in cv[1:]], **kw)
-ax[0].set(title="Pretraining: zero-shot error on the target", xlabel="pretraining step", ylabel="one-step relative error")
-ax[1].set(title="Target: fine-tuning (solid) vs scratch (dashed)", xlabel="step on the target", yscale="log", xscale="symlog",
+ax[0].set(title="Pretraining: zero-shot target error", xlabel="pretraining step", ylabel="one-step relative error")
+ax[1].set(title="Target: fine-tuning vs scratch", xlabel="step on the target (scratch dashed)", yscale="log", xscale="symlog",
           ylabel="one-step relative error")
-ax[2].set(title="Training loss (normalised MSE)", xlabel="step (fine-tuning after step 20,000)", yscale="log")
+ax[0].set_xlim(0, 20_000)
+ax[0].set_xticks([0, 5000, 10000, 15000, 20000], ["0", "5k", "10k", "15k", "20k"])
+ax[1].set_xscale("symlog", linthresh=100)
+ax[1].set_xlim(0, 22_000)
+ax[1].set_xticks([0, 100, 1000, 2000, 10000, 22000], ["0", "100", "1k", "2k", "10k", "22k"])
+ax[2].set(title="Training loss (normalised MSE; scales differ between arms)",
+          xlabel="step (fine-tuning after step 20,000)", yscale="log", xlim=(0, 22_000))
+ax[2].set_xticks([0, 5000, 10000, 15000, 20000, 22000], ["0", "5k", "10k", "15k", "20k", "22k"])
 for a in ax:
     a.grid(alpha=0.3)
 ax[0].legend(frameon=False)
 ax[1].legend(frameon=False)
-fig.suptitle("E1 follow-up F1: training curves, target (Re, k_f) = (300, 4), evaluation trajectories 2-5, seeds 0-2",
-             fontsize=10)
-fig.tight_layout()
+fig.suptitle("E1 F1: training curves, target (Re, k_f) = (300, 4)\nHeld-out trajectories 2–5; model seeds 0–2",
+             fontsize=11)
 fig.savefig(os.path.join(HERE, "figs", "e1_curves.png"), dpi=150)

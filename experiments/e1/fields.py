@@ -80,7 +80,7 @@ def main():
 
 
 def plot_diagnosis(records):
-    fig, axs = plt.subplots(1, 3, figsize=(11.5, 3.6), layout="constrained")
+    fig, axs = plt.subplots(1, 3, figsize=(11.5, 3.9), layout="constrained")
     styles = [("e1_ft_n2_T32", "fine-tune, n = 2", "#2674ce"),
               ("e1_ft_n8_T32", "fine-tune, n = 8", "#e97832"),
               ("e1_ft_n32_T32", "fine-tune, n = 32", "#9266b1"),
@@ -95,18 +95,23 @@ def plot_diagnosis(records):
             ax.fill_between(x, avg-se, avg+se, alpha=.12, color=col)
     for ax, title in zip(axs, ("Relative error", "Amplitude / truth", "Uncentred alignment")):
         ax.set(title=title, xlabel="forecast step")
+        ax.title.set_fontsize(13)
+        ax.xaxis.label.set_fontsize(12)
+        ax.tick_params(labelsize=12)
         ax.grid(alpha=.2)
     axs[1].axhline(1, color="gray", ls="--", lw=.8)
     axs[2].set_ylim(-.05, 1.05)
-    axs[0].legend(fontsize=7, frameon=False)
-    fig.suptitle("E1 diagnosis: T = 32, original frame-50 rollouts; mean ± SE across 3 model seeds", fontsize=10)
+    axs[0].legend(fontsize=11, frameon=False)
+    fig.suptitle("E1 diagnosis: T = 32, original frame-50 rollouts; mean ± SE across 3 model seeds", fontsize=12)
     fig.savefig(HERE / "figs/e1_rollout_diagnosis.png", dpi=160)
     plt.close(fig)
 
 
 def plot_contours(ex):
     horizons = (1, 5, 20)
-    limit = max(float(np.max(np.abs(a[[0, 4, 19]]))) for a in ex.values())
+    # The truth sets the scale so its structure remains readable when a rollout grows.
+    # Both figures use the same limits; colourbar triangles explicitly mark clipped values.
+    limit = float(np.max(np.abs(ex["truth"][[0, 4, 19]])))
     levels = np.linspace(-limit, limit, 25)
     coord = np.linspace(0, 2*np.pi, 64, endpoint=False)
     for n in (2, 32):
@@ -132,7 +137,7 @@ def plot_contours(ex):
                     a.set_ylabel(label + "\ny", fontsize=9)
                 if i == 3:
                     a.set_xlabel("x", fontsize=8)
-        fig.colorbar(m, ax=axs, shrink=.65, label="Physical vorticity ω (shared across both figures)")
+        fig.colorbar(m, ax=axs, shrink=.65, label="Physical ω; truth range, triangles mark clipped predictions")
         fig.suptitle(f"E1: n = {n}, T = 32; model seed 0, held-out trajectory 2, start t = 60", fontsize=10)
         fig.savefig(HERE / f"figs/e1_contours_n{n}.png", dpi=170)
         plt.close(fig)

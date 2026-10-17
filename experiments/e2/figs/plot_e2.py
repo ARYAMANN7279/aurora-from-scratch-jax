@@ -4,6 +4,7 @@ usage: python experiments/e2/figs/plot_e2.py   (writes e2_rel_err.png beside it)
 """
 import json
 import os
+import argparse
 
 import matplotlib
 
@@ -12,14 +13,19 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-R = json.load(open(os.path.join(HERE, "..", "results", "analysis.json")))["rel_err"]
+ap = argparse.ArgumentParser(description=__doc__)
+ap.add_argument("--followup", action="store_true", help="E2 F1, sources Re 30 / 3000")
+args = ap.parse_args()
+R = json.load(open(os.path.join(HERE, "..", "results", "f1_analysis.json" if args.followup else "analysis.json")))["rel_err"]
 SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e6e5e1"
 METHODS = (("perceiver", "Perceiver", "#2a78d6"), ("pad", "pad-and-mask", "#eb6834"),
            ("per_source", "per-source encoders", "#1baf7a"))
 SETS = (("a", "(a) mixed\nresolution"), ("b", "(b) mixed\nvariables"), ("c", "(c) both"))
 
 fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.2), facecolor=SURFACE)
-for ax, (src, title) in zip(axs, (("A", "Source A (Re 100)"), ("B", "Source B (Re 300)"))):
+labels = (("A", "Source A (Re 30)"), ("B", "Source B (Re 3000)")) if args.followup else \
+         (("A", "Source A (Re 100)"), ("B", "Source B (Re 300)"))
+for ax, (src, title) in zip(axs, labels):
     ax.set_facecolor(SURFACE)
     x = np.arange(len(SETS))
     w = 0.26
@@ -46,8 +52,9 @@ for ax, (src, title) in zip(axs, (("A", "Source A (Re 100)"), ("B", "Source B (R
 axs[0].set_ylabel("one-step relative error (mean ± SE, 3 seeds)", color=INK2, fontsize=9)
 h, lab = axs[0].get_legend_handles_labels()
 fig.legend(h, lab, frameon=False, fontsize=8, labelcolor=INK2, loc="lower center", ncol=3)
-fig.suptitle("E2: one-step error in each source's own format (lower is better; dashed: Perceiver on (h))",
+fig.suptitle(("E2 F1" if args.followup else "E2") + ": one-step error in each source's own format (lower is better; dashed: Perceiver on (h))",
              color=INK, fontsize=11, x=0.01, ha="left")
 fig.tight_layout(rect=(0, 0.06, 1, 1))
-fig.savefig(os.path.join(HERE, "e2_rel_err.png"), dpi=150, facecolor=SURFACE)
-print("wrote e2_rel_err.png")
+filename = "e2_f1_rel_err.png" if args.followup else "e2_rel_err.png"
+fig.savefig(os.path.join(HERE, filename), dpi=150, facecolor=SURFACE)
+print(f"wrote {filename}")

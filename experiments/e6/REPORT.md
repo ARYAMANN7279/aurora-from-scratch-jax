@@ -184,3 +184,22 @@ difference above.
 * **The fluctuation subscore recovers fully.** TKE is 76.1–76.2 for both full-budget arms, against
   75.6 for scratch and 73.3 after the short fine-tune.
 
+## Report clarification, 17 Oct 2026: the remaining FNO gap
+
+Prashant asked why the matched-budget follow-up remains behind the organisers' FNO. PAm's
+0.109403 versus 0.094819 is a **15.4% relative error gap**, or 0.66 accuracy-subscore points.
+F1 identifies the cause of the short fine-tune's deficit to scratch; it does not identify the
+causes of this separate gap to the FNO.
+
+There is a concrete information-budget difference, verified in the evaluation code:
+`run_e6.evaluate` uses only input frames 18 and 19 for a recursive 20-step forecast, while
+`fno_baseline.py` passes all 20 input frames from UGP-I's `r12_eval.window` to the FNO for a
+joint 20-frame prediction. Target frames, window starts and scoring match, but input history
+and forecasting protocol differ. The supplied checkpoint also has a different training history,
+and its real-data fine-tuning may include the held-out conditions. Consequently the reference
+is not a controlled test of backbone architecture or pretraining.
+
+An ordered-history encoder, a history-length comparison at matched inputs, boundary-aware
+local features and a rollout-objective comparison are proposed in `FINAL_REPORT.md` §8.1.
+Their individual contributions to the gap remain unmeasured. No E6 prediction or result changes.
+
