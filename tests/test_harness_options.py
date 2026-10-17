@@ -108,3 +108,24 @@ def test_H4_attention_options_through_the_harness(data_root, tmp_path):
     c["train"]["scan_chunk"] = 3
     r = run(c, data_root, tmp_path, "f")
     assert np.isfinite(r["final_loss"]) and r["n_params"] > run(BASE, data_root, tmp_path, "g")["n_params"]
+
+
+def test_H5_training_curve_leaves_training_unchanged(data_root, tmp_path):
+    """Final-report follow-up: logging a training curve changes no parameter, and its last point is the final error."""
+    c = copy.deepcopy(BASE)
+    c["train"]["steps"] = 7
+    d = copy.deepcopy(c)
+    d["train"]["curve_every"] = 3
+    rc, rd = run(c, data_root, tmp_path, "h"), run(d, data_root, tmp_path, "i")
+    assert np.array_equal(params(rc, tmp_path, "h"), params(rd, tmp_path, "i"))
+    assert "curve" not in rc and [x["step"] for x in rd["curve"]] == [0, 3, 6, 7]
+    assert rd["curve"][0]["train_loss"] is None and all(x["train_loss"] > 0 for x in rd["curve"][1:])
+    assert np.isclose(rd["curve"][-1]["val/re100_kf4"], rd["metrics"]["val/re100_kf4"]["rel_err"], rtol=1e-6)
+    d["train"]["scan_chunk"] = 2
+    with pytest.raises(ValueError):
+        run(d, data_root, tmp_path, "j")
+    d["train"].pop("scan_chunk")
+    for interval in (0, -1, 0.5, True):
+        d["train"]["curve_every"] = interval
+        with pytest.raises(ValueError, match="positive integer"):
+            run(d, data_root, tmp_path, "invalid")

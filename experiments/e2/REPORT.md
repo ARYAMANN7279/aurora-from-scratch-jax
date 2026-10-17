@@ -18,8 +18,7 @@ three predictions hit (E2-P3).**
 ## Predictions
 
 Relative change in one-step relative error on validation seeds 6–7, in each source's own format,
-paired by seed, mean ± SE over seeds 0–2. Scored by `experiments/analyse_e345.py` (unchanged since
-the freeze).
+paired by seed, mean ± SE over seeds 0–2. Scored by `experiments/analyse_e345.py` (the original formulas are retained; its analysis recomputes exactly after the F1 refactor).
 
 | # | Prediction | Measured | Verdict |
 |---|---|---|---|
@@ -87,4 +86,65 @@ variables than in (a) and (h).
 .venv/bin/python experiments/analyse_e345.py --exp e2 --results experiments/e2/results/rows_0.jsonl \
     experiments/e2/results/rows_1.jsonl experiments/e2/results/rows_2.jsonl
 python experiments/e2/figs/plot_e2.py
+```
+
+## F1: wider physics gap (17 Oct 2026)
+
+At Prashant's request, repeat the 30-run design with **A = Re 30 and B = Re 3000**, both at
+k_f = 4. Predictions were committed in `90517d2` before training; training code is `606e4f6`.
+The original methods, formats, 10,000-step recipes and seeds 0–2 are retained. The physics gap
+widens from 3× to 100×; the resolution gap stays 2×, and no unseen format is tested.
+
+Dataset `e2f1_v1` contains 16 checksum-verified trajectories: 12 reused and four Re 30 trajectories
+generated on CPU. Training seeds 0–5 and evaluation seeds 6–7 are disjoint within each source.
+Provenance: `results/f1_data.json`; environment: `results/f1_env.json`; rows:
+`results/f1_rows_{0,1,2}.jsonl`. The lab runs use `highest` matmul precision through the guarded
+launcher, with card 0 excluded. Recorded wall times include compilation, evaluation and thermal
+pauses / restarts, so they are not dedicated-card throughput measurements.
+
+These dated results supplement the original experiment; its 1/3 verdict remains unchanged.
+All percentage changes below are paired by model seed, mean ± SE over three seeds. Negative
+means lower error. Source B has only (u, v) in sets (b) and (c), so compare methods within a set.
+Physics and format remain paired by source; the design does not isolate their interaction causally.
+
+**1 of 4 predictions HIT.** The wider physics gap changes the ranking of per-source encoders and
+does not increase fusion cost uniformly. The registered thresholds are unchanged.
+
+| Prediction | Measured relative error change | Verdict |
+|---|---|---|
+| F1-P1: pad-and-mask improves B by > 5% in (a) and (c) | −9.5 ± 2.3% (a); −6.9 ± 1.8% (c) | **HIT** |
+| F1-P2: both unchanged-format fusion costs > 5% | −2.4 ± 1.7% on B (a); +53.9 ± 7.3% on A (b) | **MISS** |
+| F1-P3: per-source encoders > 5% worse on B in all sets | +0.7 ± 2.3% (a); −5.7 ± 2.2% (b); −5.3 ± 1.6% (c) | **MISS** |
+| F1-P4: both fusion costs exceed the original costs | B: −2.4% versus +12.8%; A: +53.9% versus +38.8% | **MISS** |
+
+| Set | A: Perceiver | A: pad-and-mask | A: per-source | B: Perceiver | B: pad-and-mask | B: per-source |
+|---|---|---|---|---|---|---|
+| (a) | 0.0382 ± 0.0002 | 0.0328 ± 0.0011 | 0.0251 ± 0.0033 | 0.2151 ± 0.0037 | 0.1944 ± 0.0019 | 0.2164 ± 0.0024 |
+| (b) | 0.0409 ± 0.0007 | 0.0328 ± 0.0007 | 0.0235 ± 0.0024 | 0.1214 ± 0.0030 | 0.1181 ± 0.0017 | 0.1144 ± 0.0017 |
+| (c) | 0.0408 ± 0.0001 | 0.0398 ± 0.0003 | 0.0223 ± 0.0007 | 0.1187 ± 0.0014 | 0.1104 ± 0.0008 | 0.1124 ± 0.0007 |
+| (h) | 0.0267 ± 0.0017 | — | — | 0.2204 ± 0.0005 | — | — |
+
+One-step relative error, mean ± SE over model seeds 0–2.
+
+<p align="center"><img src="figs/e2_f1_rel_err.png" width="760" alt="E2 F1 errors at Re 30 and 3000 with matched-format homogeneous references"></p>
+
+The dashed reference is shown only where its format matches: A in (b) and B in (a).
+Per-source encoders reduce A's error relative to the Perceiver by **34.4 ± 8.6% / 42.6 ± 5.9% /
+45.3 ± 1.6%** in (a) / (b) / (c). On B they are close in (a) and improve mean error in (b) / (c),
+reversing the original experiment's consistent deficit. Pad-and-mask retains a smaller advantage
+on upsampled B than the original 22–23%. The unchanged-format cost on A grows, while B has no
+resolved positive cost. A wider physics gap therefore does not simply amplify the original
+fusion penalty. Source-specific encoding may help specialise to these separated regimes, but
+the experiment does not identify the mechanism or separate physics from its pairing with format.
+All 30 rows match the expected hashes and configs, record code `606e4f6`, and have finite losses
+and metrics. No original E2 result or verdict was replaced.
+
+```bash
+# One guarded lane per shard i = 0, 1, 2; retain completed configurations on restart.
+/bin/bash --noprofile --norc experiments/lab/glane3.sh -- .venv/bin/python experiments/run.py \
+    experiments/e2/configs/f1_runs.json --skip-done --shard <i> --n-shards 3 \
+    --results experiments/e2/results/f1_rows_<i>.jsonl
+.venv/bin/python experiments/analyse_e345.py --exp e2f1 \
+    --results experiments/e2/results/f1_rows_*.jsonl
+.venv/bin/python experiments/e2/figs/plot_e2.py --followup
 ```

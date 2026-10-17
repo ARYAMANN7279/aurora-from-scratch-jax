@@ -124,3 +124,63 @@ cat experiments/e1/results/rows_[0-9].jsonl experiments/e1/results/rows_ft_*.jso
 .venv/bin/python experiments/e1/analyse.py --results experiments/e1/results/all.jsonl
 python experiments/e1/figs/plot_e1.py
 ```
+
+## F1: training curves and report figures (17 Oct 2026)
+
+Predictions were committed in `90517d2`, before training; code `606e4f6`. Fifteen runs repeat
+n = 2 and 32 at T = 32 (6 pretrains, 6 fine-tunes, 3 scratch), seeds 0–2, using the original
+data and recipes with diagnostic logging. Rows: `results/curves_rows_{0,1,2}.jsonl`;
+score: `results/f1_analysis.json`; environment: `results/f1_env.json`; figure: `figs/e1_curves.png`.
+
+| Arm | One-step error, mean ± SE |
+|---|---|
+| Zero-shot, n = 2 | 0.1871 ± 0.0013 |
+| Zero-shot, n = 32 | 0.0819 ± 0.0019 |
+| Fine-tuned, n = 2 | 0.0779 ± 0.0005 |
+| Fine-tuned, n = 32 | 0.0805 ± 0.0019 |
+| Scratch | 0.1499 ± 0.0024 |
+
+| Prediction | Measured | Verdict |
+|---|---|---|
+| F1-P1: every final one-step error within 2% of its original | 9/15 within; the other 6 differ by 2.15–2.82% | **MISS** |
+| F1-P2: every scratch endpoint within 2% of its curve minimum | 5.04 / 4.47 / 4.39% above the minima, seeds 0 / 1 / 2 | **MISS** |
+
+**0 of 2 HIT.** These are newly logged reruns, rather than exact historical training logs.
+The CPU correctness gate proves parameter invariance with logging; it does not prove historical
+GPU reproduction. Differences up to 2.82% exceed the registered tolerance and are retained.
+All original E1 results and verdicts stand.
+
+Scratch's minimum evaluation errors occur at steps 9,000 / 9,500 / 9,000. Its training MSE
+continues to fall, from 0.00218–0.00238 there to 0.00069–0.00071 at step 22,000, while its
+evaluation error rises. This is consistent with overfitting two trajectories under this recipe.
+All six fine-tunes finish at their lowest logged target error. The final paired advantages are
+47.98 ± 0.88% (n = 2) and 46.34 ± 0.53% (n = 32), consistent with the original conclusion.
+No endpoint was selected from these curves: using their minima as new test scores would be
+in-sample selection. A fair early-stopping comparison requires separate validation data.
+Training losses are in each arm's own normalisation and cannot be compared directly across arms.
+
+**Original-checkpoint diagnosis and contours (exploratory).** `fields.py` re-evaluates the original
+T = 32 models on evaluation trajectories 2–5 from frame 50, with all three model seeds. Mean drifts
+match the original rows within 9.97e-6. At step 20, fine-tuned amplitudes are 3.782 / 2.764 / 2.704
+times truth for n = 2 / 8 / 32, against scratch's 0.983. Alignment is 0.146 / 0.175 / 0.192 versus
+0.339. The smaller penalty with n = 8 / 32 accompanies less amplitude growth, not a recovered
+rollout advantage; the effects of diversity, proximity and optimisation are not separated here.
+The e² = 1 + a² − 2ac identity holds to 1.07e-14 in each model's normalised variables.
+Details: `results/fields.json`, `figs/e1_rollout_diagnosis.png`, and `FINAL_REPORT.md` §5.1.
+
+Contours use the original model seed 0 and held-out trajectory 2, fixed before re-evaluation,
+starting at t = 60 and forecasting 1, 5, 20 steps. Physical vorticity uses the same truth-based
+colour range for n = 2 and 32; colourbar triangles mark clipping, and the printed errors are
+computed on unclipped fields. Separate absolute-error panels share an error scale. The example
+illustrates the multi-seed diagnosis and is not an aggregate score.
+
+```bash
+# One seed per guarded lane; repeat for seeds 1 and 2.
+/bin/bash --noprofile --norc experiments/lab/glane3.sh -- .venv/bin/python experiments/run.py \
+    experiments/e1/configs/curves_s0.json --skip-done --results experiments/e1/results/curves_rows_0.jsonl
+# Score all three seed files and draw the training curves.
+.venv/bin/python experiments/e1/score_curves.py --results experiments/e1/results/curves_rows_*.jsonl
+# Original-checkpoint figures (on the VM, retain the project's scratch environment).
+JAX_PLATFORMS=cpu .venv/bin/python experiments/e1/fields.py
+.venv/bin/python experiments/e1/figs/plot_protocol.py
+```

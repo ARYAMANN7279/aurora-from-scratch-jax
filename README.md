@@ -120,7 +120,7 @@ Full report: [`experiments/stage1/REPORT.md`](experiments/stage1/REPORT.md).
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
 
-# correctness gates (118 tests, about 8 min on 4 CPU cores)
+# correctness gates (125 tests; run on CPU)
 .venv/bin/python -m pytest tests -q
 
 # one config -> one run -> one row: reproduces the Stage 7 result (needs the acc_v1 dataset)
@@ -132,6 +132,10 @@ python3.11 -m venv .venv
 ```
 
 ## Repository layout
+
+To rebuild the PDF from the Markdown and figures, run `node scripts/build_report.mjs` with pandoc,
+Node (with the built-in `WebSocket`) and Chrome installed. Set `CHROME_BIN` if Chrome is not in
+the default macOS location. The builder checks image loading before replacing the PDF.
 
 | Path | Contents |
 |---|---|
@@ -170,9 +174,18 @@ python3.11 -m venv .venv
 * **Experiments:** E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5, E5 2 of 4, E6 2 of 5 (and
   its follow-up 3 of 3), E7 2 of 3, E8 5 of 10 and E9 4 of 6. Each is reported in
   `experiments/eN/REPORT.md`.
-* **Records:** every stage is built and passes its correctness gates (118 tests on CPU, including the
+* **Records:** every stage is built and passes its correctness gates (125 tests on CPU, including the
   experiment tooling; GPU notes in `project_memory.md`). Each stage and experiment has a spec with
   pre-registered predictions in `handouts/`, and a report.
+
+**Report feedback (17 Oct):** Prashant's revisions add training curves, original-checkpoint
+contours and rollout diagnosis, clearer signs, the FNO-gap explanation and an architecture
+proposal. All **45 registered follow-up runs** are complete (282 including the original study).
+E1 F1: **0/2 HIT** — historical endpoints vary by up to 2.82%, and scratch ends 4.4–5.0% above its
+logged minima. E2 F1 at Re 30 / 3000: **1/4 HIT** — pad-and-mask still improves B by 7–10%,
+per-source encoders help, and fusion cost does not grow uniformly. Original verdicts are retained;
+the follow-ups are reported separately. The updated **125-test CPU suite passes**.
+See [`docs/prashant_feedback_2026-10-17.md`](docs/prashant_feedback_2026-10-17.md).
 
 ## Advisors
 

@@ -102,9 +102,9 @@ def e5(hash_fn):
     return pre, ft, sc
 
 
-# ---------------- E2: heterogeneous fusion (dataset acc_v1) ----------------
+# ---------------- E2: heterogeneous fusion (dataset acc_v1; follow-up F1: e2f1_v1) ----------------
 E2_ALL, E2_UV = ["u", "v", "p", "omega"], ["u", "v"]
-E2_SETS = {  # set -> (A = re100_kf4 format, B = re300_kf4 format) as (N, variables)
+E2_SETS = {  # set -> (A format, B format) as (N, variables); A = re100_kf4, B = re300_kf4 (F1: re30, re3000)
     "a": ((128, E2_ALL), (64, E2_ALL)),
     "b": ((64, E2_ALL), (64, E2_UV)),
     "c": ((128, E2_ALL), (64, E2_UV)),
@@ -114,23 +114,28 @@ E2_METHODS = ("perceiver", "pad", "per_source")
 E2_STEPS = 10_000
 
 
-def e2():
+def e2(tags=("re100_kf4", "re300_kf4"), dataset="acc_v1", prefix="e2", ref="E2-P1..P3"):
     out = []
     for name, (fa, fb) in E2_SETS.items():
-        sources = [{"name": "A", "tag": "re100_kf4", "N": fa[0], "vars": fa[1], "train_seeds": [0, 1, 2, 3, 4, 5],
+        sources = [{"name": "A", "tag": tags[0], "N": fa[0], "vars": fa[1], "train_seeds": [0, 1, 2, 3, 4, 5],
                     "val_seeds": [6, 7]},
-                   {"name": "B", "tag": "re300_kf4", "N": fb[0], "vars": fb[1], "train_seeds": [0, 1, 2, 3, 4, 5],
+                   {"name": "B", "tag": tags[1], "N": fb[0], "vars": fb[1], "train_seeds": [0, 1, 2, 3, 4, 5],
                     "val_seeds": [6, 7]}]
         for method in (E2_METHODS if name != "h" else ("perceiver",)):
             for s in SEEDS:
-                out.append({"name": f"e2_{name}_{method}_s{s}",
+                out.append({"name": f"{prefix}_{name}_{method}_s{s}",
                             "prediction": f"E2 set ({name}), method {method}, seed {s}: "
-                                          f"handouts/e2_heterogeneous_fusion.md E2-P1..P3",
-                            "method": method, "data": {"dataset": "acc_v1", "sources": copy.deepcopy(sources)},
+                                          f"handouts/e2_heterogeneous_fusion.md {ref}",
+                            "method": method, "data": {"dataset": dataset, "sources": copy.deepcopy(sources)},
                             "model": copy.deepcopy(MODEL),
                             "train": {"steps": E2_STEPS, "batch": 16, "lr": 1e-3, "schedule": "cosine", "seed": s},
                             "eval": {"rollout_steps": 20}})
     return out
 
 
-__all__ = ["e2", "e3", "e4", "e5", "MODEL"]
+def e2f1():
+    """E2 follow-up F1: the same 30 runs with a larger physics gap, A = Re 30 and B = Re 3000 (dataset e2f1_v1)."""
+    return e2(("re30_kf4", "re3000_kf4"), "e2f1_v1", "e2f1", "F1-P1..P4")
+
+
+__all__ = ["e2", "e2f1", "e3", "e4", "e5", "MODEL"]
