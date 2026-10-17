@@ -105,3 +105,38 @@ pretraining, every fine-tune pointing at its own pretrain run.
    Alternative: scale the steps with T.
 3. **Distance confound:** accept and report it (the current plan), or add a distance-matched
    32-regime control that excludes the target's nearest neighbours?
+
+## F1. Training curves requested on 17 Oct 2026
+
+**Registered before the follow-up runs.** The original E1 predictions and verdicts are unchanged.
+Prashant requested training curves and contours of the truth, zero-shot prediction and fine-tuned
+prediction. Rerun cells (n = 2, T = 32) and (n = 32, T = 32), plus scratch, with seeds 0–2:
+6 pretrains, 6 fine-tunes, 3 scratch runs, **15 runs**. All data, batches, budgets, initialisation,
+normalisation and optimisers are E1's. Each fine-tune starts from its own rerun pretrain.
+
+Log the mean training objective and the complete held-out one-step error every 500 pretraining or
+scratch steps and every 100 fine-tuning steps, including step zero and the final step. Logging must
+consume no training randomness and must leave the parameters unchanged (a correctness gate).
+`curve_every` cannot be combined with `scan_chunk`. Curves are diagnostic: no checkpoint selection
+or hyperparameter tuning uses the held-out curves.
+
+| Prediction | Test |
+|---|---|
+| F1-P1 | Every rerun's final one-step relative error is within 2% of its own original E1 run. |
+| F1-P2 | Each scratch rerun's final held-out error is within 2% of the minimum logged on its own curve. |
+
+The curve figure shows all three seeds, pretraining error on the target, fine-tuning versus scratch,
+and training loss. Differences in normalisation mean training losses across cells are not directly
+comparable. The original target evaluation trajectories are 2–5; pretraining never uses this regime.
+`make_curves.py` writes `configs/curves.json`; `score_curves.py` matches results by config hash and
+writes `results/f1_analysis.json` and `figs/e1_curves.png`.
+
+**Exploratory figures and diagnosis (no new predictions).** Use original E1 weights where available;
+otherwise label the rerun explicitly. Fix evaluation trajectory 2, frame 50 (physical time 60), model
+seed 0, cells n = 2 and 32 at T = 32, and horizons 1, 5, 20. Plot physical vorticity with a shared
+colour scale for truth and predictions and a separate shared error scale. Include scratch and
+zero-shot as well as fine-tuning. Compare rollout amplitude and uncentred alignment on all four
+evaluation trajectories at E1's original frame 50 for every n at T = 32 and all model seeds.
+Report the exact identity e² = 1 + a² − 2 a c per forecast, where a = ||prediction|| / ||truth|| and
+c is their cosine similarity in each model's training-normalised coordinates. This is a diagnosis,
+not a causal experiment separating diversity, distance and optimisation.
