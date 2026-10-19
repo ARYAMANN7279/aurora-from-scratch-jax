@@ -178,7 +178,7 @@ the default macOS location. The builder checks image loading before replacing th
   experiment tooling; GPU notes in `project_memory.md`). Each stage and experiment has a spec with
   pre-registered predictions in `handouts/`, and a report.
 
-**Report feedback (17 Oct):** Prashant's revisions add training curves, original-checkpoint
+**Report feedback (17 Oct):** revisions for Prashant's review notes add training curves, original-checkpoint
 contours and rollout diagnosis, clearer signs, the FNO-gap explanation and an architecture
 proposal. All **45 registered follow-up runs** are complete (282 including the original study).
 E1 F1: **0/2 HIT** — historical endpoints vary by up to 2.82%, and scratch ends 4.4–5.0% above its

@@ -989,9 +989,8 @@ stays excluded unless the lab agrees otherwise.
 
 ## 7. Report feedback, 17 Oct 2026 — complete
 
-The owner asked to finish the work interrupted by the earlier session's weekly limit, using
-Prashant's annotated `Downloads/FINAL_REPORT_261017_165949.pdf`. They explicitly authorised
-accessing the VM and referring to GitHub. All 987 earlier lines of this record were read.
+Prashant returned the final report with handwritten notes (`FINAL_REPORT_261017_165949.pdf`,
+17 pages). This section records how each note was addressed.
 
 **Requests:** a training-loop / learning-curve figure, truth / zero-shot / fine-tuned contours,
 an explanation of E1's smaller drift penalty at n = 8 and 32, E2 repeated at Re 30 / 3000,
@@ -1010,7 +1009,7 @@ Tracking: `docs/prashant_feedback_2026-10-17.md`.
   last curve point matches the final metric, including a partial final interval.
 * The original E2, E3, E4 and E5 analysis JSONs recompute exactly from their committed rows.
 
-**Environment corrections (checked now, rather than assuming the older notes still apply):**
+**Environment (checked 17 Oct; it corrects the older notes):**
 * Use the VM repository's `.venv/bin/python`: Python 3.11.15, JAX / jaxlib 0.10.2, NumPy 2.4.6,
   Optax 0.2.8, driver 570.133.20. `Aryamann/env` no longer contains JAX.
 * The older `ugp2_scratch` directory and scratch `glane3.sh` / `glane4.sh` were not found.

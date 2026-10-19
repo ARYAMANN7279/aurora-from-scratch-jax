@@ -92,7 +92,7 @@ Figures: `figs/spectra_by_seed.png` (the 8 seeds per regime overlap), `figs/ener
   Capping XLA at SSE4.2 changes the 512² hash; AVX2 gives the same hash as the default. So bitwise
   reproducibility is tied to the machine configuration.
 * **Not identified:** what differed for the original seed-7 process. It ran for ~3.3 h inside a
-  VM that is paused and restored whenever this session idles (see project_memory). A change of
+  cloud VM that is paused and restored whenever it idles (see project_memory). A change of
   host or CPU state across a restore is the leading suspect, but it could not be proven.
 * **Consequences:**
   * every trajectory is a valid sample of the dynamics (Q4–Q8 hold for Re1000 as for the others);

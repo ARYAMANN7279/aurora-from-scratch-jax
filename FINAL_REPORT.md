@@ -737,7 +737,7 @@ intrinsically unhelpful.
   long the base had trained (F4). Stage 4, and Stage 9 against E4, showed similar budget effects.
 * **Use paired, contemporaneous controls.** GPU reruns differed by up to 0.8% in E9; the newly
   logged E1 reruns differ from their historical endpoints by up to 2.82%. Pair model seeds and
-  report rerun variation when comparing results collected in different sessions.
+  report rerun variation when comparing results from different jobs.
 * **Distance confounds diversity.** Adding regimes usually also brings the nearest one closer. E1
   separated the two only because two of its sets share their nearest neighbours.
 
