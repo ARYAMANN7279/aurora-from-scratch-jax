@@ -24,11 +24,13 @@ predictions were committed in their respective `handouts/` files before any trai
 * VM interpreter: the repository's `.venv/bin/python` (Python 3.11.15, JAX 0.10.2). The parent
   `Aryamann/env` does not currently contain JAX. The old scratch GPU wrappers were not found;
   `experiments/lab/glane3.sh` and `gpu_guard.py` restore the placement and thermal protections.
-  Scratch, temporary files and the compilation cache live under `data/feedback_scratch/`.
+  Scratch, temporary files and the compilation cache went under `data/feedback_scratch/`
+  (removed as temporary on 28 Oct 2026).
 * Focused tests passed: 16 tests in 147.84 seconds, then 6 tooling tests in 0.18 seconds,
   including one newly added scoring test (17 distinct checks). The full CPU suite passed:
   **125 tests in 982.08 seconds** (16 min 22 s, alongside three cold GPU compilations).
-  Log: `logs/feedback_full_tests.log` on the VM.
+  The log was `logs/feedback_full_tests.log` on the VM (cleared 28 Oct 2026); the suite also
+  passed on a Mac on 19 Oct (125 tests, 6 min 19 s).
 * The original E2, E3, E4 and E5 analyses recompute exactly from their committed rows.
 * `e2f1_v1` is assembled and checksum-verified: 12 original trajectories linked, four Re 30
   trajectories generated on CPU; all 16 complete. Provenance: `experiments/e2/results/f1_data.json`.
@@ -36,7 +38,7 @@ predictions were committed in their respective `handouts/` files before any trai
   agree with the original result rows within 9.97e-6; the error / amplitude / alignment identity
   holds within 1.07e-14. Data: `experiments/e1/results/fields.json`. Raw example fields stay off git.
 * The three guarded training lanes run one E1 seed (5 runs), then that seed's E2 F1 shard
-  (10 runs). Logs: `logs/feedback_lane_{0,1,2}.log`; results:
+  (10 runs). Lane logs were `logs/feedback_lane_{0,1,2}.log` (cleared 28 Oct 2026); results:
   `experiments/e1/results/curves_rows_{0,1,2}.jsonl` and
   `experiments/e2/results/f1_rows_{0,1,2}.jsonl`. Each lane uses `--skip-done` for restarts.
   Initial guard PIDs: 1026958, 1026959, 1026960; initial cards 1, 3, 2 respectively. Card 0 is excluded.
