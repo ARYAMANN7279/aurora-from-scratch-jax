@@ -631,7 +631,7 @@ Report: `experiments/e3/REPORT.md`. 33 runs, 3 seeds; band Re 125–250 × k_f 3
 * **Host load:** J0's 19.2 ms against the E-runs' ≤ 10.5 ms for the same loop. The host was at load
   11–14 on 16 cores (CPU pressure 27–40%), and a host-bound step slows with it.
   * **Amendment A2**, before any further timing: every arm re-timed in one sequential lane (`s12`),
-    with J0 first and last and the host load logged (`logs/hostload.log`).
+    with J0 first and last and the host load logged (`logs/hostload.log` on the lab machine; that folder was cleared on 28 Oct 2026).
   * P1, P2 and P4 stay scored on the first pass (`results/first_pass/`).
 * **J4 was paused** when another user started a job on card 3. The owner had it killed and requeued.
 * **`glane4.sh`** (VM scratch) = `glane3.sh` plus preemption:
@@ -1018,8 +1018,9 @@ Tracking: `docs/prashant_feedback_2026-10-17.md`.
   start below 85 °C, pause at 87 °C / thermal slowdown / foreign process, resume at ≤ 80 °C.
   A pause lasting 60 seconds terminates only our own process group and requeues, up to three
   retries. It yielded card 3 once to a detected foreign process and restarted after release.
-* All scratch and caches are under `data/feedback_scratch/`, including `TMPDIR`, matplotlib and
-  the JAX persistent compilation cache. No scratch on the root partition. Card 0 is excluded.
+* All scratch and caches went under `data/feedback_scratch/`, including `TMPDIR`, matplotlib and
+  the JAX persistent compilation cache (removed as temporary on 28 Oct 2026). No scratch on the
+  root partition. Card 0 is excluded.
 * A local ignored `.venv` was also created, Python 3.11.16 / JAX 0.10.2, for analysis / PDF checks.
 
 **Data and executed lanes:**
@@ -1028,7 +1029,7 @@ Tracking: `docs/prashant_feedback_2026-10-17.md`.
   Existing trajectories are linked; raw data remains off git. Provenance: E2 `results/f1_data.json`.
 * Three guarded lanes each ran five E1 curve configs for one seed, then ten E2 F1 configs
   (`--shard seed --n-shards 3`). They use `--skip-done` and distinct result files.
-  Logs: `logs/feedback_lane_{0,1,2}.log`. Rows: E1 `results/curves_rows_{0,1,2}.jsonl` and
+  Lane logs were `logs/feedback_lane_{0,1,2}.log` (cleared 28 Oct 2026). Rows: E1 `results/curves_rows_{0,1,2}.jsonl` and
   E2 `results/f1_rows_{0,1,2}.jsonl`. Initial guard PIDs: 1026958, 1026959, 1026960.
 * Cold compilation was substantial; do not treat these wall times as training-speed measurements.
 
@@ -1104,3 +1105,9 @@ commits with a merge commit; GitHub's PR record is the source for the final merg
 Before the lab fast-forward, generated artifacts were preserved in its stash named
 `report-feedback-generated-artifacts-before-sync-2026-10-17`; raw data and all 45 saved checkpoints
 remain under ignored `data/`. There are no remaining training jobs from this work.
+
+**Cleanup, 28 Oct 2026 (owner's OK):** the lab clone was synced to `85c6415`. Only temporary
+leftovers were deleted: `data/feedback_scratch/` (caches, temporary files, transfer bundles and the
+raw contour arrays, which `experiments/e1/fields.py` regenerates), the transfer bundle and tar files
+in `data/`, the `logs/` folder, and the stash above, which held only superseded edits to
+`fields.py` and `plot_e2.py`. Every dataset, saved checkpoint and committed result is kept.
