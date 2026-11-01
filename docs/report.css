@@ -11,7 +11,7 @@ p { margin: 7pt 0; }
 ul, ol { padding-left: 20pt; margin: 7pt 0; }
 li > p { margin: 3pt 0; }
 table { border-collapse: collapse; width: 100%; font-size: 9.3pt; line-height: 1.22; margin: 10pt 0; break-inside: avoid; }
-th, td { border: 1px solid #bbb; padding: 4pt 5pt; vertical-align: top; text-align: left; overflow-wrap: anywhere; }
+th, td { border: 1px solid #bbb; padding: 4pt 5pt; vertical-align: top; text-align: left; overflow-wrap: break-word; }
 th { background: #eee; overflow-wrap: normal; }
 thead { display: table-header-group; }
 tr { break-inside: avoid; }
