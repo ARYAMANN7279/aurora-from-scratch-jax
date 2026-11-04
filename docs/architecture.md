@@ -59,7 +59,7 @@ Per sample; training adds a batch axis in front (16 in E1).
 **Temporal information:** the current two-frame token sum is symmetric. The shared embedding is
 linear in the input, and adding `frame[0]` and `frame[1]` before summing cannot attach an order to
 the two frames. The learned correction sees their sum; the final residual still uses the current
-frame. Aurora's ordered temporal patch projection differs here. The report's §8.1 proposes
+frame. Aurora's ordered temporal patch projection differs here. The report's Appendix D proposes
 separate current-frame and increment projections as a follow-up, without changing this baseline.
 
 ## 3. Part by part, against Aurora
