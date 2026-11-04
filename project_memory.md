@@ -1111,3 +1111,10 @@ leftovers were deleted: `data/feedback_scratch/` (caches, temporary files, trans
 raw contour arrays, which `experiments/e1/fields.py` regenerates), the transfer bundle and tar files
 in `data/`, the `logs/` folder, and the stash above, which held only superseded edits to
 `fields.py` and `plot_e2.py`. Every dataset, saved checkpoint and committed result is kept.
+
+**Report restructure, 4 Nov 2026 (owner's request):** `FINAL_REPORT.md` was reorganised for
+readability. The main text now gives each result with its key figure, plus new illustrative figures
+(`docs/figs/make_report_figs.py`: concept, testbed, task, model, results at a glance) and a UGP-I vs
+E6 score comparison. Full designs, tables, follow-ups, limitations, the proposed architecture
+(now Appendix D) and the prediction record (Appendix E) moved verbatim to Appendices A–F. No number,
+verdict or result changed. The rebuilt PDF has 32 pages.

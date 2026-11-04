@@ -200,6 +200,6 @@ and its real-data fine-tuning may include the held-out conditions. Consequently 
 is not a controlled test of backbone architecture or pretraining.
 
 An ordered-history encoder, a history-length comparison at matched inputs, boundary-aware
-local features and a rollout-objective comparison are proposed in `FINAL_REPORT.md` §8.1.
+local features and a rollout-objective comparison are proposed in `FINAL_REPORT.md`, Appendix D.
 Their individual contributions to the gap remain unmeasured. No E6 prediction or result changes.
 
