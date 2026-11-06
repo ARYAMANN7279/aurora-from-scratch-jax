@@ -29,6 +29,10 @@ committed before any run, address the research questions; dated report follow-up
   within 0.8 accuracy-subscore points of the organisers' FNO, and a start pretrained on simulations
   matches training from scratch.
 * **LoRA adapts little** except where the base model is systematically wrong.
+* **What limits accuracy (E10, a diagnostic follow-up of 6 Nov).** The remaining error sits in the
+  vorticity field and at small scales. The model trained from scratch memorises its two training
+  trajectories, so longer training cannot help it, and the predicted fields obey the flow's
+  physical constraints only to about 10%.
 
 The main text gives each result with its key figure. Full designs, tables, follow-ups and the
 prediction record are in the appendices.
@@ -370,7 +374,7 @@ therefore overstates what it buys.
 
 ---
 
-## 6. Which components matter (E4, E7–E9, Stage 12)
+## 6. Which components matter, and what limits accuracy (E4, E7–E10, Stage 12)
 
 ### 6.1 Architecture ablations (E4)
 
@@ -399,6 +403,27 @@ fade along a rollout and are about zero from step 30 (Appendix C.8).
 The training step was bound by the host, not the GPU, so what paid was removing host work: running
 50 steps per compiled call with on-device sampling made the loop **2.07× faster**, while arithmetic
 speed-ups barely mattered. JAX with scan also beat PyTorch with CUDA graphs by 1.52× (Appendix C.9).
+
+### 6.4 What limits accuracy (E10)
+
+After the project review, E10 diagnosed E1's 30 trained models instead of training new ones: where
+their remaining error lives, which loss term limits it, whether the output layer is converged, and
+whether the predictions respect the flow's physics.
+
+<p align="center"><img src="experiments/e10/figs/e10_diagnostics.png" width="720" alt="E10: share of the error by field, error power relative to the true power by wavenumber, and the gap between evaluation and training error, for scratch and pretrained models"></p>
+
+* **The vorticity ω is the limiting term.** It holds 62–76% of the one-step error in every model,
+  although the loss weights the four fields equally.
+* **The error is a small-scale error.** At the forcing scale and above the models are almost exact
+  (error below 1% of the signal, 0.1% after pretraining); for the smallest eddies the error exceeds
+  the signal. Pretraining lowers the error at every scale, most at the large ones.
+* **The output layer is converged:** an exact least-squares refit of it gains less than 0.1%.
+* **Scratch memorises; pretrained models do not.** Scratch fits its two training trajectories 32×
+  better than unseen ones, so its limit is data, not optimisation, and longer training would not
+  help it. Pretrained models fit both alike (1.2×).
+* **The physics holds only roughly.** The predicted velocity is 9–15% divergent, and the predicted
+  ω differs from the curl of the predicted velocity by 10–17%; nothing ties the four outputs
+  together. E10 hit 3 of 6 predictions (Appendix C.11).
 
 ---
 
@@ -439,7 +464,9 @@ The model has 5.1 M parameters and sees 64² fields of one PDE family, so effect
 genuinely different physics cannot appear. Most comparisons use fixed budgets, one fine-tuning
 recipe and three seeds, which resolve effects of a few percent only roughly. E1's 32-regime cells are
 confounded with distance, E3 extrapolates upward in Re only, and E2 tests a 2× resolution gap with
-no unseen format. The full list is in Appendix C.10.
+no unseen format. The model's four output fields are not tied together, so its predictions break
+the flow's divergence-free and vorticity constraints by about 10% (E10). The full list is in
+Appendix C.10.
 
 **The prediction record.** The original experiments made 49 pre-registered predictions and hit 25;
 the 17 Oct follow-ups hit 1 of 6. A miss is not a failed experiment: every experiment ran as designed
@@ -461,6 +488,9 @@ model comes within one accuracy point of the organisers' FNO, and real data, not
 pretraining, is what counts.
 
 **Future work.** Each would get its own pre-registered specification.
+* **Physically consistent outputs:** predict only the vorticity and derive velocity and pressure from
+  it exactly, which makes the output divergence-free by construction and puts the whole loss on the
+  field that limits accuracy (E10); and a loss that weights the small scales, where the error lives.
 * **Separate diversity, distance and compute:** a 32-regime set matched in distance to the 2-regime
   set, with pretraining steps scaled with volume.
 * **Steadier long forecasts:** fine-tuning recipes that do not trade rollout stability for one-step
@@ -633,8 +663,9 @@ traces back to one run.
   6000 Blackwell, JAX 0.10.2), on idle cards only.
 * **E6–E9 and Stage 4's longest follow-ups (F3, F4):** Kaggle's T4 GPUs, used when the lab's cards
   were busy, with software pinned to the lab machine's versions.
-* **Tests:** 125 tests pass on CPU (17 Oct, including seven report-follow-up checks; the original
-  118-test baseline also passed the 9 Oct audit).
+* **E10:** a laptop CPU (evaluation only, about 45 minutes).
+* **Tests:** 130 tests pass on CPU (6 Nov, including E10's five; 125 passed on 17 Oct, and the
+  original 118-test baseline also passed the 9 Oct audit).
 
 ## Appendix B: Stages 1–12 in detail
 
@@ -1118,6 +1149,36 @@ step is bound by the host, not the card.
   bitwise identical, so absolute numbers across those stages carry a small caveat. Comparisons
   within an experiment do not.
 
+### C.11 Diagnostics of the trained models (E10)
+
+**Design.** Pre-registered on 6 Nov 2026 (`handouts/e10_diagnostics.md`), after the review. No
+training: E10 measures E1's 30 kept models (scratch, seeds 0–2; the 9 fine-tuned cells, seeds 0–2)
+on E1's task, from one pass per model over the decoded tokens that feed the four linear output
+heads, on a laptop CPU. It reproduces E1's stored errors for all 30 models to 2.4 × 10⁻⁷ (relative).
+
+| Measure | Scratch | Fine-tuned (n = 32) |
+|---|---|---|
+| One-step relative error | 0.150 | 0.082 |
+| Share of the error: u / v / p / ω | 0.08 / 0.09 / 0.21 / 0.62 | 0.07 / 0.08 / 0.16 / 0.69 |
+| Error / true power at 1 ≤ \|k\| < 5 | 0.006 | 0.001 |
+| Error / true power at 12 ≤ \|k\| < 20 | 0.64 | 0.27 |
+| Evaluation / training MSE | 32.4 | 1.17 |
+| Output-layer refit: training MSE lowered by | 0.08% | 0.02% |
+| Divergence ratio ‖∇·u‖ / ‖∇u‖ (truth < 10⁻⁴) | 0.141 | 0.100 |
+| Curl mismatch ‖ω − curl u‖ / ‖ω‖ (truth < 10⁻⁴) | 0.154 | 0.109 |
+
+| # | Prediction | Verdict |
+|---|---|---|
+| P1 | ω's share largest and p's smallest, ω > 0.35 | MISS: ω largest (0.61–0.76), but u and v are smallest, not p |
+| P2 | Small-scale error ratio ≥ 3× the large-scale one | HIT: about 100× (scratch) and 250× (fine-tuned) |
+| P3 | Pretraining's advantage larger at small scales | MISS: the reverse, 57–88% at large scales and 41–70% at small |
+| P4 | Scratch's gap > 2; every fine-tuned gap below it | HIT: 32× against 1.07–1.28× |
+| P5 | Output-layer refit gains < 3% in training, moves the error < 1% | HIT: ≤ 0.09% and ≤ 0.02% |
+| P6 | Divergence ratio in (10⁻³, 10⁻¹); lower after pretraining; curl mismatch below ω's error | MISS: 6 of 30 above 0.1, all three scratch models among them; one pretrained model level with its scratch seed; the curl part holds |
+
+Ideas it points to, not run: predict ω only and derive u, v and p; a scale-weighted loss; finer
+patches; longer training for the pretrained models only. Full report: `experiments/e10/REPORT.md`.
+
 ## Appendix D: proposed architecture and evaluation plan
 
 **Follow-up experiments.** Each of these would get its own pre-registered specification.
@@ -1210,6 +1271,10 @@ Report follow-ups registered on 17 Oct (45 additional runs; 282 including the or
 | E2 F1: Re 30 / 3000 | 1 / 4 | Pad-and-mask still helps B; per-source encoders help, and fusion cost does not grow uniformly |
 | **Report follow-ups, total** | **1 / 6** | Original predictions and verdicts retained |
 
+The diagnostic follow-up registered on 6 Nov, E10, trained nothing and hit 3 of 6: E10-P1 (p is not
+the smallest share), E10-P3 (pretraining helps the large scales most) and E10-P6 (scratch's
+divergence is above the predicted band) missed (Appendix C.11).
+
 Stage follow-ups:
 * **Stage 4:** F1 1 / 2, F2 1 / 2, F3 3 / 4, F4 4 / 4.
 * **Stage 10:** F1 2 / 2, F2 6 / 6, F3 6 / 7, F4 5 / 6.
@@ -1220,7 +1285,7 @@ Stage follow-ups:
 | Topic | Report | Specification |
 |---|---|---|
 | Stages 1–12 | `experiments/stageN/REPORT.md` | `handouts/stageNN_*.md` |
-| E1–E9 | `experiments/eN/REPORT.md` | `handouts/eN_*.md` |
+| E1–E10 | `experiments/eN/REPORT.md` | `handouts/eN_*.md` |
 | Model walkthrough, shapes, parameters | `docs/architecture.md` | — |
 | Decision record and protocol rules | `project_memory.md` | — |
 | Original plan | `PROJECT_PLAN.md` | — |
@@ -1230,7 +1295,7 @@ To check the code and reproduce a result:
 ```bash
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
-# correctness gates (125 tests; run on CPU)
+# correctness gates (130 tests; run on CPU)
 .venv/bin/python -m pytest tests -q
 # one config -> one run -> one row: reproduces the Stage 7 result
 .venv/bin/python experiments/run.py experiments/configs/h1_stage7_repro.json
