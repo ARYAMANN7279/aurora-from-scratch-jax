@@ -114,6 +114,8 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
     dt = 0.2 * stride
 
     mc = model_config(m)
+    if m.get("derive_from_omega"):  # E11: the model keeps its ω and derives u, v, p in physical units
+        mc = mc._replace(derive=(tuple(float(x) for x in mu), tuple(float(x) for x in sd)))
     key = jax.random.PRNGKey(t["seed"])
     template = model.init(key, mc, dtype=jnp.float32)
     _, unravel = jax.flatten_util.ravel_pytree(template)
@@ -133,6 +135,11 @@ def run(cfg, data_root=None, runs_root=None, results_path=None, verbose=False):
     state = opt.init(trainable)
     fwd = jax.vmap(partial(model.apply, variables=model.VARS, dt=dt, mc=mc), in_axes=(None, 0, 0))
     lossf = (lambda a, b: jnp.mean((a - b) ** 2)) if t.get("loss", "mse") == "mse" else mae
+    if t.get("loss_fields"):  # E11: the MSE over these fields only
+        if t.get("loss", "mse") != "mse":
+            raise ValueError("loss_fields needs the MSE loss")
+        sel = jnp.asarray([model.VARS.index(v) for v in t["loss_fields"]])
+        lossf = lambda a, b: jnp.mean((jnp.take(a, sel, axis=-3) - jnp.take(b, sel, axis=-3)) ** 2)
     pf = bool(t.get("pushforward"))
 
     def objective(q, xm, x0, xp, xp2):

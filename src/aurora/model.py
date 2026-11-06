@@ -19,6 +19,7 @@ class ModelConfig(NamedTuple):
     L: int = 3
     heads: int = 4
     backbone: bb.Config = bb.Config(64, (2, 2, 2), (2, 4, 8), (2, 2, 2), (8, 4, 2), (3, 4, 4))
+    derive: tuple = ()  # E11: ((mean of u, v, p, ω), (std ...)) -> keep ω, derive u, v, p from it
 
 
 def init(key, mc=ModelConfig(), dtype=None):
@@ -59,4 +60,30 @@ def apply(p, x_prev, x_cur, variables, dt, mc=ModelConfig()):
     for i, v in enumerate(variables):
         if v in VARS:  # extra embedded inputs (e.g. E2's presence masks) have no residual
             base = base.at[VARS.index(v)].set(x_cur[i])
-    return base + delta
+    out = base + delta
+    return derive_from_omega(out, *mc.derive) if mc.derive else out
+
+
+def derive_from_omega(x, mean, std):
+    """(4, N, N) normalised (u, v, p, ω) -> four mutually consistent fields fixed by the predicted ω on
+    the 2π-periodic grid (handouts/e11_omega_only.md): ω without its mean and Nyquist modes (zero in
+    the data), psi = -lap^-1 ω, u = psi_y, v = -psi_x, lap p = 2(u_x v_y - u_y v_x); zero-mean
+    u, v, p, as in the data."""
+    N = x.shape[-1]
+    if x.shape[-2] != N:
+        raise ValueError("derive_from_omega needs a square periodic grid")
+    mean, std = jnp.asarray(mean, x.dtype), jnp.asarray(std, x.dtype)
+    k = jnp.fft.fftfreq(N, 1.0 / N).astype(x.dtype)
+    ky, kx = jnp.meshgrid(k, k, indexing="ij")
+    k2 = kx**2 + ky**2
+    k2inv = jnp.where(k2 > 0, 1.0 / jnp.where(k2 > 0, k2, 1.0), 0.0)
+    keep = (k2 > 0) & (jnp.abs(kx) < N / 2) & (jnp.abs(ky) < N / 2)  # a periodic ω has zero mean; drop Nyquist
+    wh = jnp.where(keep, jnp.fft.fft2(x[3] * std[3] + mean[3]), 0)
+    w = jnp.real(jnp.fft.ifft2(wh))
+    ph = wh * k2inv
+    uh, vh = 1j * ky * ph, -1j * kx * ph
+    d = lambda fh, kk: jnp.real(jnp.fft.ifft2(1j * kk * fh))
+    rhs = jnp.fft.fft2(2.0 * (d(uh, kx) * d(vh, ky) - d(uh, ky) * d(vh, kx)))
+    phys = jnp.stack([jnp.real(jnp.fft.ifft2(uh)), jnp.real(jnp.fft.ifft2(vh)), jnp.real(jnp.fft.ifft2(-rhs * k2inv))])
+    phys = jnp.concatenate([phys, w[None]])
+    return ((phys - mean[:, None, None]) / std[:, None, None]).astype(x.dtype)

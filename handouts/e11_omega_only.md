@@ -77,3 +77,12 @@ first idea E10 pointed to: let the model predict ω only and derive the other th
 * **P6.** W's `train_s` is within 10% of B's (mean over seeds).
 
 A miss stays a miss; any change after the first run is dated as an amendment below.
+
+## Amendments
+
+* **A1 (6 Nov 2026, before any run).** Gate D3 failed on random test outputs: a predicted ω can
+  carry a mean and Nyquist modes, which no velocity can reproduce (a periodic ω has zero mean, and
+  the data's Nyquist modes are zero). `derive_from_omega` now first removes both from the predicted
+  ω and returns that projected ω with the derived u, v and p, so all four fields are mutually
+  consistent. Gate D2 accordingly asks the projected true ω to match the true ω to 1e-5 (it was
+  "unchanged"). Arms, metrics and predictions are unchanged.
