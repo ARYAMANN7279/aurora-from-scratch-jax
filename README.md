@@ -78,8 +78,8 @@ Each stage has an acceptance test and is not passed until that test is met.
 Stages 1–8 build the instrument. Stages 9–11 and experiments RQ1–RQ5 are the contribution.
 
 **Experiments.** Every experiment has a spec with pre-registered predictions, committed in git before any
-run (E1–E5 on 28 Sep 2026, E6 on 1 Oct, E7 on 2 Oct, E8 and E9 on 3 Oct). E1–E5 ran on the lab GPU box, E6–E9
-on Kaggle's T4 cards. All are reported against those predictions:
+run (E1–E5 on 28 Sep 2026, E6 on 1 Oct, E7 on 2 Oct, E8 and E9 on 3 Oct, E10 on 6 Nov). E1–E5 ran on the lab GPU box, E6–E9
+on Kaggle's T4 cards, E10 on a laptop CPU. All are reported against those predictions:
 
 | | Spec | Runs | Data | Status |
 |---|---|---|---|---|
@@ -92,6 +92,7 @@ on Kaggle's T4 cards. All are reported against those predictions:
 | E7 attention: relative-position bias | [`handouts/e7_attention_rpb.md`](handouts/e7_attention_rpb.md) | 6 | `e1_v1` (E1's scratch task) | ✅ **done** ([report](experiments/e7/REPORT.md)): 2/3 predictions HIT; a learned bias per head for each offset inside the attention windows lowers one-step error by **6.9% ± 0.7%** (every seed; 0.27% more parameters, 1.2% more time) but not the 20-step drift (−0.9% ± 1.6%, P2 MISS); off by default |
 | E8 follow-ups: attention bias, q/k normalisation, scan chunks | [`handouts/e8_followups.md`](handouts/e8_followups.md) | 18 | `e1_v1` (E1's scratch task) | ✅ **done** ([report](experiments/e8/REPORT.md)): 5/10 predictions HIT. q/k normalisation lowers one-step error by **7.3% ± 0.7%**, as much as E7's bias (6.9% ± 0.7%, replicated). Measured from 84 rollouts, both gains fade from 8–10% at step 2–3 to about zero by step 30. Pushforward costs 12.9% one-step error on this task, and about two-thirds of its 50-step drift gain is damped amplitude (exploratory). Scan chunks give the same models 1.21× faster |
 | E9 bias and q/k normalisation together | [`handouts/e9_rpb_plus_qknorm.md`](handouts/e9_rpb_plus_qknorm.md) | 6 | `e1_v1` (E1's scratch task) | ✅ **done** ([report](experiments/e9/REPORT.md)): 4/6 predictions HIT. Together the two lower one-step error by **8.9% ± 0.4%**, beating either alone (6.9%, 7.3%) in every seed but far short of the 13.7% that independent gains would give: they overlap. The best one-step model so far (0.136 against 0.150). Exploratory: without q/k normalisation, attention is near-uniform at the fine stages and nearly one-hot at the coarsest; q/k normalisation evens this out, and the bias does not |
+| E10 diagnostics of E1's models | [`handouts/e10_diagnostics.md`](handouts/e10_diagnostics.md) | 0 (measures E1's 30 kept models) | `e1_v1` (E1's task) | ✅ **done** ([report](experiments/e10/REPORT.md)): 3/6 predictions HIT. ω holds 62–76% of the one-step error; the error is a small-scale error (below 1% of the signal at \|k\| ≤ 4, above the signal beyond \|k\| ≈ 18–24); the output layer is converged (an exact refit gains < 0.1%); scratch fits its two training trajectories **32×** better than unseen ones while pretrained models fit both alike (1.2×), so longer training cannot help scratch; predicted velocity is 9–15% divergent and ω disagrees with its curl by 10–17% |
 
 ## Stage 1 results: the data generator
 
@@ -120,7 +121,7 @@ Full report: [`experiments/stage1/REPORT.md`](experiments/stage1/REPORT.md).
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
 
-# correctness gates (125 tests; run on CPU)
+# correctness gates (130 tests; run on CPU)
 .venv/bin/python -m pytest tests -q
 
 # one config -> one run -> one row: reproduces the Stage 7 result (needs the acc_v1 dataset)
@@ -172,9 +173,9 @@ the default macOS location. The builder checks image loading before replacing th
   transfers zero-shot almost as well as a model trained on the target, and no method then gains 20%
   over it (F4).
 * **Experiments:** E1 hit 2 of 6 predictions, E2 1 of 3, E3 3 of 4, E4 1 of 5, E5 2 of 4, E6 2 of 5 (and
-  its follow-up 3 of 3), E7 2 of 3, E8 5 of 10 and E9 4 of 6. Each is reported in
+  its follow-up 3 of 3), E7 2 of 3, E8 5 of 10, E9 4 of 6 and E10 3 of 6. Each is reported in
   `experiments/eN/REPORT.md`.
-* **Records:** every stage is built and passes its correctness gates (125 tests on CPU, including the
+* **Records:** every stage is built and passes its correctness gates (130 tests on CPU, including the
   experiment tooling; GPU notes in `project_memory.md`). Each stage and experiment has a spec with
   pre-registered predictions in `handouts/`, and a report.
 
