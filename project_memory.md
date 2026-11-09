@@ -1155,4 +1155,10 @@ reach GitHub (a libp11-kit symbol error in `git-remote-https`), so it is still s
   without pushforward) matched parameters, loss and metrics exactly. 137 tests pass on CPU.
 * **Where:** no lab card was usable (card 0 reserved, cards 1 and 3 busy, card 2 not responding),
   so Kaggle job `ugp2-e11-runs` v1 (code dataset `ugp2-e11-code`, data `ugp2-e7`, 2× T4) runs the
-  9 runs, about 2 hours. Results and scoring (`experiments/e11/score.py`) to follow.
+  9 runs, about 2 hours.
+* **Done, 3 of 6 HIT** (job finished in 1.7 h, all 9 rows; weights kept in ignored
+  `experiments/e11/results/params/`). Physics exact (divergence 0.140 → 6e-7), training 7% faster.
+  W: 20-step drift −12.6% ± 2.3% (0.651, the lowest of any arm on this task, below E8's pushforward
+  arms), one-step −3.7%. WO: one-step −8.7% ± 1.1% (0.137, second to E9's RQ 0.136), 50-step drift
+  +9.8%. Pressure error −38%. Misses: P1 (W's one-step gain 1.2–6.2%), P3 (u part), P4 (WO beats W
+  by 5%). B reproduced E8's B within 0.14%. Added to README, report §6.5 and Appendix C.12.
