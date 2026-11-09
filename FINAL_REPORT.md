@@ -33,6 +33,9 @@ committed before any run, address the research questions; dated report follow-up
   vorticity field and at small scales. The model trained from scratch memorises its two training
   trajectories, so longer training cannot help it, and the predicted fields obey the flow's
   physical constraints only to about 10%.
+* **Building the physics in pays (E11).** Predicting only the vorticity and deriving velocity and
+  pressure from it exactly makes every prediction physically consistent, trains 7% faster and cuts
+  the 20-step rollout drift by 12.6%, the lowest of any variant tested on this task.
 
 The main text gives each result with its key figure. Full designs, tables, follow-ups and the
 prediction record are in the appendices.
@@ -374,7 +377,7 @@ therefore overstates what it buys.
 
 ---
 
-## 6. Which components matter, and what limits accuracy (E4, E7–E10, Stage 12)
+## 6. Which components matter, and what limits accuracy (E4, E7–E11, Stage 12)
 
 ### 6.1 Architecture ablations (E4)
 
@@ -424,6 +427,23 @@ whether the predictions respect the flow's physics.
 * **The physics holds only roughly.** The predicted velocity is 9–15% divergent, and the predicted
   ω differs from the curl of the predicted velocity by 10–17%; nothing ties the four outputs
   together. E10 hit 3 of 6 predictions (Appendix C.11).
+
+### 6.5 Building the physics in (E11)
+
+E11 tested the first idea E10 pointed to. The network is unchanged, but only its vorticity output is
+used: velocity and pressure are derived from it exactly on the periodic grid, so every prediction
+is divergence-free and curl-consistent by construction (3 seeds, E1's scratch task).
+
+<p align="center"><img src="experiments/e11/figs/e11_omega.png" width="720" alt="E11: per-field one-step error, error along a 50-step rollout, and the divergence and curl checks for the four-output model (B) and the two vorticity-only variants (W, WO)"></p>
+
+* **The physics holds exactly, at no cost.** Divergence and curl mismatch fall from 14–15% to
+  float32 round-off, and training is 7% faster.
+* **Pressure gains most:** its one-step error falls by 38%; velocity's by 5–7%.
+* **Where the loss sits decides what improves.** With the loss on all four derived fields, the
+  20-step drift falls by 12.6% ± 2.3%, lower than any variant on this task, pushforward
+  included; one step ahead it gains 3.7%. With the loss on vorticity alone, the one-step error
+  falls by 8.7% ± 1.1% (second only to E9's two attention changes together), but the 50-step drift
+  rises by 10%. E11 hit 3 of 6 predictions (Appendix C.12).
 
 ---
 
@@ -488,9 +508,10 @@ model comes within one accuracy point of the organisers' FNO, and real data, not
 pretraining, is what counts.
 
 **Future work.** Each would get its own pre-registered specification.
-* **Physically consistent outputs:** predict only the vorticity and derive velocity and pressure from
-  it exactly, which makes the output divergence-free by construction and puts the whole loss on the
-  field that limits accuracy (E10); and a loss that weights the small scales, where the error lives.
+* **Physically consistent outputs, further:** E11 showed that deriving velocity and pressure from the
+  predicted vorticity pays. Next would be combining it with pushforward or E9's attention changes,
+  a loss between E11's two variants, and a loss that weights the small scales, where E10 found the
+  error lives.
 * **Separate diversity, distance and compute:** a 32-regime set matched in distance to the 2-regime
   set, with pretraining steps scaled with volume.
 * **Steadier long forecasts:** fine-tuning recipes that do not trade rollout stability for one-step
@@ -663,8 +684,9 @@ traces back to one run.
   6000 Blackwell, JAX 0.10.2), on idle cards only.
 * **E6–E9 and Stage 4's longest follow-ups (F3, F4):** Kaggle's T4 GPUs, used when the lab's cards
   were busy, with software pinned to the lab machine's versions.
-* **E10:** a laptop CPU (evaluation only, about 45 minutes).
-* **Tests:** 130 tests pass on CPU (6 Nov, including E10's five; 125 passed on 17 Oct, and the
+* **E10:** a laptop CPU (evaluation only, about 45 minutes). **E11:** Kaggle's two T4 cards
+  (9 runs, 1.7 h).
+* **Tests:** 137 tests pass on CPU (6 Nov, including E10's five and E11's seven; 125 passed on 17 Oct, and the
   original 118-test baseline also passed the 9 Oct audit).
 
 ## Appendix B: Stages 1–12 in detail
@@ -1179,6 +1201,33 @@ heads, on a laptop CPU. It reproduces E1's stored errors for all 30 models to 2.
 Ideas it points to, not run: predict ω only and derive u, v and p; a scale-weighted loss; finer
 patches; longer training for the pretrained models only. Full report: `experiments/e10/REPORT.md`.
 
+### C.12 Predict the vorticity only (E11)
+
+**Design.** Pre-registered on 6 Nov 2026 (`handouts/e11_omega_only.md`); amendment A1, before any
+run, projects the predicted ω onto zero mean and no Nyquist modes so that u, v and p can match it.
+`model.derive_from_omega` keeps the network and derives u, v and p from its ω output in physical
+units; `train.loss_fields` restricts the MSE. Arms on E1's scratch task, seeds 0–2, same weights
+and batches per seed: B (E8's arm B, rerun), W (derived fields, loss on all four), WO (derived
+fields, loss on ω). Kaggle, two T4 cards, 9 runs. Gates D1–D5 pass, D1 bitwise against the
+previous harness.
+
+| Arm | One-step error | 20-step drift | 50-step drift | p error | ω error | Divergence ratio |
+|---|---|---|---|---|---|---|
+| B | 0.150 | 0.745 | 1.100 | 0.137 | 0.236 | 0.140 |
+| W | 0.145 (−3.7% ± 1.5%) | **0.651 (−12.6% ± 2.3%)** | 1.043 (−5.2%) | **0.085** | 0.250 | 6 × 10⁻⁷ |
+| WO | **0.137 (−8.7% ± 1.1%)** | 0.709 (−4.7%) | 1.206 (+9.8%) | 0.090 | **0.231** | 6 × 10⁻⁷ |
+
+| # | Prediction | Verdict |
+|---|---|---|
+| P1 | W lowers the one-step error by ≥ 5% in every seed | MISS: 1.2%, 3.6%, 6.2% |
+| P2 | W lowers the 20-step drift in every seed | HIT: 9.2%, 11.7%, 16.9% |
+| P3 | WO's ω error below W's, W's u error below WO's, every seed | MISS: the ω part holds; the u part only in seed 2 |
+| P4 | WO not better than W by more than 2% one step ahead | MISS: 5.1% ± 2.4% better |
+| P5 | B reproduces E8's arm B within 1% | HIT: within 0.14% |
+| P6 | W's training time within 10% of B's | HIT: 7% faster |
+
+Full report: `experiments/e11/REPORT.md`.
+
 ## Appendix D: proposed architecture and evaluation plan
 
 **Follow-up experiments.** Each of these would get its own pre-registered specification.
@@ -1273,7 +1322,9 @@ Report follow-ups registered on 17 Oct (45 additional runs; 282 including the or
 
 The diagnostic follow-up registered on 6 Nov, E10, trained nothing and hit 3 of 6: E10-P1 (p is not
 the smallest share), E10-P3 (pretraining helps the large scales most) and E10-P6 (scratch's
-divergence is above the predicted band) missed (Appendix C.11).
+divergence is above the predicted band) missed (Appendix C.11). E11, registered the same day
+(9 runs), hit 3 of 6: E11-P1 (W's one-step gain below 5% in two seeds), E11-P3 (WO's u error lower
+than W's in two seeds) and E11-P4 (WO beats W one step ahead by 5%) missed (Appendix C.12).
 
 Stage follow-ups:
 * **Stage 4:** F1 1 / 2, F2 1 / 2, F3 3 / 4, F4 4 / 4.
@@ -1285,7 +1336,7 @@ Stage follow-ups:
 | Topic | Report | Specification |
 |---|---|---|
 | Stages 1–12 | `experiments/stageN/REPORT.md` | `handouts/stageNN_*.md` |
-| E1–E10 | `experiments/eN/REPORT.md` | `handouts/eN_*.md` |
+| E1–E11 | `experiments/eN/REPORT.md` | `handouts/eN_*.md` |
 | Model walkthrough, shapes, parameters | `docs/architecture.md` | — |
 | Decision record and protocol rules | `project_memory.md` | — |
 | Original plan | `PROJECT_PLAN.md` | — |
@@ -1295,7 +1346,7 @@ To check the code and reproduce a result:
 ```bash
 python3.11 -m venv .venv
 .venv/bin/pip install jax numpy scipy sympy pytest matplotlib optax
-# correctness gates (130 tests; run on CPU)
+# correctness gates (137 tests; run on CPU)
 .venv/bin/python -m pytest tests -q
 # one config -> one run -> one row: reproduces the Stage 7 result
 .venv/bin/python experiments/run.py experiments/configs/h1_stage7_repro.json

@@ -1118,3 +1118,47 @@ readability. The main text now gives each result with its key figure, plus new i
 E6 score comparison. Full designs, tables, follow-ups, limitations, the proposed architecture
 (now Appendix D) and the prediction record (Appendix E) moved verbatim to Appendices A–F. No number,
 verdict or result changed. The rebuilt PDF has 32 pages.
+
+## 8. After the review, Nov 2026
+
+**Repository, 4 Nov 2026 (owner's request).** The repository is public. Its history was rewritten
+once to drop a trailer from the root commit's message (no file changed), then recreated fresh at
+the same name with `main` only. The old repository, with PRs #1–#53, was deleted by the owner on
+4 Nov, so PR numbers restart at #1. `vm-results` is retired: new work branches off `main` and merges
+by PR. The co-advisor's write access was restored on the new repository. The lab clone's git cannot
+reach GitHub (a libp11-kit symbol error in `git-remote-https`), so it is still synced by bundle.
+
+### 2026-11-06 — E10: diagnostics of E1's trained models, 3 of 6 HIT
+* **The ask:** after the review, the co-advisor suggested diagnosing what limits accuracy (which
+  loss term, output-layer convergence, where the error lives, physics checks). Registered as
+  `handouts/e10_diagnostics.md` before any measurement. No training: E1's 30 kept checkpoints
+  (`data/runs/`, on the lab machine and copied to the Mac) were measured on the Mac's CPU.
+* **Findings:** ω holds 62–76% of the one-step error; the error is small-scale (below 1% of the
+  signal at |k| ≤ 4, above it beyond |k| ≈ 18–24); an exact least-squares refit of the output heads
+  gains < 0.1%, so the output layer is converged; scratch's evaluation MSE is 32× its training MSE,
+  pretrained models' 1.2×, so scratch is data-limited; predicted velocity is 9–15% divergent and ω
+  disagrees with its curl by 10–17%.
+* **Misses:** P1 (u and v, not p, are the smallest shares), P3 (pretraining helps the large scales
+  most), P6 (scratch's divergence above the predicted band).
+* Merged as PR #1 on the new repository (`262230d`), with the README row, report §6.4 and
+  Appendix C.11 (PDF rebuilt, 34 pages) and a slide in the simple deck. 130 tests passed.
+* **Mac environment:** on 6 Nov a faulty copy command merged the lab machine's Linux `.venv` into
+  the Mac's; the Mac `.venv` was rebuilt (Python 3.11, `jax==0.10.2`, `optax==0.2.8`, CPU).
+
+### 2026-11-06 — E11 registered and running: predict ω only, derive u, v, p
+* **Spec:** `handouts/e11_omega_only.md`, committed before any run (`812967d`). Arms on E1's
+  scratch task, seeds 0–2: B (E8's arm B, rerun), W (`model.derive_from_omega`, loss over all four
+  derived fields), WO (the same, `train.loss_fields: ["omega"]`). Predictions P1–P6.
+* **Amendment A1 (before any run):** gate D3 showed that a predicted ω with a mean or Nyquist modes
+  cannot match any velocity; the derivation now projects ω first and returns that ω with u, v, p.
+* **Gates:** D1–D5 pass; D1's bitwise check against the previous harness (40 steps, with and
+  without pushforward) matched parameters, loss and metrics exactly. 137 tests pass on CPU.
+* **Where:** no lab card was usable (card 0 reserved, cards 1 and 3 busy, card 2 not responding),
+  so Kaggle job `ugp2-e11-runs` v1 (code dataset `ugp2-e11-code`, data `ugp2-e7`, 2× T4) runs the
+  9 runs, about 2 hours.
+* **Done, 3 of 6 HIT** (job finished in 1.7 h, all 9 rows; weights kept in ignored
+  `experiments/e11/results/params/`). Physics exact (divergence 0.140 → 6e-7), training 7% faster.
+  W: 20-step drift −12.6% ± 2.3% (0.651, the lowest of any arm on this task, below E8's pushforward
+  arms), one-step −3.7%. WO: one-step −8.7% ± 1.1% (0.137, second to E9's RQ 0.136), 50-step drift
+  +9.8%. Pressure error −38%. Misses: P1 (W's one-step gain 1.2–6.2%), P3 (u part), P4 (WO beats W
+  by 5%). B reproduced E8's B within 0.14%. Added to README, report §6.5 and Appendix C.12.

@@ -1,0 +1,755 @@
+[
+ {
+  "name": "e11_B_s0",
+  "prediction": "E11 arm B (none (the control)), seed 0: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_B_s1",
+  "prediction": "E11 arm B (none (the control)), seed 1: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_B_s2",
+  "prediction": "E11 arm B (none (the control)), seed 2: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   }
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_W_s0",
+  "prediction": "E11 arm W (\u03c9 only, u, v, p derived; loss over all four), seed 0: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   },
+   "derive_from_omega": true
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_W_s1",
+  "prediction": "E11 arm W (\u03c9 only, u, v, p derived; loss over all four), seed 1: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   },
+   "derive_from_omega": true
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_W_s2",
+  "prediction": "E11 arm W (\u03c9 only, u, v, p derived; loss over all four), seed 2: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   },
+   "derive_from_omega": true
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_WO_s0",
+  "prediction": "E11 arm WO (\u03c9 only, u, v, p derived; loss on \u03c9), seed 0: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   },
+   "derive_from_omega": true
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 0,
+   "init_from": null,
+   "lora_rank": null,
+   "loss_fields": [
+    "omega"
+   ]
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_WO_s1",
+  "prediction": "E11 arm WO (\u03c9 only, u, v, p derived; loss on \u03c9), seed 1: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   },
+   "derive_from_omega": true
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 1,
+   "init_from": null,
+   "lora_rank": null,
+   "loss_fields": [
+    "omega"
+   ]
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ },
+ {
+  "name": "e11_WO_s2",
+  "prediction": "E11 arm WO (\u03c9 only, u, v, p derived; loss on \u03c9), seed 2: E11-P1 to E11-P6; handouts/e11_omega_only.md",
+  "data": {
+   "dataset": "e1_v1",
+   "N": 64,
+   "stride": 1,
+   "train": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      0,
+      1
+     ]
+    }
+   ],
+   "test": [],
+   "val": [
+    {
+     "tag": "re300_kf4",
+     "seeds": [
+      2,
+      3,
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "model": {
+   "D": 64,
+   "P": 4,
+   "L": 3,
+   "heads": 4,
+   "backbone": {
+    "enc_depths": [
+     2,
+     2,
+     2
+    ],
+    "enc_heads": [
+     2,
+     4,
+     8
+    ],
+    "dec_depths": [
+     2,
+     2,
+     2
+    ],
+    "dec_heads": [
+     8,
+     4,
+     2
+    ],
+    "window": [
+     3,
+     4,
+     4
+    ]
+   },
+   "derive_from_omega": true
+  },
+  "train": {
+   "steps": 22000,
+   "batch": 16,
+   "lr": 0.001,
+   "schedule": "cosine",
+   "loss": "mse",
+   "pushforward": false,
+   "seed": 2,
+   "init_from": null,
+   "lora_rank": null,
+   "loss_fields": [
+    "omega"
+   ]
+  },
+  "eval": {
+   "rollout_steps": 20,
+   "splits": [
+    "val"
+   ],
+   "drift_every": 20,
+   "drift_steps": 50
+  }
+ }
+]
