@@ -189,6 +189,12 @@ per-source encoders help, and fusion cost does not grow uniformly. Original verd
 the follow-ups are reported separately. The updated **125-test CPU suite passes**.
 See [`docs/prashant_feedback_2026-10-17.md`](docs/prashant_feedback_2026-10-17.md).
 
+## UGP Parts I and II: final presentation and report
+
+[`UGP_Final/`](UGP_Final/) holds the presentation (38 slides with speaker notes) and the report for the whole
+undergraduate project: Part I, forecasting a real airfoil wake in the NeurIPS 2026 RealPDE competition, and
+Part II, this repository.
+
 ## Advisors
 
 Prof. Rajesh Ranjan (ACAL, IIT Kanpur) · Prashant Kumar (PhD)
