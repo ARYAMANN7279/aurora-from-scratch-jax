@@ -1,4 +1,4 @@
-// Combined UGP deck, v3 (Part I: RealPDE airfoil wake; Part II: Aurora in JAX).
+// Combined UGP deck, v4: the UGP-I/UGP-II look (light-blue covers, blue header band), approach/finding tags (Part I: RealPDE airfoil wake; Part II: Aurora in JAX).
 // Action titles, one exhibit per slide, illustrative plots drawn at slide size by make_deck_figs.py and
 // make_physics_figs.py. Usage: node build.js [out.pptx]   (also writes ../UGP_Final_speaker_notes.md)
 const pptxgen = require("pptxgenjs");
@@ -7,7 +7,7 @@ const path = require("path");
 const IMG = (f) => path.join(__dirname, "..", "figs", f);
 const OUT = process.argv[2] || path.join(__dirname, "..", "UGP_Final_Presentation.pptx");
 
-const INK = "2C3E50", BLUE = "2E75B6", OR = "CA6F1E", MUT = "5D6D7E", GREY = "AAB4BF", WHITE = "FFFFFF",
+const INK = "2C3E50", BLUE = "2E75B6", OR = "CA6F1E", MUT = "5D6D7E", GREY = "AAB4BF", WHITE = "FFFFFF", LBLUE = "558ED5", NAVY = "1F4E79",
   PALE = "EAF1FB", PALEO = "FBEFE4", SOFT = "F2F5FA", LIGHT = "E2E8F0";
 const FONT = "Arial";
 const pres = new pptxgen();
@@ -17,6 +17,12 @@ pres.title = "Teaching Neural Networks to Forecast Fluid Flow";
 pres.theme = { headFontFace: FONT, bodyFontFace: FONT };
 const NOTES = require("./notes.json");
 const TITLES = [];
+const P1T = "PART I", P2T = "PART II";
+const TAGS = [null, "OVERVIEW", null, `${P1T} · PROBLEM`, `${P1T} · APPROACH`, `${P1T} · PROBLEM`, `${P1T} · APPROACH`, `${P1T} · RESULT`, `${P1T} · RESULT`,
+  `${P1T} · RESULT`, `${P1T} · LESSON`, `${P1T} · SUMMARY`, null, `${P2T} · QUESTION`, `${P2T} · APPROACH`, `${P2T} · APPROACH`, `${P2T} · APPROACH`,
+  `${P2T} · APPROACH`, `${P2T} · APPROACH`, `${P2T} · FINDING 1`, `${P2T} · FINDING 1`, `${P2T} · FINDING 2`, `${P2T} · FINDING 3`, `${P2T} · CHALLENGE`,
+  `${P2T} · FINDING 4`, `${P2T} · FINDING 5`, `${P2T} · FINDING 6`, `${P2T} · FINDING 6`, `${P2T} · IDEA`, `${P2T} · FINDING 7`, `${P2T} · FINDING 7`,
+  `${P2T} · SUMMARY`, "SYNTHESIS", "DISCUSSION", "CONCLUSIONS", "BACKUP", "BACKUP", "BACKUP", "BACKUP", "BACKUP"];
 let n = 0;
 
 function dims(f) { // PNG width and height from the IHDR chunk
@@ -32,16 +38,27 @@ function img(s, f, x, y, w, h, align) { // fit inside w x h keeping the aspect r
 function slide(name, o) {
   o = o || {};
   const s = pres.addSlide();
-  s.background = { color: o.dark ? INK : WHITE };
+  s.background = { color: o.dark ? LBLUE : WHITE };
   n++;
   TITLES.push(name);
   s.addNotes(NOTES[n - 1]);
-  if (!o.dark) {
-    s.addText(String(n), { x: 9.1, y: 5.25, w: 0.4, h: 0.25, fontSize: 11, color: MUT, align: "right", fontFace: FONT, margin: 0, isTextBox: true });
-    if (o.tag) s.addText(o.tag, { x: 0.5, y: 5.25, w: 6, h: 0.25, fontSize: 11, color: MUT, fontFace: FONT, margin: 0, isTextBox: true });
-    if (o.cite) s.addText(o.cite, { x: 0.5, y: 4.97, w: 9, h: 0.25, fontSize: 11, color: MUT, fontFace: FONT, margin: 0, italic: true, isTextBox: true });
-    s.addText(name, { x: 0.5, y: 0.28, w: 9, h: 0.95, fontSize: 26, bold: true, color: INK, fontFace: FONT, margin: 0, valign: "top", isTextBox: true });
+  if (o.dark) {
+    s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 5.05, w: 10, h: 0.575, fill: { color: NAVY }, line: { color: NAVY } });
+    return s;
   }
+  s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 0, w: 10, h: 1.18, fill: { color: LBLUE }, line: { color: LBLUE } });
+  s.addShape(pres.shapes.RECTANGLE, { x: 0, y: 5.33, w: 10, h: 0.295, fill: { color: LBLUE }, line: { color: LBLUE } });
+  const tag = TAGS[n - 1];
+  if (tag) {
+    const hot = /FINDING|RESULT/.test(tag), dark = /SUMMARY|CONCLUSIONS/.test(tag);
+    const fill = hot ? OR : dark ? NAVY : WHITE, col = hot || dark ? WHITE : NAVY, w = 0.3 + tag.length * 0.085;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.5, y: 0.1, w, h: 0.22, fill: { color: fill }, line: { color: fill }, rectRadius: 0.05 });
+    s.addText(tag, { x: 0.5, y: 0.1, w, h: 0.22, fontSize: 9, bold: true, color: col, align: "center", valign: "middle", fontFace: FONT, margin: 0, isTextBox: true });
+  }
+  s.addText(name, { x: 0.5, y: 0.36, w: 9, h: 0.78, fontSize: 23, bold: true, color: WHITE, fontFace: FONT, margin: 0, valign: "middle", isTextBox: true });
+  s.addText(String(n), { x: 9.1, y: 5.36, w: 0.4, h: 0.24, fontSize: 10, color: WHITE, align: "right", fontFace: FONT, margin: 0, isTextBox: true });
+  if (o.tag) s.addText(o.tag, { x: 0.5, y: 5.36, w: 6, h: 0.24, fontSize: 10, color: WHITE, fontFace: FONT, margin: 0, isTextBox: true });
+  if (o.cite) s.addText(o.cite, { x: 0.5, y: 5.0, w: 9, h: 0.25, fontSize: 10.5, color: MUT, fontFace: FONT, margin: 0, italic: true, isTextBox: true });
   return s;
 }
 const txt = (s, t, o) => s.addText(t, Object.assign({ fontFace: FONT, color: INK, fontSize: 18, margin: 0, valign: "top", isTextBox: true }, o));
@@ -66,22 +83,22 @@ function mathBox(s, t, y, o) {
 }
 function divider(part, t, sub) {
   const s = slide(`${part}: ${t}`, { dark: true });
-  txt(s, part, { x: 0.7, y: 1.6, w: 8.6, h: 0.5, fontSize: 18, bold: true, color: "9FC0EC" });
+  txt(s, part, { x: 0.7, y: 1.6, w: 8.6, h: 0.5, fontSize: 18, bold: true, color: WHITE });
   txt(s, t, { x: 0.7, y: 2.1, w: 8.6, h: 0.9, fontSize: 34, bold: true, color: WHITE });
-  txt(s, sub, { x: 0.7, y: 3.1, w: 8.6, h: 0.6, fontSize: 16, color: "C9D6E6" });
+  txt(s, sub, { x: 0.7, y: 3.1, w: 8.6, h: 0.6, fontSize: 16, color: WHITE });
 }
 const P1 = "Part I  |  Real airfoil wake", P2 = "Part II  |  What pretraining data buys";
 
 // 1 Title ------------------------------------------------------------------------------------------------------
 {
   const s = slide("Teaching Neural Networks to Forecast Fluid Flow", { dark: true });
-  txt(s, "Undergraduate Project  |  Parts I and II", { x: 0.6, y: 1.0, w: 5.6, h: 0.4, fontSize: 15, bold: true, color: "9FC0EC" });
+  txt(s, "Undergraduate Project  |  Parts I and II", { x: 0.6, y: 1.0, w: 5.6, h: 0.4, fontSize: 15, bold: true, color: WHITE });
   txt(s, "Teaching Neural Networks to Forecast Fluid Flow", { x: 0.6, y: 1.5, w: 5.6, h: 1.7, fontSize: 34, bold: true, color: WHITE });
-  txt(s, "From a real airfoil wake to a rebuilt weather foundation model", { x: 0.6, y: 3.25, w: 5.4, h: 0.7, fontSize: 16, color: "C9D6E6" });
-  txt(s, "Aryamann Srivastava  |  Aerospace Engineering, IIT Kanpur", { x: 0.6, y: 4.35, w: 5.6, h: 0.3, fontSize: 13, color: "C9D6E6" });
-  txt(s, "Supervisor: Prof. Rajesh Ranjan  |  November 2026", { x: 0.6, y: 4.7, w: 5.6, h: 0.3, fontSize: 13, color: "C9D6E6" });
-  s.addImage({ path: IMG("kolmo1.png"), x: 6.55, y: 0.65, w: 2.95, h: 2.95 });
-  s.addImage({ path: IMG("wake.png"), x: 6.55, y: 3.75, w: 2.95, h: 2.95 / 2.168 });
+  txt(s, "From a real airfoil wake to a rebuilt weather foundation model", { x: 0.6, y: 3.25, w: 5.4, h: 0.7, fontSize: 16, color: WHITE });
+  txt(s, "Aryamann Srivastava  |  Aerospace Engineering, IIT Kanpur", { x: 0.6, y: 4.1, w: 5.6, h: 0.3, fontSize: 13, color: WHITE });
+  txt(s, "Supervisor: Prof. Rajesh Ranjan  |  November 2026", { x: 0.6, y: 5.2, w: 5.6, h: 0.3, fontSize: 12, color: WHITE });
+  s.addImage({ path: IMG("kolmo1.png"), x: 6.75, y: 0.45, w: 2.75, h: 2.75 });
+  s.addImage({ path: IMG("wake.png"), x: 6.75, y: 3.4, w: 2.75, h: 2.75 / 2.168 });
 }
 
 // 2 Overview + the forecaster ----------------------------------------------------------------------------------
@@ -177,6 +194,22 @@ divider("Part I", "Forecasting a Real Airfoil Wake", "NeurIPS 2026 RealPDE compe
   });
   fillBox(s, 0.5, 4.0, 9, 0.85, PALEO);
   txt(s, "The camera sees a 2-D slice of a 3-D flow: 45% of the measured fluctuation energy breaks the 2-D rule.", { x: 0.7, y: 4.0, w: 8.6, h: 0.85, fontSize: 16, bold: true, valign: "middle" });
+}
+
+// 11b Part I summary -------------------------------------------------------------------------------------
+{
+  const s = slide("Part I in one slide: decode the score, calibrate the bands, keep the forecast safe", { tag: P1 });
+  const col = (x, head, c, items) => {
+    txt(s, head, { x, y: 1.4, w: 4.3, h: 0.4, fontSize: 20, bold: true, color: c });
+    items.forEach(([b, d], i) => {
+      const y = 1.95 + i * 0.95;
+      fillBox(s, x, y, 4.3, 0.82, c === OR ? PALEO : PALE);
+      txt(s, b, { x: x + 0.15, y: y + 0.07, w: 4.0, h: 0.34, fontSize: 15, bold: true });
+      txt(s, d, { x: x + 0.15, y: y + 0.42, w: 4.0, h: 0.36, fontSize: 12.5, color: MUT });
+    });
+  };
+  col(0.5, "Approach", BLUE, [["Recover the hidden scoring", "solved the weights from 40 leaderboard scores"], ["Fine-tune and average the model", "the organisers' FNO, weights averaged (model soup)"], ["Bands that never touch the forecast", "U-Net error estimate + 24-bin width table"]]);
+  col(5.2, "Findings", OR, [["72.7 → 80.1 overall", "uncertainty 14 → 40, turbulence +4.6"], ["The forecast was the limit", "perfect bands would still miss the top ten"], ["A false physics rule hurts", "2-D rule on 3-D camera data: −9 points"]]);
 }
 
 // 12 Divider ---------------------------------------------------------------------------------------------------
@@ -350,6 +383,25 @@ divider("Part II", "What Does Pretraining Data Buy?", "Part I's open question, a
   bullets(s, ["Best of any change tried here, pushforward included", "7% faster to train", "Pressure error −38%"], { x: 6.1, y: 2.65, w: 3.4, h: 2.2, fontSize: 16, paraSpaceAfter: 8 });
 }
 
+// 30b Part II findings at a glance ------------------------------------------------------------------------
+{
+  const s = slide("Part II findings at a glance", { tag: P2 });
+  const F = [["−46%", "Pretraining roughly halves the next-step error (0.150 → 0.081)"],
+    ["0.084 vs 0.19", "Closeness matters most: near-target settings start twice as good; more data or variety did not help"],
+    ["41% → 5%", "The gain is largest when target data is scarce (1 → 6 target simulations)"],
+    ["31–50%", "Pushforward cuts long-forecast drift; attention +9%, depth +7%"],
+    ["≈ 0.1", "Simulation pretraining adds almost nothing on real data: real data counts"],
+    ["62–76%", "of the remaining error is in the spin field, in the tiniest swirls"],
+    ["−12.6%", "Physics built in: exact flow rules and better 20-step forecasts"]];
+  F.forEach(([b, t], i) => {
+    const y = 1.32 + i * 0.52;
+    if (i % 2 === 0) fillBox(s, 0.5, y, 9, 0.48, SOFT);
+    txt(s, String(i + 1), { x: 0.6, y, w: 0.3, h: 0.48, fontSize: 13, bold: true, color: MUT, valign: "middle" });
+    txt(s, b, { x: 0.95, y, w: 1.85, h: 0.48, fontSize: 18, bold: true, color: OR, valign: "middle" });
+    txt(s, t, { x: 2.9, y, w: 6.5, h: 0.48, fontSize: 14, valign: "middle" });
+  });
+}
+
 // 31 Together ------------------------------------------------------------------------------------------------
 {
   const s = slide("Together: closeness, scarce target data and true physics are what help", { tag: "Synthesis" });
@@ -433,9 +485,9 @@ divider("Part II", "What Does Pretraining Data Buy?", "Part I's open question, a
 
 if (n !== NOTES.length) throw new Error(`slides ${n} != notes ${NOTES.length}`);
 const words = NOTES.map((t) => t.split(/\s+/).length);
-const talk = words.slice(0, 33).reduce((a, b) => a + b, 0);
+const talk = words.slice(0, 35).reduce((a, b) => a + b, 0);
 let md = "# UGP Parts I and II: speaker notes\n\n";
-md += `Slides 1–33 are the talk, about 30 seconds each (${Math.round(talk / 150)} to ${Math.round(talk / 130)} minutes at a calm pace); slides 34–38 are backup for questions.\n`;
+md += `Slides 1–35 are the talk, about 30 seconds each (${Math.round(talk / 150)} to ${Math.round(talk / 130)} minutes at a calm pace); slides 36–40 are backup for questions.\n`;
 NOTES.forEach((t, i) => { md += `\n## ${i + 1}. ${TITLES[i]}\n\n${t}\n`; });
 fs.writeFileSync(path.join(__dirname, "..", "UGP_Final_speaker_notes.md"), md);
 console.log("max words in a note:", Math.max(...words), "talk words:", talk);

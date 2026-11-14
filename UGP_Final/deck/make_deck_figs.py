@@ -46,24 +46,6 @@ a.spines["bottom"].set_visible(False)
 a.spines["left"].set_visible(False)
 save(f, "d_weights.png")
 
-# 8. channels
-f, a = fig(6.3, 3.55)
-ch = ["Accuracy", "Fluct.", "Probes", "Speed", "Uncert.", "Overall"]
-kit = [94.2, 74.0, 92.8, 92.7, 14.1, 72.7]
-ours = [94.0, 78.6, 93.2, 90.8, 39.6, 80.1]
-x = np.arange(6)
-a.bar(x - 0.2, kit, 0.4, color=GREY, label="Organisers' baseline")
-b = a.bar(x + 0.2, ours, 0.4, color=[BLUE] * 4 + [OR, OR], label="Our entry")
-for xi, v in zip(x, kit):
-    a.text(xi - 0.2, v + 1.5, f"{v:.0f}", ha="center", fontsize=11, color=MUT)
-for xi, v in zip(x, ours):
-    a.text(xi + 0.2, v + 1.5, f"{v:.0f}", ha="center", fontsize=11, fontweight="bold")
-a.set(xticks=x, xticklabels=ch, ylim=(0, 118), yticks=[])
-a.tick_params(axis="x", labelsize=12.5, length=0)
-a.spines["left"].set_visible(False)
-a.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=GREY), plt.Rectangle((0, 0), 1, 1, color=BLUE)], labels=["Organisers' baseline", "Our entry"], frameon=False, ncol=2, loc="upper left", fontsize=13)
-save(f, "d_channels.png")
-
 # 9. climb
 v = [78.450, 79.2464, 79.3418, 79.3695, 79.3789, 79.4626, 79.4844, 79.4870, 79.4939, 79.5907, 79.6026, 79.6567, 79.7535, 79.8574, 80.0613, 80.0813]
 f, a = fig(9, 3.2)
@@ -120,22 +102,6 @@ a.set(xlim=(0.6, 6.4), xticks=[int(k) for k in ks], ylim=(0, 55), yticks=[], xla
 a.spines["left"].set_visible(False)
 a.tick_params(axis="x", labelsize=16)
 save(f, "d_scarce.png")
-
-# 21. tiny swirls
-S = J("experiments/e10/results/analysis.json")["shell_ratio"]
-k = np.arange(1, 25)
-f, a = fig(5.4, 3.6)
-a.plot(k, 100 * np.array(S["scratch"][1:25]), color=GREY, lw=3.5, label="Trained from scratch")
-a.plot(k, 100 * np.array(S["ft n32"][1:25]), color=BLUE, lw=3.5, label="Pretrained")
-a.axhline(100, color=OR, lw=2, ls="--")
-a.text(1, 106, "error as big as the swirls", color=OR, fontsize=13, fontweight="bold")
-a.set(ylim=(0, 200), xlim=(1, 24), xticks=[], yticks=[0, 50, 100, 150, 200], xlabel="swirl size   (big  →  tiny)", ylabel="error, % of the swirls' strength")
-a.set_yticklabels(["0", "50", "100", "150", "200"])
-a.tick_params(axis="y", labelsize=13)
-a.legend(frameon=False, loc="upper left", fontsize=13)
-a.grid(axis="y", color=LIGHT)
-a.set_axisbelow(True)
-save(f, "d_swirls.png")
 
 # 22. rollout (average over the first 20 steps is what the 13% measures)
 E11 = J("experiments/e11/results/analysis.json")["runs"]
