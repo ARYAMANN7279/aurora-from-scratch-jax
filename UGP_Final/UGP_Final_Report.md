@@ -98,7 +98,7 @@ contains the truth earns little; a narrow one that misses earns nothing.
 
 ## 4. What we built
 
-Three pieces, each tested on its own:
+Four pieces, each tested on its own:
 
 1. **A better forecast.** We fine-tuned the organisers' FNO on the real recordings and averaged the
    weights of several independently fine-tuned copies (a *model soup*). The size limit allows only
@@ -109,6 +109,10 @@ Three pieces, each tested on its own:
 3. **Uncertainty bands.** A U-Net looks at the input and the forecast and predicts how wrong the
    forecast is likely to be at each point. A lookup table turns that into a band width, and the
    band is shifted to where it covers best.
+4. **Speed.** Runtime is scored too. We moved per-point work from the CPU to the GPU, merged three
+   small networks into one and stored weights at half precision, reaching 7.8 seconds. The speed
+   score is already on the flat part of its curve there: halving the time again would add only about
+   0.25 points.
 
 **A useful design choice:** the bands never touch the forecast itself, so every improvement to the
 uncertainty left the accuracy channels exactly unchanged. That made uncertainty work safe and cheap
@@ -129,8 +133,21 @@ Against the organisers' baseline, channel by channel:
 * **Fluctuations: 74.0 → 78.6**, from the fluctuation correction.
 * Accuracy and the probes stayed at the baseline's level of about 93–94; speed stayed above 90.
 
-The field was very tight: about 182 teams, with the whole published top 50 within 1.6 points. Our
-development score finished just outside the top 50.
+**Getting it wrong, then right.** On 22 September we widened the bands by 20%, predicting +0.11; the
+score fell by 0.48, our worst submission in weeks. Because the prediction had been written down, the
+miss could be solved for: a calibration constant was 2.14 times too large. The next day we narrowed
+the bands instead, predicted +0.31, gained +0.20 and crossed 80 for the first time.
+
+**Where we landed.** Our final development score was **80.081**, against the organisers' baseline of
+72.65. The top-10 cutoff was 81.90 and the development leader scored 82.22. The field was very tight:
+about 182 teams, with the whole published top 50 within 1.6 points, and our score finished just
+outside the top 50.
+
+* **The forecast was the limit, not the bands.** Even a perfect uncertainty model on our forecast
+  would score 81.73, below the top-10 cutoff (81.77 at the time).
+* **What the gap to first place was made of.** The leader's errors were 10–16% smaller and their
+  program 30% faster; we estimated about 58% of the gap came from a better forecast and 42% from
+  better bands.
 
 ## 6. What Part I taught us
 
@@ -455,7 +472,8 @@ pretrained models' 1.2×.
 
 ## Appendix D: Where everything lives
 
-* **Part I:** the competition entry, its record and the HiPC 2026 student symposium paper, in the
-  UGP-I project folder (`project_memory.md`, `shipped/`, `hipc_srs/`).
+* **Part I:** the competition entry, its full decision record and the HiPC 2026 student symposium
+  paper, at github.com/ARYAMANN7279/RealPDE-Track1.
 * **Part II:** code, data recipes, every experiment's specification and report, and the detailed
   Part II report (`FINAL_REPORT.pdf`), at github.com/ARYAMANN7279/aurora-from-scratch-jax.
+* **This presentation and report:** the `UGP_Final/` folder of the Part II repository.

@@ -257,7 +257,9 @@ items = ["A.  Part I: the scoring formulas, the uncertainty bands, the component
          "C.  All eleven Part II experiments and the full prediction record",
          "D.  Deriving velocity and pressure from the spin, and a glossary",
          "",
-         "Final report: UGP_Final_Report.pdf      Code and results: github.com/ARYAMANN7279/aurora-from-scratch-jax"]
+         "Final report: UGP_Final_Report.pdf",
+         "Part I code and record: github.com/ARYAMANN7279/RealPDE-Track1",
+         "Part II code and results: github.com/ARYAMANN7279/aurora-from-scratch-jax"]
 bshape = add_text(apx, BODY_TMPL, items)
 bshape.left, bshape.top, bshape.width, bshape.height = int(914400 * 0.8), int(914400 * 1.7), int(914400 * 11.7), int(914400 * 4.5)
 notes(apx, "The details are in the final report's appendices: the scoring formulas, the model and data, all eleven experiments with the prediction record, and the physics derivation. "
@@ -265,9 +267,9 @@ notes(apx, "The details are in the final report's appendices: the scoring formul
 
 # thank you
 set_lines(find(ty, r"^UGP Presentation$")[0], ["UGP  ·  Parts I and II"])
-set_lines(find(ty, r"^Forecasting Real Airfoil")[0], ["Thank You", "Questions are welcome"])
-set_lines(find(ty, r"^Aryamann")[0], ["github.com/ARYAMANN7279/aurora-from-scratch-jax"])
-set_lines(find(ty, r"^NeurIPS 2026")[0], ["Code, reports and every result"])
+set_lines(find(ty, r"^Forecasting Real Airfoil")[0], ["Thank You"])
+set_lines(find(ty, r"^Aryamann")[0], ["Part I:   github.com/ARYAMANN7279/RealPDE-Track1"])
+set_lines(find(ty, r"^NeurIPS 2026")[0], ["Part II:  github.com/ARYAMANN7279/aurora-from-scratch-jax"])
 notes(ty, "Thank you, sir. I am happy to take questions.")
 
 # ---- order, numbering, footers ---------------------------------------------------------------------------------
