@@ -1543,8 +1543,3 @@ python3.11 -m venv .venv
 Each experiment report ends with the exact commands that produced its numbers. Part I's local harness runs
 on the organisers' starting kit and the competition's training release, which are not redistributed in the
 repository.
-
-### E.4 This report and the presentation
-
-The deck, this report and their build scripts are in the final-submission folder: `deck/merge_decks.py` builds the
-presentation from the two source decks, `make_figs.py` the figures, and `build_report.mjs` the PDF.
