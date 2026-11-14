@@ -191,8 +191,8 @@ See [`docs/prashant_feedback_2026-10-17.md`](docs/prashant_feedback_2026-10-17.m
 
 ## UGP Parts I and II: final presentation and report
 
-[`UGP_Final/`](UGP_Final/) holds the presentation (38 slides with speaker notes) and the report for the whole
-undergraduate project: Part I, forecasting a real airfoil wake in the NeurIPS 2026 RealPDE competition, and
+[`UGP_Final/`](UGP_Final/) holds the final presentation (the UGP-I and UGP-II decks merged into one, 43 slides with speaker
+notes) and the report for the whole undergraduate project: Part I, forecasting a real airfoil wake in the NeurIPS 2026 RealPDE competition, and
 Part II, this repository.
 
 ## Advisors

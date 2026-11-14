@@ -1,6 +1,6 @@
 """Figures for the combined UGP report and deck (Part I: RealPDE airfoil wake; Part II: Aurora in JAX).
 
-usage: ../.venv/bin/python make_figs.py   (writes figs/*.png; reads this repository and the UGP-I folder beside it)
+usage: ../UGP-II/.venv/bin/python make_figs.py   (writes figs/*.png; reads the UGP-II and UGP folders beside this one)
 """
 import json
 import os
@@ -13,7 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 HERE = os.path.dirname(os.path.realpath(__file__))
-U2 = os.path.join(HERE, "..")  # this repository (UGP-II)
+U2 = os.path.join(HERE, "..", "UGP-II")  # the UGP-II repository, next to this folder
 U1 = os.path.join(U2, "..", "UGP")  # the UGP-I project folder, for three crops
 OUT = os.path.join(HERE, "figs")
 INK, MUT, BLUE, OR, GREY = "#2C3E50", "#5D6D7E", "#558ED5", "#CA6F1E", "#AAB4BF"
@@ -38,14 +38,8 @@ def clean(a):
 
 # flow images: the measured wake (Part I) and Kolmogorov vorticity at three Re (Part II)
 wake = crop(os.path.join(U1, "figs", "fig6_data.png"), (1562, 185, 2245, 500))
-Image.fromarray(wake).save(os.path.join(OUT, "wake.png"))
 SNAP = os.path.join(U2, "experiments", "stage1", "figs", "snapshots.png")
 snaps = [crop(SNAP, (x, 38, x + 280, 318), (400, 400)) for x in (63, 490, 917)]
-for i, s in enumerate(snaps):
-    Image.fromarray(s).save(os.path.join(OUT, f"kolmo{i}.png"))
-CONT = os.path.join(U2, "experiments", "e1", "figs", "e1_contours_n32.png")  # rows: truth, zero-shot, fine-tuned, scratch
-for name, (y0, y1) in zip(("truth", "pretrained", "scratch"), ((80, 321), (680, 922), (980, 1223))):
-    Image.fromarray(crop(CONT, (116, y0 + 26, 116 + y1 - y0 - 30, y1 - 4), (400, 400))).save(os.path.join(OUT, f"c_{name}.png"))
 
 # overview: the two parts side by side
 fig, ax = plt.subplots(1, 2, figsize=(10, 3.3), gridspec_kw={"width_ratios": [2.2, 1]})
