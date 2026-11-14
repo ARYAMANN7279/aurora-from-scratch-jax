@@ -164,7 +164,7 @@ b = list(B.slides)  # b[i] is UGP-II slide i + 1
 # title and thank-you (both light-blue covers, from the UGP-I title slide before it is edited)
 title = clone(a[0])
 ty = clone(a[0])
-set_lines(find(title, r"^UGP Presentation$")[0], ["UGP Final Presentation  ·  Parts I and II"])
+set_lines(find(title, r"^UGP Presentation$")[0], ["AE496-Undergraduate Project-1  ·  Parts I and II"])
 set_lines(find(title, r"^Forecasting Real Airfoil")[0], ["Neural Networks for Fluid Flow", "Part I: real airfoil wakes   ·   Part II: pretraining"])
 set_lines(find(title, r"^NeurIPS 2026")[0], ["Supervisor: Prof. Rajesh Ranjan   ·   November 2026"])
 notes(title, "Good morning, sir. My UGP had two parts. In Part I, I forecast a real airfoil wake in the NeurIPS RealPDE competition. "
@@ -296,7 +296,7 @@ notes(apx, "The details are in the final report's appendices: the scoring formul
            "I am happy to go into any of them.")
 
 # thank you
-set_lines(find(ty, r"^UGP Presentation$")[0], ["UGP  ·  Parts I and II"])
+set_lines(find(ty, r"^UGP Presentation$")[0], ["AE496-Undergraduate Project-1  ·  Parts I and II"])
 set_lines(find(ty, r"^Forecasting Real Airfoil")[0], ["Thank You"])
 set_lines(find(ty, r"^Aryamann")[0], ["Part I:   github.com/ARYAMANN7279/RealPDE-Track1"])
 set_lines(find(ty, r"^NeurIPS 2026")[0], ["Part II:  github.com/ARYAMANN7279/aurora-from-scratch-jax"])
@@ -332,6 +332,15 @@ for s in order:
             if "MCP" in para.text:
                 _fill(para._p, "Built a small tool that reads the public Codabench leaderboard, which let us solve for the weights of all metrics"
                       if para.text.startswith("Built") else "A small tool reading Codabench's public leaderboard endpoint")
+# the project's two parts are called Part I and Part II everywhere
+def _rename(tf):
+    for para in tf.paragraphs:
+        for r in para.runs:
+            t = r.text
+            for a, b in (("UGP-II", "Part II"), ("UGP-I", "Part I"), ("My UGP had", "My project had")):
+                t = t.replace(a, b)
+            if t != r.text:
+                r.text = t
 # no em dashes anywhere in the deck (slide text and speaker notes)
 def _undash(tf):
     for para in tf.paragraphs:
@@ -342,6 +351,11 @@ for _sl in A.slides:
     for _sh in _sl.shapes:
         if _sh.has_text_frame:
             _undash(_sh.text_frame)
+            _rename(_sh.text_frame)
+        if getattr(_sh, 'has_table', False) and _sh.has_table:
+            for _row in _sh.table.rows:
+                for _c in _row.cells:
+                    _rename(_c.text_frame)
     for _sh in _sl.shapes:
         if getattr(_sh, 'has_table', False) and _sh.has_table:
             for _row in _sh.table.rows:
@@ -350,6 +364,7 @@ for _sl in A.slides:
                         _c.text_frame.paragraphs[0].runs[0].text = 'n/a'
     if _sl.has_notes_slide:
         _undash(_sl.notes_slide.notes_text_frame)
+        _rename(_sl.notes_slide.notes_text_frame)
 A.save(OUT)
 
 print("wrote", OUT, N, "slides")

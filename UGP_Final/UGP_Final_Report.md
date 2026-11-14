@@ -1,6 +1,8 @@
-# Teaching Neural Networks to Forecast Fluid Flow
+# AE496-Undergraduate Project-1
 
-A complete report on the Undergraduate Project (UGP), Parts I and II
+## Teaching Neural Networks to Forecast Fluid Flow
+
+A complete report on both parts of the project, Part I and Part II
 
 Aryamann Srivastava, Department of Aerospace Engineering, IIT Kanpur
 Supervisor: Prof. Rajesh Ranjan  ·  November 2026
@@ -13,7 +15,7 @@ Turbulent fluid flows are expensive to simulate and hard to measure, and a neura
 seen enough examples can learn to forecast them in a fraction of a second. This project studied how
 to build such forecasters well, in two connected parts.
 
-Part I (UGP-I) was our entry to the NeurIPS 2026 RealPDE competition, Track 1 (Sim2Real): forecast
+Part I was our entry to the NeurIPS 2026 RealPDE competition, Track 1 (Sim2Real): forecast
 the next 20 frames of the real, noisy flow behind a NACA 4418 airfoil, measured with particle image
 velocimetry (PIV), and return a lower and an upper bound for every predicted value, inside a 256 MB
 package and a 3-minute run-time limit, with one scored submission a day. We decoded the hidden scoring
@@ -26,7 +28,7 @@ measured negative results explains where it stopped. We finished just outside th
 teams. The project left one question open: would a model *pretrained* on lots of related data have
 done better?
 
-Part II (UGP-II) answers that question where it can be answered. We rebuilt Microsoft's Aurora
+Part II answers that question where it can be answered. We rebuilt Microsoft's Aurora
 weather foundation model from primitives in JAX at small scale (5.1 million parameters), built a
 validated Kolmogorov-flow simulator and datasets in which every property of the pretraining data is an
 independent knob, and ran eleven experiments (291 training runs), each with its predictions written
@@ -96,7 +98,7 @@ forecasters *good*.
 *Figure 0.1. The two flows. Left: a real wake behind an airfoil, measured in a water tunnel (Part I).
 Right: a simulated Kolmogorov flow whose data we control completely (Part II).*
 
-| | Part I (UGP-I) | Part II (UGP-II) |
+| | Part I | Part II |
 |---|---|---|
 | Flow | a real airfoil wake, measured with PIV in a water tunnel | Kolmogorov flow: 2-D turbulence in a periodic box, simulated by us |
 | Goal | score as high as possible in a competition | find out which property of pretraining data produces the benefit of pretraining |
@@ -117,7 +119,7 @@ Right: a simulated Kolmogorov flow whose data we control completely (Part II).*
 | 2–18 September | a series of small gains (bias correction, more training data, speed, a turbulence head): up to 79.75 |
 | 21–24 September | recalibrating the band widths at the live error scale crosses 80: 80.08 |
 | 28 September | the one-day decision phase; the same archive scores 75.09 on private data |
-| 1 October | HiPC student symposium paper submitted; Part II (UGP-II) begins in earnest |
+| 1 October | HiPC student symposium paper submitted; Part II begins in earnest |
 | 28 September – 17 October | Part II: instrument built (Stages 1–12), experiments E1–E9 run and reviewed |
 | 17 October | the competition's final results are published: we did not place in the top 10 |
 | 6 November | diagnostics of the trained models (E10) and the physics-built-in model (E11) |
@@ -1544,5 +1546,5 @@ repository.
 
 ### E.4 This report and the presentation
 
-The deck, this report and their build scripts are in the `UGP_Final` folder: `deck/merge_decks.py` builds the
+The deck, this report and their build scripts are in the final-submission folder: `deck/merge_decks.py` builds the
 presentation from the two source decks, `make_figs.py` the figures, and `build_report.mjs` the PDF.
