@@ -332,6 +332,24 @@ for s in order:
             if "MCP" in para.text:
                 _fill(para._p, "Built a small tool that reads the public Codabench leaderboard, which let us solve for the weights of all metrics"
                       if para.text.startswith("Built") else "A small tool reading Codabench's public leaderboard endpoint")
+# no em dashes anywhere in the deck (slide text and speaker notes)
+def _undash(tf):
+    for para in tf.paragraphs:
+        for r in para.runs:
+            if '\u2014' in r.text:
+                r.text = r.text.replace(' \u2014 ', ', ').replace('\u2014', ', ')
+for _sl in A.slides:
+    for _sh in _sl.shapes:
+        if _sh.has_text_frame:
+            _undash(_sh.text_frame)
+    for _sh in _sl.shapes:
+        if getattr(_sh, 'has_table', False) and _sh.has_table:
+            for _row in _sh.table.rows:
+                for _c in _row.cells:
+                    if _c.text.strip() == '\u2014':
+                        _c.text_frame.paragraphs[0].runs[0].text = 'n/a'
+    if _sl.has_notes_slide:
+        _undash(_sl.notes_slide.notes_text_frame)
 A.save(OUT)
 
 print("wrote", OUT, N, "slides")
