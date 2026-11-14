@@ -1,163 +1,175 @@
 # UGP Parts I and II: speaker notes
 
-Slides 1–35 are the talk, about 30 seconds each (12 to 13 minutes at a calm pace); slides 36–40 are backup for questions.
+One deck: Part I (UGP-I) and Part II (UGP-II). About 30 seconds a slide.
 
-## 1. Teaching Neural Networks to Forecast Fluid Flow
+## 1. Title
 
-Good morning, sir. My UGP had two parts, both about one idea: teaching a neural network to forecast how a fluid flow moves. Part I was an international competition on a real airfoil wake. Part II was a controlled study that answers the question Part I left open: what does pretraining data actually buy?
+Good morning, sir. My UGP had two parts. In Part I, I forecast a real airfoil wake in the NeurIPS RealPDE competition. In Part II, I rebuilt Microsoft's Aurora model to answer the question Part I left open: what does pretraining data actually buy?
 
-## 2. A neural network can forecast a flow in a blink; we asked how to build one well
+## 2. What is Covered
 
-A neural forecaster takes the flow now and just before, and predicts the flow a moment later; feeding its predictions back in gives longer forecasts. On the left, Part I: a real wake measured in a water tunnel, noisy and limited. On the right, Part II: a flow I simulate, where I control the data and always know the exact answer.
+The plan: first the competition, its problem, our approach and the result. Then the question it left open, and what Part II found.
 
-## 3. Part I: Forecasting a Real Airfoil Wake
+## 3. Part I cover: Forecasting Real Airfoil Wakes
 
-Part I: the NeurIPS 2026 RealPDE competition, Track 1, where the challenge was to forecast real measured flow.
+Part I: forecasting real airfoil wakes in the NeurIPS 2026 RealPDE competition.
 
-## 4. Forecasting a real wake is hard: noisy data, unseen conditions, strict rules
+## 4. This Is the Data
 
-This is the data: velocity behind a NACA 4418 airfoil, measured with particle image velocimetry. Blue is the slow wake, red the fast flow around it. The model sees 20 frames and predicts the next 20, with a band around every value. We had 81 recordings, a 256-megabyte limit and one scored submission a day, and test conditions go beyond the training range.
+Walk them through the picture. NACA4418 airfoil, 20 degrees angle of attack, Re 13,950. Blue is slow fluid, red is fast. The dark blue lobe is the separated wake. Note the speckle — that is genuine measurement noise from the PIV cross-correlation, not a rendering artefact. The task is: see the top three frames (and 17 others), produce the bottom three (and 17 others). Twenty frames in, twenty frames out. Mention that in the real competition the test runs are at Reynolds numbers we never trained on.
 
-## 5. Uncertainty was worth a quarter of the score; we recovered the hidden weights
+## 5. The Task, in a Nutshell
 
-The score mixes five channels, but the weights were never published. I built a small tool that read the public leaderboard and solved for the weights from 40 published scores. It matched every total to within 0.005 and showed that uncertainty alone was worth almost a quarter of the score. So it became our focus.
+Keep this short. The one number that matters is the last line: the test set extrapolates beyond the training range in Reynolds number, so this is not interpolation. Pressure is in the tensor but identically zero — PIV cannot measure it.
 
-## 6. Only narrow bands that still contain the truth earn uncertainty points
+## 6. What We Actually Submit
 
-Here is how the uncertainty channel works. For each value we give a band. If the truth is inside, the score is e to the minus width over sigma, so narrower is better. If the truth is outside, the score is zero. A narrow, correct band scores 0.84, a wide one 0.17, and a narrow miss scores nothing.
+Make the deliverable concrete before talking about methods. We submit a zip containing model weights plus a Python file exposing one function, predict(). The graders run it inside an isolated container with no internet, PyTorch and NumPy only, and a 5-minute budget. It returns three arrays: the forecast, and a lower and upper bound for every single value. The size bar shows why everything is tight: the forecasting model alone eats 201 of the 256 MB, which is why we could never simply ensemble several models.
 
-## 7. Two paths: a fine-tuned forecast, and uncertainty bands that never touch it
+## 7. Why This Is Hard
 
-Our system has two paths. The top path makes the forecast: the organisers' Fourier neural operator, fine-tuned on the real data, with several copies averaged into one model soup, plus a small network that restores the turbulence smooth forecasts lose. The bottom path makes the bands: a U-Net predicts how wrong the forecast is at each point, and a 24-bin table turns that into a width. The bands never touch the forecast, so accuracy can never get worse.
+On the third point — the plot shows one row of one frame. The jitter is measurement noise. No model can predict that, so a floor on achievable error exists. This becomes important later: it is why chasing accuracy forever does not pay, and why the uncertainty channel is where the value is.
 
-## 8. The entry raised the overall score from 72.7 to 80.1; uncertainty nearly tripled
+## 8. The Rules
 
-Against the organisers' baseline, the overall score rose from 72.7 to 80.1. The biggest gain is uncertainty, plus 25 points, and turbulence rose 4.6. Accuracy and speed stayed at the baseline's high level.
+This slide explains the whole working style. With 24 hours between measurements you cannot iterate by trial and error — you must predict, submit, then reconcile. Most of what follows is the consequence of that constraint.
 
-## 9. The score climbed in small steps; adding uncertainty bands gave the largest jump
+## 9. How a Submission Is Scored
 
-This is every submission that beat the best so far, over one month. The first big step is adding the uncertainty bands. Then the turbulence fix, and finally calibrating the band widths, which took us across our target of 80.
+The organisers publish the five channel scores but not how they combine into the final number. We solved for the weights by least squares across 40 leaderboard rows and got a fit accurate to 0.005. That is what let us decide where to spend effort — and it showed the uncertainty channel, which we had been ignoring, was worth 24.7%.
 
-## 10. We finished just outside the top 50; the top ten needed a better forecast, not better bands
+## 10. The Unusual Channel: Uncertainty
 
-Where we stand. The field was very tight: 80.08 sat just outside the top 50 of about 182 teams. One more insight: even perfect uncertainty bands on our forecast would score 81.73, below the top-10 cutoff. So the top ten needed a better forecast, not better bands.
+Work through the four rows. Key consequence for later: because the reward decays exponentially with width, this channel is set by the TYPICAL error, whereas the accuracy channel is an L2 norm dominated by the WORST errors. They are nearly independent objectives — a model can be no more accurate overall and still win this channel outright.
 
-## 11. What failed was just as informative: a 2-D physics rule is false for this data
+## 11. The Tool built
 
-We also measured what did not work. Forcing the forecast to be divergence-free cost nine points: the camera sees a 2-D slice of a 3-D flow, so the 2-D rule is not true for this data. The benchmark's best architecture, a U-Net, was 16 percent worse. Adding simulations to training gave nothing. And a finer band table changed almost nothing.
+Be upfront about the legality question because someone will ask. Codabench serves the leaderboard to the browser through a public REST endpoint, and at the time it exposed per-channel subscores for every submission. We read that endpoint programmatically instead of clicking through the website. No authentication, no private data, nothing hidden. The competition rules forbid network calls from inside the submitted code during evaluation — that is a completely different thing, and our submission makes none. Worth noting the endpoint has since been restricted, so only totals are public now.
 
-## 12. Part I in one slide: decode the score, calibrate the bands, keep the forecast safe
+## 12. Approach 1 of 3:  The Model
 
-To sum up Part I. The approach had three parts: recover the hidden scoring, fine-tune and average the organisers' model, and build uncertainty bands that never touch the forecast. The findings: the score rose from 72.7 to 80.1, mostly through uncertainty; the top ten needed a better forecast, not better bands; and a physics rule that is false for camera data hurts.
+Fine-tuning was the single biggest step — it took us from roughly 77 to 78.45. Model soup means training several times from different random starts and averaging the weights; it cancels each run's idiosyncrasies. The TKE head was worth +2.21 on that channel alone. But flag the caveat now and pay it off on slide 18 — this is the thread of the talk.
 
-## 13. Part II: What Does Pretraining Data Buy?
+## 13. Approach 2 of 3:  Uncertainty
 
-That left one question open: would pretraining on lots of related data have helped? Part II answers it on a flow we control.
+The green box is the important one for a sceptical audience: because the prediction array is untouched, these submissions carry zero accuracy risk. We verified that byte-for-byte before shipping each one. Every gain since 21 September came from this channel with the model completely frozen.
 
-## 14. Research question: which property of pretraining data produces the gain?
+## 14. Approach 3 of 3:  Speed
 
-Large models are pretrained on lots of related data, then fine-tuned on the task, instead of training from scratch. Aurora, Microsoft's weather model, reports a 25 percent gain from pretraining. But its data differ in amount, variety and closeness all at once, so it cannot say which one helps. That is our research question.
+Start with the curve, because the formula is unintuitive. The score is 100/(1 + sqrt(t/728.96)). It is deliberately gentle: taking 2.5 minutes still scores 65, and the hard failure is only at 5 minutes. We run in 7.8 seconds, which scores 90.6 — we are far out on the flat part, so further speed-ups buy almost nothing. That is the point of the slide: we did the cheap engineering (GPU, merged networks, half precision), confirmed we were in the flat region, and stopped. One tempting idea — cutting the model's internal padding — gave a genuine 1.74x speed-up and wrecked accuracy by 60 times more than the time gain was worth. We priced it before submitting rather than after.
 
-## 15. Kolmogorov flow: a turbulent flow whose every property we control
+## 15. Inside Each Submission
 
-We chose Kolmogorov flow. In one line: the spin is carried by the flow, smoothed by viscosity, damped by drag, and kept alive by a striped forcing. Two knobs set its behaviour: the number of stirring bands, and the Reynolds number, how wild it gets. Our target is Reynolds 300 with four bands, never seen in pretraining.
+This is the 'specific steps' table. Three rows carry most of the story, highlighted in orange. SHIFT_v2 is where the uncertainty machinery was added at all — the largest single jump in the project. FA1BMT added the TKE head. NARROW080 is the final one, and it is the cleanest illustration of the whole approach: the forecasting model is completely frozen and byte-identical, we only multiplied every interval width by 0.80, and that was worth +0.20. Note the 'model underneath' column: after FITA1B the backbone stops changing entirely. Everything after that is uncertainty and engineering.
 
-## 16. Pretraining sets differ in size and variety; only the largest includes near-target settings
+## 16. The Steps That Moved the Score
 
-This is the design of the main experiment. Each dot is a flow setting. The pretraining sets have 2, 8 or 32 settings, at three different amounts of data. Only the 32-setting set contains the target's close neighbours, same bands and nearby Reynolds numbers. Keep this map in mind for the results.
+Point out three places: SHIFT_v2 is where the uncertainty channel was added — the largest single jump. FA1BMT is the TKE head. The final two points are pure bounds calibration with the model frozen. Also note the flat stretch in the middle: that is six weeks of accuracy work producing almost nothing, which is the puzzle slide 18 resolves.
 
-## 17. We built a verified toolkit, and pre-registered every experiment
+## 17. Getting It Wrong, Then Right
 
-I built four pieces, each tested before use. A simulator whose energy balance is exact to one part in a billion. A dataset of 326 simulations. Aurora rebuilt in JAX, 5.1 million parameters. And a strict protocol: every experiment's predictions were written down and committed before running. In the original experiments, 25 of 49 predictions hit; the misses are findings too.
+This is the slide that front-runs the obvious question, so do not skip it. The failed submission is what let us solve for the calibration constant — one equation, one unknown. The answer was 1.00, not 2.14, meaning the intervals should have been narrowed all along. Root cause: an earlier successful change had altered interval shape and width together and we credited the gain to width. The next day's submission, built on the corrected constant, crossed 80.
 
-## 18. Inside the model: patches, windowed attention, and a zoom-out, zoom-in backbone
+## 18. Where We Stand
 
-Inside the model: two frames go in, cut into 256 patches. The Perceiver compresses the frequency levels, and a Swin U-Net lets patches share information in small windows, zooming out and back in. It outputs the next snapshot. The core block matches Aurora's own code to seven decimals, and cheap LoRA fine-tuning adds a small low-rank update, training under one percent of the weights.
+Be straightforward here. We are at 80.06, rank 1 is 82.10, the top-10 cutoff is 81.74. In relative terms that is a 2.5% difference, but the field is so tightly packed that 2.5% spans rank 1 to outside the top 50. The left panel is there to make the scale honest — every team is inside one dot on the full range.
 
-## 19. Eleven experiments, one question each
+## 19. What the Gap Consists Of
 
-Eleven experiments, each answering one question; here is the map, with the one-line answer for each. All of them use two scores: the relative error of a forecast, and the gain, which is how much lower the pretrained model's error is than the scratch model's.
+Explain the oracle: for a given set of forecast errors there is a best possible set of intervals — knowing each error exactly and sizing the interval to just cover it. That is an upper bound no method can beat. We reach 83.6% of it; the leader reaches 90.7%. This is how we separated 'they have a better model' from 'they have better uncertainty' using only published numbers.
 
-## 20. Pretraining roughly halves the next-step error, from 0.150 to 0.081
+## 20. Main Finding
 
-First result: pretraining roughly halves the next-step error, from 0.150 to 0.081. You can see it in the flow: from the same starting moment, the pretrained forecast keeps the vortices that the scratch model smears. It holds on flows nearly three times wilder than any it was pretrained on.
+Each point is one past submission: its offline score against the score it actually got. For a useful test these should lie on a rising line. For rel_l2 they do not — the fit is negative and meaningless, because our offline score spans 0.028 while the live score spans 0.098. The test has no resolution in that channel. The uncertainty panel, by contrast, is clean: slope 0.62, and that matches a factor we derived independently from a single live anchor. This is the result I would most like feedback on.
 
-## 21. Pretrained models reach in 100 steps what scratch never reaches in 22,000
+## 21. Part I: Where We Landed
 
-And it is fast. Trained from scratch, the model needs 22,000 steps to reach 0.150. Both pretrained models reach 0.08 within 100 fine-tuning steps. The one pretrained on close settings is already there before any fine-tuning.
+Where Part I landed. Our development score was 80.08, against the organisers' baseline of 72.65. The top-10 cutoff was 81.90 and the leader 82.22. Even perfect uncertainty bands would not reach the top ten, so the forecast itself was the limit. We finished just outside the top 50 in a very tight field, and the project left one question open: would pretraining on related data have helped?
 
-## 22. Closeness to the target matters most: near-target settings give the best start
+## 22. Part II cover: What Does Pretraining Really Buy?
 
-Second result, the main answer: closeness matters most. More data or more variety did not change the final gain. But the set containing near-target settings starts far better, before any fine-tuning: error 0.084, against about 0.19.
+Part II answers that question: what does pretraining data really buy? I rebuilt Aurora, a large weather model, from scratch in JAX and tested it on a swirling flow where I control the data.
 
-## 23. Pretraining pays most when target data is scarce: 41% gain with one simulation
+## 23. Where We Started
 
-Third: pretraining pays most when target data is scarce. With one simulation of the target, the gain is 41 percent; with six, training from scratch nearly catches up. That is exactly the situation of real experiments.
+In UGP-I, I took part in the RealPDE competition at NeurIPS 2026, forecasting real measured airflow past a wing, and scored 80.08. It ended with an open question: would a model pretrained on lots of related data have done better? I could not test that, because outside pretrained models were banned and there were only 81 real recordings. UGP-II builds a setting where I can test it properly.
 
-## 24. Long forecasts are hard: small errors grow until the fine detail is lost
+## 24. The Big Idea: Pretrain, Then Fine-tune
 
-Forecasting far ahead is hard. Feed the prediction back in, and small errors grow: by step 10 the fine detail is gone, and by step 20 the forecast no longer matches the truth, even though the big vortices are still there. So we also measured 20- and 50-step forecasts.
+Quick background on how these models are trained. First, pretraining: learn from lots of related data. Then a short fine-tuning on the actual task. Think of a student who studies every chapter, then practises the exam chapter. Training from scratch is studying only the exam chapter. Throughout the project, I compare these two.
 
-## 25. Pushforward is the biggest lever for long forecasts; attention and depth help next steps
+## 25. Aurora Says It Works, But Not Why
 
-Fourth: what improves the model. Training on its own predictions, pushforward, cuts long-forecast drift by 31 to 50 percent, the biggest lever. Two attention upgrades give about 9 percent, a deeper model about 7, and training became twice as fast. The Perceiver did not earn its place: simple padding beat it.
+Aurora is the best-known example. It has 1.3 billion parameters and reports that pretraining beats training from scratch by 25%. But its pretraining data differs in amount, variety, format and closeness to the task all at once, so it cannot say which one helps. Rerunning that comparison would need a lot of GPUs. That is the gap I target.
 
-## 26. On real data, the rebuilt model is within one point of the organisers' model
+## 26. Our Goal
 
-Fifth, back to the real wake. Our rebuilt Aurora scores 94.7 on accuracy, within one point of the organisers' model while seeing two past frames instead of twenty. Simulation pretraining adds only about 0.1. On real data, the real data is what counts, the same lesson as Part I.
+So my goal has two parts. Rebuild Aurora from scratch in JAX, then use it to find out which property of the pretraining data creates the benefit. Four objectives: rebuild Aurora at small scale, build my own data solver, test each ingredient one at a time, and finally check the answer on the real lab data from UGP-I.
 
-## 27. The remaining error lives in the tiniest swirls; pretraining pushes that limit further
+## 27. Why Kolmogorov Flow?
 
-Then I asked what still limits accuracy, without new training. Each row is a group of models; each column a swirl size, big on the left. Big swirls are almost exact. The error grows for smaller swirls until it is as large as the signal, the white bar. Pretraining pushes that limit to smaller swirls.
+I chose Kolmogorov flow, a classic test case: fluid in a box, kept moving by a steady push. The big advantage is that I generate the data myself, in any amount and any setting. Two simple knobs change how it behaves. It is genuinely turbulent, so forecasting it is hard. And I always know the exact true answer to score against.
 
-## 28. Two thirds of the error is in the spin field, and scratch memorises its data (32×)
+## 28. Two Knobs Define Each Flow
 
-Two more findings. About two thirds of the error sits in the spin field, the one richest in small swirls. And the scratch model is 32 times better on its training data than on new data: it memorises, so it needs data, not longer training. Pretrained models do not memorise.
+These are the two knobs. On the left is the stirring pattern, kf: bands of fluid pushed left and right, and kf is the number of band pairs. On the right is the Reynolds number: how wild the flow gets, from calm at 100 to turbulent at 1000. My test task is Reynolds number 300 with kf 4, and the model never sees that setting during pretraining.
 
-## 29. On this flow the spin fixes everything else, so the model can predict the spin alone
+## 29. The Task: Predict the Next Moment
 
-That suggested a fix. On this periodic box, the spin determines everything else exactly: velocity comes from the stream function, and pressure from the velocity. So the model predicts only the spin, and we calculate the rest.
+The model's job is simple. It sees the flow at two consecutive moments and predicts the next one; two inputs let it see the motion. For longer forecasts, each prediction is fed back in as the next input, step after step. I test up to 20 steps ahead.
 
-## 30. The normal model breaks the no-leak rule by 12%; with physics built in, it never does
+## 30. How We Measure Success
 
-Here is why it matters. Real flow cannot create or destroy fluid; this map shows where a prediction does. The normal model breaks that rule by 12 percent, speckled everywhere. With the physics built in, the rule holds exactly, just like the true flow.
+I use four measures. Error: how far the prediction is from the truth. The lazy guess, 'nothing changes', is the minimum bar any model must beat. Long-forecast drift measures stability over 20 steps. And the key number, pretraining gain: how much lower the error is than a model trained from scratch on the same data and budget.
 
-## 31. Building the physics in cuts the average 20-step forecast error by 13%
+## 31. What We Built
 
-And it forecasts better. The average error over a 20-step forecast falls by 13 percent, the best of any change I tried on this task, pushforward included. Training is 7 percent faster and pressure error falls 38 percent.
+I built four pieces, each tested before use. A fluid simulator whose energy balance is exact to about one part in a billion. A dataset of 326 simulations across 33 flow settings. A copy of Aurora with 5.1 million parameters that matches Aurora's own code to seven decimal places. And an experiment system where one settings file gives one run and one recorded result.
 
-## 32. Part II findings at a glance
+## 32. Inside the Model
 
-Here is all of Part II on one slide. Pretraining halves the error. Closeness matters more than amount or variety. The gain is largest when target data is scarce. Pushforward steadies long forecasts. On real data, simulation pretraining adds almost nothing. The remaining error lives in the spin field's tiniest swirls. And building the physics in makes 20-step forecasts 13 percent better.
+Inside, the model uses Aurora's building blocks. It cuts each snapshot into 256 small patches. Each patch gathers information from the patches that matter to it; this is called attention, done in small windows for speed. Then the model zooms out to see the big swirls and back in to keep the detail, and outputs the next snapshot.
 
-## 33. Together: closeness, scarce target data and true physics are what help
+## 33. Result 1: Pretraining Halves the Error
 
-Putting both parts together. Pretraining helps when it is close to the task and target data is scarce; far-away simulations did not help on the real wake. Physics helps when it is true for the data: it hurt on camera measurements and helped on the simulation. And writing predictions down first turns every surprise into a result.
+First result: pretraining halves the error. A model trained from scratch has an error of 0.150; the pretrained one gets 0.080, which is 42 to 50% better in every setup tested. On the right, the colours show the fluid's spin. Starting from the same moment, the pretrained model's next-step forecast is closer to the truth than the scratch model's.
 
-## 34. Limits and next steps: claims are bounded by a small model and one flow family
+## 34. Result 2: Closeness Matters Most
 
-To be clear about the limits: a small model, one flow family, fixed budgets and three seeds, so these are claims about this setting, not about Aurora itself. Next: combine the physics-built-in model with pushforward and the attention upgrades, weight training toward small swirls, and give the model a longer, ordered history.
+Second, and the main answer to my question: closeness matters most. Adding more data or more variety did not change the gain. But the pretraining mix that contained settings near the task gave a far better starting point, 0.085 against about 0.19. On the right: even when tested well beyond the training range, pretraining still gives a 36 to 41% gain.
 
-## 35. Conclusions: pretraining helps when close and scarce; built-in physics steadies forecasts
+## 35. Result 3: Most Valuable When Data Is Scarce
 
-To conclude. Part I raised the organisers' model from 72.7 to 80.1 by decoding the score and calibrating uncertainty. Part II shows that pretraining halves the error and helps most when close and scarce, and that building physics into the output steadies forecasts. The code, reports and every result are on GitHub. Thank you, sir; I am happy to take questions.
+Third: pretraining is most valuable when task data is scarce. With a single target simulation it gives a 41% gain, and as more target data becomes available, training from scratch catches up. Even without any fine-tuning, the pretrained model is already within 6% of the best fine-tuned result.
 
-## 36. References
+## 36. Result 4: What Makes the Model Better
 
-Backup: the references for the sources cited on the slides.
+Fourth: what makes the model better. The biggest win is pushforward, training the model on its own predictions, which cuts long-forecast drift by up to half. Two small attention upgrades give about 9% at very little cost, and a deeper model about 7%. Cheap fine-tuning, called LoRA, corrects systematic errors: up to 71% in one case.
 
-## 37. Appendix A: how the competition score is computed
+## 37. Result 5: Tested on Real Lab Data
 
-Backup: the formulas behind the competition score, recovered by least squares from 40 public leaderboard rows.
+Finally, I went back to the real UGP-I airflow data. On top: my UGP-I entry scored 80.1 overall, against 72.7 for the organisers' baseline. Below, on held-out real recordings, my rebuilt Aurora scores 94.7 accuracy, within one point of the organisers' FNO, while seeing only 2 past frames instead of 20. Simulation pretraining adds under 0.1, so on real data, the real data is what counts.
 
-## 38. Appendix B: from the predicted spin to velocity and pressure
+## 38. What Still Limits Accuracy
 
-Backup: the exact formulas for deriving velocity and pressure from the spin, and the three variants compared.
+After the review, I examined the 30 trained models to find what still limits them, without any new training. Three things. The big swirls are almost perfect; the error lives in the tiniest swirls. About 70% of the error is in the spin field, which has the most tiny swirls. And the model trained from scratch memorises its two examples, so longer training cannot fix it; the pretrained models do not memorise.
 
-## 39. Appendix C: the prediction record
+## 39. Key Takeaways
 
-Backup: the full prediction record. Of 49 pre-registered predictions in the original experiments, 25 hit; the two later experiments add 3 of 6 each.
+To sum up: pretraining halves next-step error. The main answer to my question is that closeness to the task matters more than amount or variety. The payoff is biggest when task data is scarce. Training on its own predictions keeps long forecasts steady. And building the physics into the model keeps 20-step forecasts 13 percent steadier.
 
-## 40. Appendix D: glossary
+## 40. Future Work
 
-Backup: a short glossary of the terms used in the talk.
+There are four ways to take this further. First, build the physics in. I already ran the first test: the model predicts only the spin, and the other fields are worked out from it exactly. The flow's rules then always hold, and 20-step forecasts improve by 13%. Next is combining it with pushforward. Then steadier long forecasts, a longer and ordered input history, and scaling up with better transfer to real measurements.
+
+## 41. Both Parts Together
+
+Putting both parts together. Know what you are measured on. Pretraining helps when it is close to the task and target data is scarce, and far-away simulations did not help on the real wake. Physics helps only when it is true for the data: it hurt on the camera data in Part I and helped on the simulation in Part II. And writing predictions down first turns every surprise into a result.
+
+## 42. Appendix
+
+The details are in the final report's appendices: the scoring formulas, the model and data, all eleven experiments with the prediction record, and the physics derivation. I am happy to go into any of them.
+
+## 43. Thank You
+
+Thank you, sir. I am happy to take questions.
