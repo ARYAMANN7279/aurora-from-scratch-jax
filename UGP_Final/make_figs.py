@@ -66,6 +66,38 @@ ax.legend(frameon=False, loc="upper center", ncol=2)
 clean(ax)
 save(fig, "ugp1_channels.png")
 
+# Part I: every submission that set a new best, on the day it was scored (dates from the project record)
+import datetime as dt  # noqa: E402
+import matplotlib.dates as mdates  # noqa: E402
+subs = [((8, 23), 78.4566), ((8, 30), 79.2464), ((9, 1), 79.3418), ((9, 2), 79.3695), ((9, 4), 79.3789), ((9, 5), 79.4626), ((9, 9), 79.4844),
+        ((9, 13), 79.4870), ((9, 14), 79.4939), ((9, 15), 79.5907), ((9, 16), 79.6026), ((9, 17), 79.6567), ((9, 18), 79.7535),
+        ((9, 21), 79.8574), ((9, 23), 80.0613), ((9, 24), 80.0813)]
+days = [dt.date(2026, m, d) for (m, d), _ in subs]
+prog = [v for _, v in subs]
+fig, ax = plt.subplots(figsize=(11.2, 4.5))
+ax.axhline(80, color="#1E8B4C", lw=2, ls="--")
+ax.text(days[0], 80.04, "target: 80", color="#1E8B4C", ha="left", va="bottom", fontsize=14, fontweight="bold")
+ax.plot(days, prog, "-o", color="#2E86C1", lw=3.5, ms=9)
+ax.text(days[0] + dt.timedelta(days=1.1), prog[0], "78.45: first fine-tuned model", fontsize=13, color=INK, ha="left", va="center")
+for i, t, dx, dy, ha in ((1, "uncertainty bands added\n(the biggest jump, +0.8)", 1.5, -0.55, "left"), (9, "turbulence head added", 0.8, -0.5, "left"),
+                         (14, "band widths calibrated", -5.0, 0.3, "center")):
+    ax.annotate(t, (days[i], prog[i]), (days[i] + dt.timedelta(days=dx), prog[i] + dy), fontsize=14, fontweight="bold", color=INK, ha=ha,
+                arrowprops=dict(arrowstyle="->", color=MUT, lw=1.6))
+ax.text(days[-1] + dt.timedelta(days=0.6), prog[-1] + 0.05, "80.08", ha="left", va="center", fontsize=16, fontweight="bold", color="#2E86C1")
+ax.text(0.01, 0.97, "16 submissions set a new best in one month", transform=ax.transAxes, fontsize=15, fontweight="bold", color="#1F4E79", va="top")
+ax.set(ylim=(78.2, 80.5), xlim=(dt.date(2026, 8, 21), dt.date(2026, 9, 29)), yticks=[78.5, 79.0, 79.5, 80.0], ylabel="leaderboard score")
+ax.set_xticks([dt.date(2026, 8, 23), dt.date(2026, 8, 30), dt.date(2026, 9, 8), dt.date(2026, 9, 15), dt.date(2026, 9, 22)])
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%-d %b"))
+ax.tick_params(labelsize=13)
+ax.yaxis.label.set_size(14)
+for sp in ("top", "right"):
+    ax.spines[sp].set_visible(False)
+ax.grid(axis="y", color="#E2E8F0")
+ax.set_axisbelow(True)
+fig.tight_layout()
+fig.savefig(os.path.join(HERE, "figs", "ugp1_climb.png"), dpi=200, facecolor="white")
+plt.close(fig)
+
 # Part II E10: error by swirl size (simple)
 D = json.load(open(os.path.join(U2, "experiments", "e10", "results", "analysis.json")))
 fig, ax = plt.subplots(figsize=(5.2, 3.7))
