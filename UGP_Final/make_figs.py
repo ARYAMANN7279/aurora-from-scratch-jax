@@ -43,8 +43,8 @@ SNAP = os.path.join(U2, "experiments", "stage1", "figs", "snapshots.png")
 snaps = [crop(SNAP, (x, 38, x + 280, 318), (400, 400)) for x in (63, 490, 917)]
 for i, s in enumerate(snaps):
     Image.fromarray(s).save(os.path.join(OUT, f"kolmo{i}.png"))
-CONT = os.path.join(U2, "experiments", "e1", "figs", "e1_contours_n32.png")
-for name, (y0, y1) in zip(("truth", "pretrained", "zeroshot", "scratch"), ((80, 321), (680, 922), (380, 622), (980, 1223))):
+CONT = os.path.join(U2, "experiments", "e1", "figs", "e1_contours_n32.png")  # rows: truth, zero-shot, fine-tuned, scratch
+for name, (y0, y1) in zip(("truth", "pretrained", "scratch"), ((80, 321), (680, 922), (980, 1223))):
     Image.fromarray(crop(CONT, (116, y0 + 26, 116 + y1 - y0 - 30, y1 - 4), (400, 400))).save(os.path.join(OUT, f"c_{name}.png"))
 
 # overview: the two parts side by side
@@ -71,34 +71,6 @@ ax.set(xticks=x, xticklabels=ch, ylim=(0, 118), ylabel="score (out of 100)")
 ax.legend(frameon=False, loc="upper center", ncol=2)
 clean(ax)
 save(fig, "ugp1_channels.png")
-
-# Part II: the three headline effects, simple bars (E1, E1 zero-shot, E5)
-A = json.load(open(os.path.join(U2, "experiments", "e1", "results", "analysis.json")))
-sc = {s: v["rel_err"] for s, v in A["scratch"].items()}
-ft = [sc[str(s)] * (1 - a) for c in A["cells"].values() for s, a in zip(c["seeds"], c["adv_rel_err"])]
-fig, ax = plt.subplots(figsize=(4.6, 3.6))
-b = ax.bar(["from scratch", "pretrained"], [np.mean(list(sc.values())), np.mean(ft)], color=[GREY, BLUE], width=0.55)
-ax.bar_label(b, fmt="%.3f", fontweight="bold")
-ax.set(ylabel="next-step error (lower is better)", ylim=(0, 0.18))
-clean(ax)
-save(fig, "p2_halves.png")
-zs = {n: np.mean([c["zero_shot_mean"] for c in A["cells"].values() if c["n"] == n]) for n in (2, 8, 32)}
-fig, ax = plt.subplots(figsize=(4.6, 3.6))
-b = ax.bar(["2 settings", "8 settings", "32 settings\n(incl. close ones)"], list(zs.values()), color=[GREY, GREY, OR], width=0.55)
-ax.bar_label(b, fmt="%.3f", fontweight="bold")
-ax.set(ylabel="error before any fine-tuning", ylim=(0, 0.23))
-clean(ax)
-save(fig, "p2_closeness.png")
-E5 = json.load(open(os.path.join(U2, "experiments", "e5", "results", "analysis.json")))["sizes"]
-k = sorted(E5, key=int)
-fig, ax = plt.subplots(figsize=(4.6, 3.6))
-ax.plot([int(i) for i in k], [100 * E5[i]["adv"][0] for i in k], "-o", color=BLUE, lw=3, ms=8)
-for i in k:
-    ax.annotate(f"{100 * E5[i]['adv'][0]:.0f}%", (int(i), 100 * E5[i]["adv"][0]), textcoords="offset points", xytext=(0, 9),
-                ha="center", fontweight="bold")
-ax.set(xticks=[int(i) for i in k], xlabel="target simulations available", ylabel="gain from pretraining (%)", ylim=(0, 52))
-clean(ax)
-save(fig, "p2_scarce.png")
 
 # Part II E10: error by swirl size (simple)
 D = json.load(open(os.path.join(U2, "experiments", "e10", "results", "analysis.json")))
