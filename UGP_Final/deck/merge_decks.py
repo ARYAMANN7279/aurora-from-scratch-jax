@@ -1,6 +1,6 @@
 """The final UGP deck: the UGP-I deck and the UGP-II deck merged into one presentation.
 
-usage: python merge_decks.py   (needs python-pptx; writes ../UGP_Final_Presentation.pptx and ../UGP_Final_speaker_notes.md)
+usage: python merge_decks.py   (needs python-pptx; writes ../UGP_Final_Presentation.pptx)
 Base: ../../UGP/UGP_presentation.pptx (13.33 x 7.5 in). The UGP-II slides (../../UGP-II/UGP2_presentation_draft.pptx,
 10 x 5.625 in) are copied in, scaled by 1.33, and given the UGP-I header band and footer, so the two parts read as one
 deck. Joining slides (title, contents, part covers, outcome, both parts together, appendix) are edited copies of
@@ -18,7 +18,6 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 A_PATH = os.path.join(HERE, "..", "..", "UGP", "UGP_presentation.pptx")
 B_PATH = os.path.join(HERE, "..", "..", "UGP-II", "UGP2_presentation_draft.pptx")
 OUT = os.path.join(HERE, "..", "UGP_Final_Presentation.pptx")
-NOTES_MD = os.path.join(HERE, "..", "UGP_Final_speaker_notes.md")
 
 A = Presentation(A_PATH)
 B = Presentation(B_PATH)
@@ -176,10 +175,41 @@ cov = a[1]
 for old, new in (("The problem statement", "Part I: the problem"), ("The method", "Part I: our approach"), ("The scoring", "Part I: the result"),
                  ("What we tried", "Part II: the question"), ("Where we stand", "Part II: the findings")):
     set_lines(find(cov, "^" + old + "$")[0], [new])
-for old, new in (("Forecasting future frames", "Forecasting a real wake"), ("What the model does", "Model, scoring, bands"), ("Five Metrics to score on", "72.7 → 80.1"),
+for old, new in (("Forecasting future frames", "Forecasting a real wake"), ("What the model does", "Model, scoring, bands"), ("Five Metrics to score on", "80.1 score"),
                  ("Including the failures", "What pretraining buys"), ("Against several teams", "Five results, next steps")):
     set_lines(find(cov, "^" + old + "$")[0], [new])
 notes(cov, "The plan: first the competition, its problem, our approach and the result. Then the question it left open, and what Part II found.")
+
+# Approach 2 (uncertainty): made very simple
+ap2 = a[11]
+set_lines(find(ap2, r"^24\.7% of the score")[0], ["Uncertainty is 24.7% of the score. Here is how we draw the bands"])
+set_lines(find(ap2, r"^How our bounds are produced$")[0], ["Three simple steps"])
+set_lines(find(ap2, r"^a network predicts how wrong")[0], ["Guess the error: a network estimates how wrong the forecast is at each point"])
+set_lines(find(ap2, r"^that is sorted into 24 bins")[0], ["Choose the width: expect a big error, draw a wide band; expect a small one, draw a narrow band"])
+set_lines(find(ap2, r"^a third network re-centers")[0], ["Centre it: shift the band to where it is most likely to catch the truth"])
+set_lines(find(ap2, r"^Only the bounds move")[0], ["The forecast itself is never changed, so improving the bands cannot hurt accuracy."])
+set_lines(find(ap2, r"^Why this became the focus$")[0], ["In plain words"])
+set_lines(find(ap2, r"^Uncertainty explained")[0], ["Like a weather forecast: \u201c20\u00b0C, give or take 2\u201d. We give the forecast and the \u201cgive or take\u201d for every point. A small \u201cgive or take\u201d that still turns out right earns the most points."])
+notes(ap2, "Uncertainty is a quarter of the score, so this was our biggest opportunity. It works in three simple steps. First, a network guesses how wrong the forecast will be at each point. "
+           "Second, we turn that guess into a band width: a big expected error gets a wide band, a small one gets a narrow band. Third, we shift the band to where it is most likely to catch the truth. "
+           "Think of a weather forecast saying 20 degrees, give or take 2. The give or take is our band. And the forecast itself is never touched, so improving the bands can never hurt accuracy.")
+
+# Score progression: the old table slide and chart slide become one slide, with dates instead of submission names
+pg = a[14]
+set_lines(find(pg, r"^The Steps That Moved the Score$")[0], ["Score Progression"])
+set_lines(find(pg, r"^Only submissions that improved")[0], ["Every submission that set a new best, on the day it was scored (23 Aug to 24 Sep)"])
+old_pic = [sh for sh in pg.shapes if sh.shape_type == 13][0]
+l, t, w, h = old_pic.left, old_pic.top, old_pic.width, old_pic.height
+remove(old_pic)
+pg.shapes.add_picture(os.path.join(HERE, "..", "figs", "ugp1_climb.png"), l, t, w, h)
+set_lines(find(pg, r"^The last two steps changed only")[0], ["16 submissions set a new best, from 78.45 to 80.08. The last two steps changed only the bands."])
+notes(pg, "This is the score progression over the month, one point per submission that set a new best, placed on the day it was scored. "
+          "The first big jump, on 30 August, is when we added the uncertainty bands. The turbulence head came in mid September, and in the last days we calibrated the band widths, "
+          "which took us across our target of 80. The last two steps changed only the bands; the forecast was identical.")
+
+# the gap slide no longer points to the removed "Main Finding" slide
+gap = find(a[17], r"After giving considerable time")[0]
+set_lines(gap, [p.text for p in gap.text_frame.paragraphs if p.text.strip() and "After giving considerable time" not in p.text])
 
 # Part I cover (UGP-I's own title slide)
 p1 = a[0]
@@ -273,17 +303,18 @@ set_lines(find(ty, r"^NeurIPS 2026")[0], ["Part II:  github.com/ARYAMANN7279/aur
 notes(ty, "Thank you, sir. I am happy to take questions.")
 
 # ---- order, numbering, footers ---------------------------------------------------------------------------------
-part1 = [a[i] for i in list(range(2, 16)) + [16, 17, 18, 20]]  # UGP-I 3-16, 17, 18, 19, 21 (20 dropped)
+part1 = [a[i] for i in list(range(2, 13)) + [14, 16, 17, 20]]  # UGP-I 3-13, 15 (progression), 17, 18, 21
 order = [title, cov, p1] + part1 + [p2] + [b_slides[i] for i in sorted(b_slides)] + [tog, apx, ty]
 lst = A.slides._sldIdLst
 by_id = {int(el.get("id")): el for el in lst}
 sid = {id(s): s.slide_id for s in A.slides}  # before any relationship is dropped
-dropped = by_id[a[19].slide_id]  # UGP-I slide 20, "What We Tested and Closed"
+dropped = [by_id[a[i].slide_id] for i in (13, 15, 18, 19)]  # UGP-I 14 (table), 16 (getting it wrong), 19 (main finding), 20 (tested and closed)
 for el in list(lst):
     lst.remove(el)
 for s in order:
     lst.append(by_id[sid[id(s)]])
-A.part.drop_rel(dropped.get(qn("r:id")))
+for el in dropped:
+    A.part.drop_rel(el.get(qn("r:id")))
 N = len(order)
 for k, s in enumerate(order, 1):
     for sh in find(s, r"^\d+ / \d+$"):
@@ -303,13 +334,4 @@ for s in order:
                       if para.text.startswith("Built") else "A small tool reading Codabench's public leaderboard endpoint")
 A.save(OUT)
 
-md = "# UGP Parts I and II: speaker notes\n\nOne deck: Part I (UGP-I) and Part II (UGP-II). About 30 seconds a slide.\n"
-for k, s in enumerate(order, 1):
-    head = next((sh.text_frame.text for sh in s.shapes if sh.has_text_frame and sh.text_frame.text.strip()
-                 and sh.top < 914400 * 0.5 and sh.left < 914400 * 2), None) or next(
-        (sh.text_frame.text.split("\n")[0] for sh in sorted(s.shapes, key=lambda z: z.top) if sh.has_text_frame and len(sh.text_frame.text) > 8), "")
-    head = {id(title): "Title", id(p1): "Part I cover: Forecasting Real Airfoil Wakes", id(p2): "Part II cover: What Does Pretraining Really Buy?",
-            id(ty): "Thank You"}.get(id(s), head)
-    md += f"\n## {k}. {head.strip()}\n\n{s.notes_slide.notes_text_frame.text.strip() if s.has_notes_slide else ''}\n"
-open(NOTES_MD, "w").write(md)
 print("wrote", OUT, N, "slides")
