@@ -15,20 +15,20 @@ Turbulent fluid flows are expensive to simulate and hard to measure, and a neura
 seen enough examples can learn to forecast them in a fraction of a second. This project studied how
 to build such forecasters well, in two connected parts.
 
-Part I was our entry to the NeurIPS 2026 RealPDE competition, Track 1 (Sim2Real): forecast
+Part I was my entry to the NeurIPS 2026 RealPDE competition, Track 1 (Sim2Real): forecast
 the next 20 frames of the real, noisy flow behind a NACA 4418 airfoil, measured with particle image
 velocimetry (PIV), and return a lower and an upper bound for every predicted value, inside a 256 MB
-package and a 3-minute run-time limit, with one scored submission a day. We decoded the hidden scoring
+package and a 3-minute run-time limit, with one scored submission a day. I decoded the hidden scoring
 rule from the public leaderboard and found that the quality of the uncertainty bands was worth a
-quarter of the score. We fine-tuned the organisers' Fourier neural operator, averaged several
+quarter of the score. I fine-tuned the organisers' Fourier neural operator, averaged several
 fine-tuned copies into one "model soup", added a small network that restores lost turbulence, and
 built a separate calibration pipeline for the bands so that the forecast itself is never touched.
 The development score rose from the organisers' baseline of 72.65 to 80.08, and a long list of
-measured negative results explains where it stopped. We finished just outside the top 50 of about 182
+measured negative results explains where it stopped. I finished just outside the top 50 of about 182
 teams. The project left one question open: would a model *pretrained* on lots of related data have
 done better?
 
-Part II answers that question where it can be answered. We rebuilt Microsoft's Aurora
+Part II answers that question where it can be answered. I rebuilt Microsoft's Aurora
 weather foundation model from primitives in JAX at small scale (5.1 million parameters), built a
 validated Kolmogorov-flow simulator and datasets in which every property of the pretraining data is an
 independent knob, and ran eleven experiments (291 training runs), each with its predictions written
@@ -53,19 +53,19 @@ data.
 - Part I: forecasting a real airfoil wake (the RealPDE competition)
 1. The competition and the problem
 2. The data
-3. How a submission is scored, and how we decoded it
+3. How a submission is scored, and how I decoded it
 4. The starting point
-5. Our approach, part 1: the forecast
-6. Our approach, part 2: the uncertainty bands
+5. My approach, part 1: the forecast
+6. My approach, part 2: the uncertainty bands
 7. Engineering within the limits: size, time and packaging
-8. How we worked: one submission a day
+8. How I worked: one submission a day
 9. Results
-10. What limited us
+10. What limited me
 11. What did not work
-12. What Part I taught us
+12. What Part I taught me
 - Part II: what does pretraining data buy?
 13. Motivation and research questions
-14. The testbed: Kolmogorov flow and our solver
+14. The testbed: Kolmogorov flow and my solver
 15. The data
 16. The model: Aurora rebuilt in JAX
 17. Training, evaluation and the experimental protocol
@@ -96,15 +96,15 @@ forecasters *good*.
 <p align="center"><img src="figs/overview.png" width="760" alt="The two flows of the project: the measured airfoil wake of Part I and the simulated Kolmogorov flow of Part II"></p>
 
 *Figure 0.1. The two flows. Left: a real wake behind an airfoil, measured in a water tunnel (Part I).
-Right: a simulated Kolmogorov flow whose data we control completely (Part II).*
+Right: a simulated Kolmogorov flow whose data I control completely (Part II).*
 
 | | Part I | Part II |
 |---|---|---|
-| Flow | a real airfoil wake, measured with PIV in a water tunnel | Kolmogorov flow: 2-D turbulence in a periodic box, simulated by us |
+| Flow | a real airfoil wake, measured with PIV in a water tunnel | Kolmogorov flow: 2-D turbulence in a periodic box, simulated by me |
 | Goal | score as high as possible in a competition | find out which property of pretraining data produces the benefit of pretraining |
-| Model | the organisers' Fourier neural operator (FNO), fine-tuned and extended | our own rebuild of Aurora in JAX |
+| Model | the organisers' Fourier neural operator (FNO), fine-tuned and extended | my own rebuild of Aurora in JAX |
 | Data | 81 real recordings (about 69,000 frames) | 326 simulations in the main dataset, any amount on demand |
-| Rules | 256 MB, 3 minutes, one scored submission a day | none, apart from our own protocol |
+| Rules | 256 MB, 3 minutes, one scored submission a day | none, apart from my own protocol |
 | Headline | 72.65 → 80.08 development score | pretraining halves the error; closeness to the task matters most |
 
 ### 0.2 Timeline
@@ -112,8 +112,8 @@ Right: a simulated Kolmogorov flow whose data we control completely (Part II).*
 | When (2026) | What happened |
 |---|---|
 | 5 July | the RealPDE competition opens (warm-up phase) |
-| early August | we study the data and the scoring rule and start submitting (Part I) |
-| 19–20 August | the hidden scoring rule is decoded; the organisers' own checkpoint with our recalibrated bands banks 78.07 |
+| early August | I study the data and the scoring rule and start submitting (Part I) |
+| 19–20 August | the hidden scoring rule is decoded; the organisers' own checkpoint with my recalibrated bands banks 78.07 |
 | 23 August | first fine-tuned model soup: 78.45 |
 | 30 August | decoupling the interval centre from the forecast: 79.25 |
 | 2–18 September | a series of small gains (bias correction, more training data, speed, a turbulence head): up to 79.75 |
@@ -121,7 +121,7 @@ Right: a simulated Kolmogorov flow whose data we control completely (Part II).*
 | 28 September | the one-day decision phase; the same archive scores 75.09 on private data |
 | 1 October | HiPC student symposium paper submitted; Part II begins in earnest |
 | 28 September – 17 October | Part II: instrument built (Stages 1–12), experiments E1–E9 run and reviewed |
-| 17 October | the competition's final results are published: we did not place in the top 10 |
+| 17 October | the competition's final results are published: I did not place in the top 10 |
 | 6 November | diagnostics of the trained models (E10) and the physics-built-in model (E11) |
 
 ### 0.3 Where the code and the records live
@@ -186,14 +186,14 @@ is real measurement noise.*
 | Rule | Consequence |
 |---|---|
 | the whole submission is at most 256 MB | the organisers' own model is 201.4 MB, so there is room for exactly one backbone plus a few small networks |
-| a 3-minute container limit, including model loading, on a grader we cannot see (the starting kit's README quotes 300 s) | speed is part of the score, and a program that runs too long is killed before it writes any output |
+| a 3-minute container limit, including model loading, on a grader I cannot see (the starting kit's README quotes 300 s) | speed is part of the score, and a program that runs too long is killed before it writes any output |
 | only PyTorch and NumPy, no internet | no outside pretrained weights, no extra libraries |
-| one scored submission per day | we cannot iterate by trial and error: each submission must be justified in advance |
+| one scored submission per day | I cannot iterate by trial and error: each submission must be justified in advance |
 | only the top 10 of the development leaderboard go to the decision phase | a few hundredths of a point decide a rank |
 
 <p align="center"><img src="figs/ugp1_zip.png" width="760" alt="Anatomy of a submission: 201 MB backbone, 42 MB of small U-Nets, 17 MB free, under a 256 MB cap"></p>
 
-*Figure 1.2. Anatomy of what we submitted: a zip of about 240 MB (93.5% of the cap) that exposes one
+*Figure 1.2. Anatomy of what I submitted: a zip of about 240 MB (93.5% of the cap) that exposes one
 function, `predict(input)`, returning a forecast, a lower bound and an upper bound. The graders import
 it in an isolated container, hand it 20 frames and read back three arrays.*
 
@@ -210,7 +210,7 @@ infers the velocity from how the particles move between frames. Three properties
 everything that follows.
 
 1. It is a plane. The camera sees one slice of a three-dimensional flow, so the measured
-   two-dimensional velocity is the flow's projection onto that plane, not the full flow. We write the
+   two-dimensional velocity is the flow's projection onto that plane, not the full flow. I write the
    measurement as y = M(q) + ε: q is the true three-dimensional flow, M the measurement operator
    (the slice) and ε noise. A rule that holds for q need not hold for y. Part I's main
    failures (section 11) are all instances of this.
@@ -237,14 +237,14 @@ easily a local test can fail to measure what the scorer measures.
 
 ### 2.3 The simulations
 
-The organisers also supply 100 simulated trajectories of the same airfoil flow (with pressure). We
-tested whether adding them to training helps (they did not; section 11), and in Part II we use them
+The organisers also supply 100 simulated trajectories of the same airfoil flow (with pressure). I
+tested whether adding them to training helps (they did not; section 11), and in Part II I use them
 to test the pretraining question directly on real data (experiment E6).
 
 *Where the code is: data preparation is `train/01_prep_data.py` and `train/00_config.py`; the
 description of the two datasets and the discovery of the mismatch is section 2 ("root cause of six proxy failures") of `project_memory.md`.*
 
-## 3. How a submission is scored, and how we decoded it
+## 3. How a submission is scored, and how I decoded it
 
 ### 3.1 Five scores
 
@@ -262,7 +262,7 @@ Each error is converted to a score by score(e) = 100 / (1 + 0.5 e).
 
 ### 3.2 The uncertainty channel
 
-For every predicted value we give a lower and an upper bound. If the truth lies inside the band, the
+For every predicted value I give a lower and an upper bound. If the truth lies inside the band, the
 element earns exp(−width/σ), with σ = 0.0564; if it lies outside, it earns zero. The element
 scores are then weighted by how well that point's accuracy scores are doing and averaged:
 
@@ -274,7 +274,7 @@ scores are then weighted by how well that point's accuracy scores are doing and 
 correct one only 0.17; a narrow band that misses scores nothing. Being too cautious is punished almost
 as hard as being wrong.*
 
-Three consequences, derived from the scoring code the organisers released, set our strategy:
+Three consequences, derived from the scoring code the organisers released, set my strategy:
 
 1. The score is a sum over elements, so the best band for each element can be chosen separately.
 2. The optimal half-width solves a simple balance between the chance of covering the truth and the
@@ -282,10 +282,10 @@ Three consequences, derived from the scoring code the organisers released, set o
 3. Accuracy *multiplies* the uncertainty score through the weight W, so improving turbulence accuracy
    pays twice.
 
-### 3.3 The hidden weights, and how we recovered them
+### 3.3 The hidden weights, and how I recovered them
 
 The organisers published the five scores of every leaderboard row but not how they combine into the
-final score during the development phase. We built a small tool that reads the public Codabench
+final score during the development phase. I built a small tool that reads the public Codabench
 leaderboard and collects every team's five scores, and solved a least-squares problem over 40 public
 rows. The fit reproduces every published total to within 0.005:
 
@@ -313,7 +313,7 @@ and studied in the early sections of `project_memory.md`; the weight fit and lea
 ### 4.1 The baseline
 
 The organisers' starting kit contains pretrained baselines (CNO, FNO, Transolver) and the exact scoring
-program. We used the FNO (a Fourier neural operator, a network that works on the Fourier modes of
+program. I used the FNO (a Fourier neural operator, a network that works on the Fourier modes of
 the flow) with about 100 million parameters. Trained by the organisers on simulations and fine-tuned on
 real data, it scored 72.65 on the development leaderboard:
 
@@ -326,7 +326,7 @@ baseline's `sps` is 14.
 
 ### 4.2 The first stage: bands only
 
-For the first eleven submissions (until 20 August) we shipped the organisers' checkpoint
+For the first eleven submissions (until 20 August) I shipped the organisers' checkpoint
 byte-identical and put all the work into the bands and a few post-hoc corrections. The first
 decoded insight was that the baseline's band half-widths were 2.4 times too wide: with σ = 0.0564
 the penalty exp(−width/σ) is brutal, and an element keeps only 34% of its value at a half-width of
@@ -346,9 +346,9 @@ The same stage taught three lessons.
 * A silent fallback to the CPU is a disaster. Four early submissions "failed" with an empty result
   file. The cause was not the contents of the zip: the program chose the CPU when it could not see the
   GPU, was 66 times slower (176 ms against 2.7 ms per sample), ran out of time and was killed before it
-  wrote its output. We added a time budget guard to every later submission (section 7.3), and a rule: *a failure with
+  wrote its output. I added a time budget guard to every later submission (section 7.3), and a rule: *a failure with
   an empty result means the container was killed, not that the archive is wrong.*
-* Check the scoring rule's own constraints. We later found (section 6.3) that the rules never
+* Check the scoring rule's own constraints. I later found (section 6.3) that the rules never
   required the band to be centred on the forecast. Every bounds experiment in the first weeks had
   assumed it was.
 
@@ -356,7 +356,7 @@ The same stage taught three lessons.
 `harness/` (for example `bounds.py`, `bounds_fast.py`); the "fullstack" failure and its diagnosis are
 sections 6 and 6A of `project_memory.md`.*
 
-## 5. Our approach, part 1: the forecast
+## 5. My approach, part 1: the forecast
 
 Once the bands were reasonable, the forecast itself became the question. Everything in this section
 changes the point prediction (the thing the accuracy scores measure). Section 6 changes only the
@@ -365,10 +365,10 @@ bands.
 ### 5.1 Fine-tuning
 
 The organisers' FNO was trained on simulations. Fine-tuning means continuing to train that same
-model, gently, on our 81 real recordings, so it adapts to real flow without forgetting what it learned.
+model, gently, on my 81 real recordings, so it adapts to real flow without forgetting what it learned.
 It is like a driver who learned on a simulator and now practises in the real car.
 
-Our loss was L = rel_l2 + w · tke_rel_l2: the relative error of the velocity plus a weighted relative
+My loss was L = rel_l2 + w · tke_rel_l2: the relative error of the velocity plus a weighted relative
 error of the turbulent kinetic energy. The weight w was chosen from the score's own sensitivities:
 one point of `tke` is worth about a third as much as one point of `rel_l2`, giving a plateau at
 w between 0.05 and 0.15. Two measurements justify the term: w = 0 is worse than not training at all
@@ -386,8 +386,8 @@ weights into a single model. The quirks cancel, much as averaging several people
 because the result is one model it costs nothing extra to store or to run. That mattered a great deal: the
 256 MB cap leaves room for exactly one backbone.
 
-Averaging all six of our first fine-tunes beat the best single run (+1.21 against +1.17 on our local
-test). A technical trap cost us a day: the FNO has sixteen *complex* spectral tensors, and a naive cast
+Averaging all six of my first fine-tunes beat the best single run (+1.21 against +1.17 on my local
+test). A technical trap cost me a day: the FNO has sixteen *complex* spectral tensors, and a naive cast
 to real numbers silently discards their imaginary parts. A soup built that way scored −7.34 points
 while looking perfectly legitimate; only a casting warning exposed it. Every packing script now branches
 on complex tensors explicitly.
@@ -395,7 +395,7 @@ on complex tensors explicitly.
 ### 5.3 Ensembling
 
 Ensembling is the other way to combine models: run several of them and average their *answers*. It
-usually helps, but every model must be stored and run. With one 201 MB backbone allowed, we could afford
+usually helps, but every model must be stored and run. With one 201 MB backbone allowed, I could afford
 it only in a limited form (an ensemble of the soup with a cheaper partner, which banked a small gain),
 and an ensemble across different architectures was later measured and closed (section 11).
 
@@ -411,7 +411,7 @@ nothing left to hold out, so it was a pure bet. It scored 79.46 (+0.084 over the
 
 ### 5.5 A turbulence head
 
-Models trained to minimise average error learn to be safe, and their forecasts come out too smooth. We
+Models trained to minimise average error learn to be safe, and their forecasts come out too smooth. I
 measured that the fine-tuned model keeps only 74% of the true turbulent fluctuation energy, and that
 the missing `tke` is 97.5% a matter of *shape* (where the fluctuations are), not amplitude. A small extra
 network, the TKE head, rescales the predicted fluctuations towards the right amount and pattern. Live,
@@ -420,11 +420,11 @@ it raised `tke` from 76.4 to 78.6 (+2.2), worth +0.097 final, although the extra
 ### 5.6 A time-constant bias correction
 
 `tke` is computed from the *fluctuation* u − mean over time of u. Adding a correction that is constant
-in time therefore cannot change `tke` at all, algebraically. We exploited this: add the mean residual
+in time therefore cannot change `tke` at all, algebraically. I exploited this: add the mean residual
 (averaged over time) to the forecast. On the live board `tke` moved by exactly +0.000000, confirming the
 mechanism, while the probe profile `mvpe` gained 0.27 (submission 79.369).
 
-### 5.7 What we tried that did not help
+### 5.7 What I tried that did not help
 
 The record of the forecast search is mostly a record of closed doors, each with a measurement: a
 learned centre correction applied to the forecast (it destroys fluctuation energy: `tke` −2.5), more soup
@@ -432,7 +432,7 @@ members (recipe matters more than count), exponential moving averages (real, but
 soup until their decays differed), a mixture of experts (the cap makes experts too weak), mirror
 augmentation, per-window normalisation, simulation pretraining then fine-tuning (no arm ever beat its
 own starting checkpoint), and a three-dimensional U-Net (section 11). Part I's final lesson on the
-forecast is that fine-tuning buys `tke` and pays `rel_l2`, a trade whose price we measured exactly
+forecast is that fine-tuning buys `tke` and pays `rel_l2`, a trade whose price I measured exactly
 but could not escape.
 
 *Where the code is: fine-tuning and soup training are in `pipeline/train` and `pipeline/train_soup`;
@@ -440,14 +440,14 @@ averaging and packing are `avg_and_eval.py` and the kit's `pack_ckpt_fp16.py`; t
 is in `_tke/` (`tkeA.py` to `tkeG.py`) and the time-constant correction is `build_tmean.py`; the
 reasoning is in sections 8 (fine-tuning and model soup) and 11A (the first soup result) of `project_memory.md`.*
 
-## 6. Our approach, part 2: the uncertainty bands
+## 6. My approach, part 2: the uncertainty bands
 
 ### 6.1 The idea: calibrate after the fact
 
 Because the band width enters only the bounds, the bands can be calibrated *after* the forecast is
 frozen, without retraining or touching the point forecast. A frozen backbone and a tight memory budget
 therefore cost nothing in calibration quality. Every improvement to the bands left the three accuracy
-scores *bit-identical*, which we verified live to within 3 × 10⁻⁴, and made uncertainty work safe to test
+scores *bit-identical*, which I verified live to within 3 × 10⁻⁴, and made uncertainty work safe to test
 with one submission a day.
 
 ### 6.2 The pipeline
@@ -482,13 +482,13 @@ Two further stages were gains purely in the widths.
   *smaller* than the residuals on the unseen live conditions. Recalibrating at the live scale
   (submission `LUT150`) moved the final score from 79.754 to 79.857 (+0.104).
 * Narrowing. A scalar multiplying every width by 0.80 gave 80.061 (+0.204) on 23 September, the
-  first time we crossed 80. All of that gain was `sps` (+0.84); the three accuracy scores were
+  first time I crossed 80. All of that gain was `sps` (+0.84); the three accuracy scores were
   unchanged to 4 × 10⁻⁴. A further stack of two scalars and a free per-bin table gave 80.081.
 
-We tried to widen the bands on 22 September, predicted +0.11, and scored −0.48, our worst
+I tried to widen the bands on 22 September, predicted +0.11, and scored −0.48, my worst
 submission in weeks. The cause was a calibration constant 2.14 times too large: it had been fitted in
 the wrong direction. Because the prediction had been written down in advance, the error could be solved
-for rather than explained away, and the next day we did the opposite (narrow instead of widen),
+for rather than explained away, and the next day I did the opposite (narrow instead of widen),
 predicted +0.31 and gained +0.20.
 
 *Where the code is: the U-Net bounds networks and the lookup table are in `analysis/bounds`,
@@ -501,7 +501,7 @@ and the later calibration entries are in the same file.*
 ### 7.1 The 256 MB budget
 
 The organisers' FNO checkpoint is 201.4 MB in half precision (float16). That leaves about 55 MB for
-everything else. We spent it on a pair of small U-Nets for the bands and the turbulence head (about
+everything else. I spent it on a pair of small U-Nets for the bands and the turbulence head (about
 42 MB together), and kept roughly 17 MB free. Anything that would have needed a second backbone, such
 as an ensemble across architectures or a mixture of experts, was ruled out by arithmetic before it was
 tried.
@@ -514,7 +514,7 @@ of the FNO need explicit handling (section 5.2). The final archive is about 240 
 
 Inference time is both a hard limit (3 minutes of container time including model loading; a program
 that runs over is killed and scores nothing) and a score channel worth 9.7% of the total, with
-score = 100/(1 + √(t/729)). We cut time in three ways, none of which changed a prediction: the per-point
+score = 100/(1 + √(t/729)). I cut time in three ways, none of which changed a prediction: the per-point
 work that had run on the CPU was moved to the GPU, three small networks were merged into one, and the
 weights were stored in half precision. That brought the run time to 7.8 seconds for the whole test
 set. At that point the speed score is on the flat part of its curve, and halving the time again would add
@@ -527,7 +527,7 @@ After the CPU-fallback failures of section 4.2, every submission carried a time 
 (145 s measured from import, model loading included). Each batch checks the clock, and if it trips the
 remaining windows are filled with *persistence* (repeat the last input frame), which scores about 70
 instead of nothing. The guard was verified with forced and partial fallbacks, each of which produced
-complete, finite, correctly-shaped output with lower ≤ upper. Its first version had two flaws we later
+complete, finite, correctly-shaped output with lower ≤ upper. Its first version had two flaws I later
 found by reading it carefully: the budget did not count model loading, and it could overshoot by a whole
 batch because the check ran only between batches. The fixed version refuses to *start* a unit of work
 whose predicted cost would exceed what is left.
@@ -536,7 +536,7 @@ whose predicted cost would exceed what is left.
 (the organiser's loader), and the packaging scripts in `train/` and `harness/`; timing measurements are
 the timeout-bug entry (section 16) of `project_memory.md`.*
 
-## 8. How we worked: one submission a day
+## 8. How I worked: one submission a day
 
 ### 8.1 Predict, then submit
 
@@ -550,7 +550,7 @@ points, and the widening, −0.48) are exactly the ones where the prediction res
 
 ### 8.2 The local proxy and why it failed
 
-We built a local scoring harness that reproduced the organisers' scorer exactly (down to the pairing
+I built a local scoring harness that reproduced the organisers' scorer exactly (down to the pairing
 of channels and the uncertainty formula) and ran it on held-out trajectories. It worked well for
 ranking changes to the forecast of similar kind, and badly in three situations:
 
@@ -573,9 +573,9 @@ only to *confirm* a change that had already earned its slot.
 ### 8.3 Reading the board
 
 Besides the weights of section 3.3, the public board gave a second kind of information: the five scores of
-every team, 182 rows. Looking at the scores of the teams ahead of us showed where they gained: their
+every team, 182 rows. Looking at the scores of the teams ahead of me showed where they gained: their
 `rel_l2` and `tke` were a few percent better and their `time` score was higher, while their `sps` was
-not far from ours. That is how we sized the gap to first place (section 10.2).
+not far from mine. That is how I sized the gap to first place (section 10.2).
 
 *Where the code is: the local harness is `harness/` (scorer mirror, window sampler, calibration
 tables); the live-versus-local comparisons are in `analysis/proxy` and in `SUBMISSION_LEDGER.md` of the
@@ -594,7 +594,7 @@ uncertainty bands (30 August, +0.80) and the band calibration at the live scale 
 
 ### 9.2 Channel by channel
 
-<p align="center"><img src="figs/ugp1_channels.png" width="700" alt="Our final entry against the organisers' baseline on each scoring channel"></p>
+<p align="center"><img src="figs/ugp1_channels.png" width="700" alt="My final entry against the organisers' baseline on each scoring channel"></p>
 
 | Score | Baseline | Ours | Change | Where it came from |
 |---|---|---|---|---|
@@ -606,7 +606,7 @@ uncertainty bands (30 August, +0.80) and the band calibration at the live scale 
 | Overall | 72.65 | 80.08 | +7.43 | |
 
 Three quarters of the gain is uncertainty, one fifth fluctuations. The accuracy score is where the
-organisers' model was already strong and where we deliberately did not try to improve: the 20-step
+organisers' model was already strong and where I deliberately did not try to improve: the 20-step
 forecast of a chaotic wake has an error floor of its own, set by the measurement noise (section 2.1)
 and by chaos.
 
@@ -620,11 +620,11 @@ and by chaos.
 | + band width calibration at the live scale | 78.62 | 39.56 | 80.06 | +0.20 |
 | + speed engineering (no model change) | 78.62 | 39.56 | 80.08 | +0.02 |
 
-### 9.4 Where we landed
+### 9.4 Where I landed
 
-Our final development-phase score was 80.081. The cutoff for the top ten was 81.90 and the
+My final development-phase score was 80.081. The cutoff for the top ten was 81.90 and the
 leader's score 82.22. The field was very tight: about 182 teams, and the published top 50 spanned only
-1.6 points, so every few hundredths mattered. We finished just outside the top 50.
+1.6 points, so every few hundredths mattered. I finished just outside the top 50.
 
 In the one-day decision phase (28 September) the same archive scored 75.09 on the organisers'
 private data (accuracy 91.2, fluctuations 59.9, probes 91.6, speed 79.0, uncertainty 53.8). The
@@ -632,35 +632,35 @@ fluctuation score falls by almost twenty points on unseen conditions and the unc
 shows how far the development leaderboard was from a measure of generalisation: every team was tuned to
 the development conditions.
 
-## 10. What limited us
+## 10. What limited me
 
 ### 10.1 An oracle experiment: the bands were not the limit
 
-To ask where the remaining headroom was, we computed oracles: scores we would get if one component
+To ask where the remaining headroom was, I computed oracles: scores I would get if one component
 were perfect. If the band network were perfect (it knew the true error of every element), the final
-score on our forecast would be 81.73, still below the top-10 cutoff of 81.77 at that time. In
-other words, we were limited by the forecast, not by the bands. A forecast gain of the size that
+score on my forecast would be 81.73, still below the top-10 cutoff of 81.77 at that time. In
+other words, I was limited by the forecast, not by the bands. A forecast gain of the size that
 separated the leaders could not be bought by any amount of band work.
 
 ### 10.2 The gap to first place
 
-Using the five public scores of the teams ahead of us we decomposed the 2.1-point gap to the
+Using the five public scores of the teams ahead of me I decomposed the 2.1-point gap to the
 leader:
 
 <p align="center"><img src="figs/ugp1_gap.png" width="720" alt="The gap to first place decomposed into forecast quality and bands"></p>
 
-* the leader's errors (`rel_l2`, `tke`) were 10–16% smaller than ours,
+* the leader's errors (`rel_l2`, `tke`) were 10–16% smaller than mine,
 * their program was about 30% faster,
-* we estimated that about 58% of the gap came from a better forecast and 42% from better
+* I estimated that about 58% of the gap came from a better forecast and 42% from better
   bands.
 
 Better bands were within reach in principle; a better forecast needed either more data, a different
 backbone, or a better way to use simulation data, and each of those had been tested (section 11) and
-had not worked for us within the size and time limits.
+had not worked for me within the size and time limits.
 
 ### 10.3 Training versus held-out conditions
 
-The deepest limit was the data. We have 81 trajectories, at most 18 distinct conditions in the test set
+The deepest limit was the data. I have 81 trajectories, at most 18 distinct conditions in the test set
 and Reynolds numbers above anything seen in training. Every method that increased the effective data
 (a bigger model, more steps, augmentation) either overfit or moved the forecast along the same
 accuracy–turbulence trade-off. The best use of more data is simply more *real* data, as the all-data
@@ -689,7 +689,7 @@ Part I recorded about forty closed directions. These are the ones that taught so
 | Mixture of experts, mirror augmentation, per-window normalisation | no gain | cap and data limits |
 | A learned per-element bounds head | −1.0 | trained on windows its own weights had seen (section 4.2) |
 
-The first three share one reason, which we came to call the measurement-operator argument. The
+The first three share one reason, which I came to call the measurement-operator argument. The
 camera does not record the flow q; it records y = M(q) + ε, a plane of the flow plus noise. A constraint
 that is exactly true of q (incompressibility, vorticity transport, "noise is uncorrelated") need not be
 true of y. In Part II, where the data is the true two-dimensional flow, the same constraint helps
@@ -699,7 +699,7 @@ before you build it in*.
 *Where the code is: every negative result has its experiment in `analysis/` and a numbered section in
 `project_memory.md` and the analysis scripts in `analysis/`.*
 
-## 12. What Part I taught us
+## 12. What Part I taught me
 
 1. Know exactly how you are scored. Recovering the hidden weights turned a guess ("improve the
    forecast") into a plan ("a quarter of the score is uncertainty, and it is nearly free to improve").
@@ -711,7 +711,7 @@ before you build it in*.
 5. Make sure your local test measures the scorer's data. A local proxy that is wrong in a systematic
    way is worse than no proxy.
 6. Physics rules can fail on measurements. PIV is a window onto a 3-D flow.
-7. The open question. Adding the organisers' simulation data did not help, but we could not test
+7. The open question. Adding the organisers' simulation data did not help, but I could not test
    properly whether *pretraining* on lots of related data would: outside pretrained models were not
    allowed and 81 recordings are too few to study it. Part II builds a setting where that question can
    be answered.
@@ -742,12 +742,11 @@ budget.
 
 ### 13.3 Where it came from
 
-Part I ended on exactly this question: the organisers' simulation data did not improve our entry on real
-measurements, and we could not tell whether that was a property of simulation data in general or of that
+Part I ended on exactly this question: the organisers' simulation data did not improve my entry on real
+measurements, and I could not tell whether that was a property of simulation data in general or of that
 data and that model. A project that rebuilt a foundation model's architecture at small scale and used it
 on a flow where each property of the pretraining data could be varied one at a time would answer a version
-of the question. The question and the approach came from Prashant Kumar, whose proposal is acknowledged
-at the end of this report; the work reported here was done as our own Part II.
+of the question. 
 
 ### 13.4 Goal and research questions
 
@@ -777,11 +776,11 @@ The questions the experiments answer:
 5. A diagnosis of what limits accuracy and a design change (physics built into the output) that
    follows from it.
 
-## 14. The testbed: Kolmogorov flow and our solver
+## 14. The testbed: Kolmogorov flow and my solver
 
 ### 14.1 Why Kolmogorov flow
 
-To answer "which property of the pretraining data matters" we need a flow where each property can be
+To answer "which property of the pretraining data matters" I need a flow where each property can be
 changed on its own and where the truth is exact. Kolmogorov flow is two-dimensional turbulence in a
 doubly periodic box, kept going by a steady sinusoidal force and damped by linear drag:
 
@@ -795,17 +794,17 @@ set through the viscosity ν).
 <p align="center"><img src="figs/p2_fig_testbed.png" width="760" alt="Kolmogorov forcing bands and vorticity snapshots at Reynolds numbers 100, 300 and 1000"></p>
 
 *Figure 14.1. Left: the forcing pushes bands of fluid alternately left and right (k_f = 4). Right:
-vorticity snapshots from our solver at Re 100, 300 and 1000. The target regime of most experiments is
+vorticity snapshots from my solver at Re 100, 300 and 1000. The target regime of most experiments is
 (Re 300, k_f 4).*
 
 It is a standard benchmark in the study of turbulence [6, 7]. It is chaotic (positive
-Lyapunov exponents), it is cheap to simulate, it has no measurement noise, and, above all, because we
-generate the data ourselves, volume, diversity, format and distance from the target can each be
+Lyapunov exponents), it is cheap to simulate, it has no measurement noise, and, above all, because I
+generate the data myself, volume, diversity, format and distance from the target can each be
 changed independently, and every prediction is scored against an exact truth.
 
 ### 14.2 The solver
 
-We wrote a pseudo-spectral solver in JAX: derivatives are computed in Fourier space, the nonlinear
+I wrote a pseudo-spectral solver in JAX: derivatives are computed in Fourier space, the nonlinear
 product is formed on the grid and then filtered with the 2/3 rule to remove aliasing errors [14], and time
 stepping uses a fourth-order Runge–Kutta scheme with an integrating factor for the stiff diffusion term
 [15]. Everything runs in 64-bit floating point. Energy and enstrophy budgets are tracked at every step.
@@ -876,7 +875,7 @@ mirrors the encoder. Aurora trains with a mean-absolute-error loss, rolls out au
 adapts to long rollouts with LoRA [5], a small low-rank add-on trained while the pretrained weights stay
 frozen.
 
-### 16.2 Our rebuild
+### 16.2 My rebuild
 
 <p align="center"><img src="figs/p2_fig_model.png" width="760" alt="Model pipeline from two snapshots through spectral levels, patch embedding, Perceiver and Swin U-Net to the next snapshot"></p>
 
@@ -904,7 +903,7 @@ which does not preserve their order, unlike Aurora's ordered temporal patch proj
 encoder is proposed in Appendix D of the Part II repository's report and listed under future work; no result in
 this report uses it.
 
-### 16.3 How we knew it was right
+### 16.3 How I knew it was right
 
 The rebuilt pieces were each tested against reference implementations before use.
 
@@ -1159,7 +1158,7 @@ scripts alongside; the configurations are in `experiments/configs/`.*
 
 ## 20. Looking inside the trained models (E10)
 
-After the project review we asked a different question: not "what else can we train" but "where does
+After the project review I asked a different question: not "what else can I train" but "where does
 the remaining error live?" E10 trained nothing. It diagnosed E1's 30 trained models: where their error
 sits, which loss term limits it, whether the output layer is converged, and whether the predictions respect
 the flow's physics.
@@ -1271,7 +1270,7 @@ good?
 
 | | Part I: the competition | Part II: the controlled study |
 |---|---|---|
-| What we controlled | the *scoring side*: bands, calibration, packaging | the *data side*: volume, variety, closeness, format |
+| What I controlled | the *scoring side*: bands, calibration, packaging | the *data side*: volume, variety, closeness, format |
 | What decided the result | knowing the scoring rule, and a forecast limit set by 81 noisy recordings | closeness of the pretraining data to the target, and how scarce target data was |
 | Physics built in | failed: the data (a PIV slice of a 3-D flow) does not obey the 2-D rules | worked: the data is the exact 2-D flow and obeys them |
 | Simulation data | no gain on real measurements | no gain on real measurements (E6) |
@@ -1314,10 +1313,7 @@ Part II. Each item would get its own pre-registered specification:
 
 ## Acknowledgements
 
-We thank Prof. Rajesh Ranjan for supervising the project, and Prashant Kumar for proposing the pretraining
-question and the approach that became Part II. Part II computations ran on the lab's shared GPU machine and
-on Kaggle's T4 notebooks. The competition's data, scoring program and baselines were provided by the
-RealPDE organisers.
+I thank Prof. Rajesh Ranjan for supervising the project and Prashant Kumar for assisting with doubts and queries. Part II computations ran on the lab's shared GPU machine and on Kaggle's T4 notebooks. The competition's data, scoring program and baselines were provided by the RealPDE organisers.
 
 ## References
 
@@ -1360,7 +1356,7 @@ with w the band's width and W a weight that depends on how well that point's acc
 Optimal half-width. For a point whose absolute forecast error has density f and cumulative distribution
 F, the half-width h that maximises e^{−2h/σ}·F(h) satisfies f(h)/F(h) = 2/σ. A band is therefore *narrower
 than the 90% or 95% interval one would choose for coverage*: with σ = 0.0564 the optimum covers only about
-70% of the truth. This is why our bands cover less than a conventional conformal interval would, and why
+70% of the truth. This is why my bands cover less than a conventional conformal interval would, and why
 widening them (22 September) lost points.
 
 Recovered combination of the channels (development phase, fitted on 40 public leaderboard rows; every
@@ -1368,7 +1364,7 @@ published total reproduced to within 0.005):
 
 $$\text{final} = 0.467\,\mathrm{rel\_l2} + 0.100\,\mathrm{tke} + 0.094\,\mathrm{mvpe} + 0.097\,\mathrm{time} + 0.247\,\mathrm{sps} + 0.912.$$
 
-The decision phase used a plain unweighted mean of the five scores; the private-data result for our archive
+The decision phase used a plain unweighted mean of the five scores; the private-data result for my archive
 (75.09) is the mean of 91.2, 59.9, 91.6, 79.0 and 53.8.
 
 ### A.2 The submitted model
@@ -1401,7 +1397,7 @@ The component ablation is in section 9.3 and the negative results in section 11.
 
 Let q be the true three-dimensional flow, M the operator the camera applies (a slice through the laser
 sheet, projected on a grid) and ε noise, so the data are y = M(q) + ε. A constraint C(q) = 0 that holds for
-the true flow does not in general give C(y) = 0. Three of our failures are examples. (i) Divergence: the
+the true flow does not in general give C(y) = 0. Three of my failures are examples. (i) Divergence: the
 true flow has ∇·u = 0, but the slice has ∂u/∂x + ∂v/∂y = −∂w/∂z ≠ 0; the measured divergence (0.0068)
 exceeded the forecast's (0.0060), and projecting the forecast cost 9 points. (ii) Vorticity transport: the
 2-D equation explains R² = 0.04–0.12 of the measured change. (iii) Filtering: a filter that removes "noise"
