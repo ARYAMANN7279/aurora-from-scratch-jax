@@ -339,6 +339,10 @@ def _rename(tf):
             t = r.text
             for a, b in (("UGP-II", "Part II"), ("UGP-I", "Part I"), ("My UGP had", "My project had")):
                 t = t.replace(a, b)
+            for a, b in ((r"\b[Ww]e are\b", "I am"), (r"\b[Ww]e were\b", "I was"), (r"\b[Ww]e have\b", "I have"),
+                         (r"\b[Ww]e've\b", "I've"), (r"\b[Ww]e're\b", "I am"), (r"\b[Ww]e\b", "I"),
+                         (r"\bOur\b", "My"), (r"\bour\b", "my"), (r"\bus\b", "me"), (r"\bours\b", "mine")):
+                t = re.sub(a, b, t)
             if t != r.text:
                 r.text = t
 # no em dashes anywhere in the deck (slide text and speaker notes)
